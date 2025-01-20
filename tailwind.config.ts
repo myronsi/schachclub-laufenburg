@@ -25,10 +25,10 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         club: {
-          primary: "#1E3A8A",
-          accent: "#F59E0B",
-          light: "#F3F4F6",
-          dark: "#1F2937",
+          primary: "#1E3A8A", // Hauptblau
+          accent: "#F59E0B", // Gold
+          light: "#F3F4F6", // Hellgrau
+          dark: "#1F2937", // Dunkelgrau
         },
         primary: {
           DEFAULT: "hsl(var(--primary))",

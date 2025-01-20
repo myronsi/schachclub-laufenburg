@@ -9,7 +9,7 @@ const Header = () => {
     <header className="bg-club-primary text-white py-4 fixed w-full top-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center">
-          <div className="text-2xl font-bold">Sportverein</div>
+          <div className="text-2xl font-bold">Schachclub Laufenburg</div>
           
           {/* Mobile Menu Button */}
           <button
@@ -24,11 +24,20 @@ const Header = () => {
             <a href="#home" className="hover:text-club-accent transition-colors">
               Home
             </a>
+            <a href="#about" className="hover:text-club-accent transition-colors">
+              Über uns
+            </a>
             <a href="#teams" className="hover:text-club-accent transition-colors">
               Teams
             </a>
+            <a href="#youth" className="hover:text-club-accent transition-colors">
+              Jugend
+            </a>
             <a href="#tournaments" className="hover:text-club-accent transition-colors">
               Turniere
+            </a>
+            <a href="#media" className="hover:text-club-accent transition-colors">
+              Medien
             </a>
             <a href="#contact" className="hover:text-club-accent transition-colors">
               Kontakt
@@ -47,6 +56,13 @@ const Header = () => {
                   Home
                 </a>
                 <a
+                  href="#about"
+                  className="hover:text-club-accent transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Über uns
+                </a>
+                <a
                   href="#teams"
                   className="hover:text-club-accent transition-colors"
                   onClick={() => setIsMenuOpen(false)}
@@ -54,11 +70,25 @@ const Header = () => {
                   Teams
                 </a>
                 <a
+                  href="#youth"
+                  className="hover:text-club-accent transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Jugend
+                </a>
+                <a
                   href="#tournaments"
                   className="hover:text-club-accent transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Turniere
+                </a>
+                <a
+                  href="#media"
+                  className="hover:text-club-accent transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Medien
                 </a>
                 <a
                   href="#contact"

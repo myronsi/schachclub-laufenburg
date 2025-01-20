@@ -1,24 +1,25 @@
 import { useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Share2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const news = [
   {
     id: 1,
-    title: "Großer Erfolg beim Regionalturnier",
-    description: "Unsere Mannschaft sichert sich den ersten Platz",
-    image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6",
+    title: "Erfolg beim Bezirksturnier",
+    description: "Unsere Jugendmannschaft sichert sich den ersten Platz",
+    image: "https://images.unsplash.com/photo-1580541832626-2a7131ee809f",
   },
   {
     id: 2,
-    title: "Neue Jugendmannschaft gegründet",
-    description: "Start der U15 in der kommenden Saison",
-    image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
+    title: "Neue Jugendgruppe",
+    description: "Start der U12-Gruppe im kommenden Monat",
+    image: "https://images.unsplash.com/photo-1529699211952-734e80c4d42b",
   },
   {
     id: 3,
     title: "Sommerfest 2024",
     description: "Save the Date: 15. Juli 2024",
-    image: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81",
+    image: "https://images.unsplash.com/photo-1582127832282-0c3d5fd5d5f7",
   },
 ];
 
@@ -41,6 +42,16 @@ const NewsSlider = () => {
     setCurrentSlide((prev) => (prev - 1 + news.length) % news.length);
   };
 
+  const handleShare = (title: string) => {
+    if (navigator.share) {
+      navigator.share({
+        title: "Schachclub Laufenburg News",
+        text: title,
+        url: window.location.href,
+      }).catch((error) => console.log("Error sharing:", error));
+    }
+  };
+
   return (
     <div className="relative h-[500px] w-full overflow-hidden mt-16">
       {news.map((item, index) => (
@@ -59,7 +70,15 @@ const NewsSlider = () => {
           <div className="relative h-full flex items-center justify-center text-center text-white px-4">
             <div className="max-w-2xl animate-fadeIn">
               <h2 className="text-4xl font-bold mb-4">{item.title}</h2>
-              <p className="text-xl">{item.description}</p>
+              <p className="text-xl mb-6">{item.description}</p>
+              <Button
+                variant="outline"
+                className="text-white border-white hover:bg-white/20"
+                onClick={() => handleShare(item.title)}
+              >
+                <Share2 className="mr-2" size={20} />
+                Teilen
+              </Button>
             </div>
           </div>
         </div>
