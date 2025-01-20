@@ -1,4 +1,5 @@
 import { Card } from "@/components/ui/card";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 const teams = [
   {
@@ -22,18 +23,25 @@ const teams = [
 ];
 
 const TeamSection = () => {
+  const { elementRef, isVisible } = useScrollAnimation();
+
   return (
     <section id="teams" className="py-16 container mx-auto px-4">
-      <h2 className="text-3xl font-bold text-center mb-12 text-club-primary opacity-0 animate-fadeIn">
+      <h2 className="text-3xl font-bold text-center mb-12 text-club-primary">
         Unsere Teams
       </h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div 
+        ref={elementRef}
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+      >
         {teams.map((team, index) => (
           <Card
             key={team.id}
-            className="overflow-hidden opacity-0"
+            className={`overflow-hidden opacity-0 ${
+              isVisible ? 'animate-slideInRight' : ''
+            }`}
             style={{
-              animation: `slideInRight 0.5s ease-out ${index * 0.2}s forwards`,
+              animationDelay: isVisible ? `${index * 0.2}s` : '0s',
             }}
           >
             <div
