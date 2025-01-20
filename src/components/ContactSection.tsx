@@ -7,11 +7,11 @@ import { Mail, Phone, MapPin } from "lucide-react";
 const ContactSection = () => {
   return (
     <section id="contact" className="py-16 container mx-auto px-4">
-      <h2 className="text-3xl font-bold text-center mb-12 text-club-primary">
+      <h2 className="text-3xl font-bold text-center mb-12 text-club-primary opacity-0 animate-fadeIn">
         Kontakt
       </h2>
       <div className="grid md:grid-cols-2 gap-8">
-        <Card className="p-6">
+        <Card className="p-6 opacity-0 animate-slideInLeft">
           <h3 className="text-xl font-semibold mb-6">Kontaktinformationen</h3>
           <div className="space-y-4">
             <div className="flex items-center gap-3">
@@ -29,7 +29,7 @@ const ContactSection = () => {
           </div>
         </Card>
 
-        <Card className="p-6">
+        <Card className="p-6 opacity-0 animate-slideInRight">
           <h3 className="text-xl font-semibold mb-6">Schreiben Sie uns</h3>
           <form className="space-y-4">
             <div>
