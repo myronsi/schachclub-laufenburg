@@ -23,12 +23,12 @@ const App = () => (
         <Header />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
+          <Route path="/ueberuns" element={<About />} />
           <Route path="/teams" element={<Teams />} />
-          <Route path="/youth" element={<Youth />} />
-          <Route path="/tournaments" element={<Tournaments />} />
-          <Route path="/media" element={<Media />} />
-          <Route path="/contact" element={<Contact />} />
+          <Route path="/jugend" element={<Youth />} />
+          <Route path="/turniere" element={<Tournaments />} />
+          <Route path="/archiv" element={<Media />} />
+          <Route path="/kontakt" element={<Contact />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>

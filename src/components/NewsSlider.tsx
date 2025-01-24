@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, Share2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 const news = [
   {
@@ -71,14 +70,6 @@ const NewsSlider = () => {
             <div className="max-w-2xl animate-fadeIn">
               <h2 className="text-4xl font-bold mb-4">{item.title}</h2>
               <p className="text-xl mb-6">{item.description}</p>
-              <Button
-                variant="outline"
-                className="text-white border-white hover:bg-white/20"
-                onClick={() => handleShare(item.title)}
-              >
-                <Share2 className="mr-2" size={20} />
-                Teilen
-              </Button>
             </div>
           </div>
         </div>

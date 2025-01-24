@@ -27,19 +27,19 @@ const Header = () => {
             <Link to="/" className="hover:text-club-accent transition-colors">
               Home
             </Link>
-            <Link to="/about" className="hover:text-club-accent transition-colors">
+            <Link to="/ueberuns" className="hover:text-club-accent transition-colors">
               Über uns
             </Link>
             <Link to="/teams" className="hover:text-club-accent transition-colors">
               Teams
             </Link>
-            <Link to="/youth" className="hover:text-club-accent transition-colors">
+            <Link to="/jugend" className="hover:text-club-accent transition-colors">
               Jugend
             </Link>
-            <Link to="/tournaments" className="hover:text-club-accent transition-colors">
+            <Link to="/turniere" className="hover:text-club-accent transition-colors">
               Turniere
             </Link>
-            <Link to="/media" className="hover:text-club-accent transition-colors">
+            <Link to="/archiv" className="hover:text-club-accent transition-colors">
               Medien
             </Link>
           </nav>
@@ -98,7 +98,7 @@ const Header = () => {
             className="hidden lg:block bg-club-accent hover:bg-club-accent/90"
           >
             <Link
-                  to="/contact"
+                  to="/kontakt"
                   className="hover:text-club-accent transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >

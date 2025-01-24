@@ -23,15 +23,15 @@ const ContactSection = () => {
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <Mail className="text-club-accent" size={20} />
-              <span>info@sportverein.de</span>
+              <span>info@sc-laufenburg.de</span>
             </div>
             <div className="flex items-center gap-3">
               <Phone className="text-club-accent" size={20} />
-              <span>+49 123 456789</span>
+              <span>+49 000 000000</span>
             </div>
             <div className="flex items-center gap-3">
               <MapPin className="text-club-accent" size={20} />
-              <span>Sportplatz 1, 12345 Sportstadt</span>
+              <span>Bertastraße 6, 79725 Laufenburg</span>
             </div>
           </div>
         </Card>
