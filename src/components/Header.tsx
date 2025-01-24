@@ -56,7 +56,7 @@ const Header = () => {
                   Home
                 </Link>
                 <Link
-                  to="/about"
+                  to="/ueberuns"
                   className="hover:text-club-accent transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
@@ -70,25 +70,32 @@ const Header = () => {
                   Teams
                 </Link>
                 <Link
-                  to="/youth"
+                  to="/jugend"
                   className="hover:text-club-accent transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Jugend
                 </Link>
                 <Link
-                  to="/tournaments"
+                  to="/turniere"
                   className="hover:text-club-accent transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Turniere
                 </Link>
                 <Link
-                  to="/media"
+                  to="/archiv"
                   className="hover:text-club-accent transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Medien
+                </Link>
+                <Link
+                  to="/kontakt"
+                  className="hover:text-club-accent transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Kontakt
                 </Link>
               </div>
             </nav>
