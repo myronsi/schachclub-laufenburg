@@ -42,9 +42,6 @@ const Header = () => {
             <Link to="/media" className="hover:text-club-accent transition-colors">
               Medien
             </Link>
-            <Link to="/contact" className="hover:text-club-accent transition-colors">
-              Kontakt
-            </Link>
           </nav>
 
           {/* Mobile Navigation */}
@@ -93,13 +90,6 @@ const Header = () => {
                 >
                   Medien
                 </Link>
-                <Link
-                  to="/contact"
-                  className="hover:text-club-accent transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Kontakt
-                </Link>
               </div>
             </nav>
           )}
@@ -107,7 +97,13 @@ const Header = () => {
           <Button
             className="hidden lg:block bg-club-accent hover:bg-club-accent/90"
           >
-            Mitglied werden
+            <Link
+                  to="/contact"
+                  className="hover:text-club-accent transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Kontakt
+            </Link>
           </Button>
         </div>
       </div>
