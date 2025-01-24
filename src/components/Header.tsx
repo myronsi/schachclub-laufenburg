@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -9,7 +10,9 @@ const Header = () => {
     <header className="bg-club-primary text-white py-4 fixed w-full top-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center">
-          <div className="text-2xl font-bold">Schachclub Laufenburg</div>
+          <Link to="/" className="text-2xl font-bold">
+            Schachclub Laufenburg
+          </Link>
           
           {/* Mobile Menu Button */}
           <button
@@ -21,82 +24,82 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex gap-8">
-            <a href="#home" className="hover:text-club-accent transition-colors">
+            <Link to="/" className="hover:text-club-accent transition-colors">
               Home
-            </a>
-            <a href="#about" className="hover:text-club-accent transition-colors">
+            </Link>
+            <Link to="/about" className="hover:text-club-accent transition-colors">
               Über uns
-            </a>
-            <a href="#teams" className="hover:text-club-accent transition-colors">
+            </Link>
+            <Link to="/teams" className="hover:text-club-accent transition-colors">
               Teams
-            </a>
-            <a href="#youth" className="hover:text-club-accent transition-colors">
+            </Link>
+            <Link to="/youth" className="hover:text-club-accent transition-colors">
               Jugend
-            </a>
-            <a href="#tournaments" className="hover:text-club-accent transition-colors">
+            </Link>
+            <Link to="/tournaments" className="hover:text-club-accent transition-colors">
               Turniere
-            </a>
-            <a href="#media" className="hover:text-club-accent transition-colors">
+            </Link>
+            <Link to="/media" className="hover:text-club-accent transition-colors">
               Medien
-            </a>
-            <a href="#contact" className="hover:text-club-accent transition-colors">
+            </Link>
+            <Link to="/contact" className="hover:text-club-accent transition-colors">
               Kontakt
-            </a>
+            </Link>
           </nav>
 
           {/* Mobile Navigation */}
           {isMenuOpen && (
             <nav className="absolute top-full left-0 w-full bg-club-primary lg:hidden">
               <div className="flex flex-col items-center py-4 gap-4">
-                <a
-                  href="#home"
+                <Link
+                  to="/"
                   className="hover:text-club-accent transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Home
-                </a>
-                <a
-                  href="#about"
+                </Link>
+                <Link
+                  to="/about"
                   className="hover:text-club-accent transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Über uns
-                </a>
-                <a
-                  href="#teams"
+                </Link>
+                <Link
+                  to="/teams"
                   className="hover:text-club-accent transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Teams
-                </a>
-                <a
-                  href="#youth"
+                </Link>
+                <Link
+                  to="/youth"
                   className="hover:text-club-accent transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Jugend
-                </a>
-                <a
-                  href="#tournaments"
+                </Link>
+                <Link
+                  to="/tournaments"
                   className="hover:text-club-accent transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Turniere
-                </a>
-                <a
-                  href="#media"
+                </Link>
+                <Link
+                  to="/media"
                   className="hover:text-club-accent transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Medien
-                </a>
-                <a
-                  href="#contact"
+                </Link>
+                <Link
+                  to="/contact"
                   className="hover:text-club-accent transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Kontakt
-                </a>
+                </Link>
               </div>
             </nav>
           )}
