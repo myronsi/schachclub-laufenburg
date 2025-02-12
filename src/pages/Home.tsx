@@ -18,7 +18,7 @@ const Home = () => {
               
               <div className="space-y-6">
                 <div>
-                  <p className="font-semibold mb-2">22.11.24:</p>
+                  <p className="font-semibold mb-2">22.11.24</p>
                   <p>
                     Wir sollten mal wieder Turniere spielen,<br />
                     siehe auch Turnierausschreibungen 2022 / 23
@@ -26,8 +26,13 @@ const Home = () => {
                 </div>
                 
                 <div>
-                  <p className="font-semibold">2025 wird "anders" ...</p>
-                  <p>Wiederaufnahme des Spielbetriebs Di., 07.01.25</p>
+                  <p className="font-semibold">07.01.25</p>
+                  <p>Wiederaufnahme des Spielbetriebs</p>
+                </div>
+
+                <div>
+                  <p className="font-semibold">22.04.25</p>
+                  <p>Kein Spieleabend wegen Ostern</p>
                 </div>
               </div>
             </div>
