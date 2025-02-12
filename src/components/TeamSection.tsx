@@ -5,8 +5,8 @@ import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 const teams = [
   {
     id: 1,
-    name: "1. Mannschaft",
-    league: "Regionalliga",
+    name: "Mannschaft1 BSV-Ergebnisdienst",
+    league: "Hochrhein Bezirksklasse",
     image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
   },
   {
@@ -36,26 +36,29 @@ const TeamSection = () => {
         <h3 className="text-xl font-semibold mb-4">Aktuell</h3>
         <p className="mb-2">
           <a 
-            href="#" 
-            className="text-blue-600 hover:text-blue-800 hover:underline"
+            href="https://bsv-ergebnisdienst.de/index.php?p1=0:pa:BK9-24-4" 
+            target="_blank"
+            className="underline hover:text-club-accent hover:underline"
           >
             Bezirksklasse Hochrhein
           </a>
         </p>
         <p className="mb-4">
           In diesem Jahr spielen wir nicht ganz um den<br />
-          Aufstieg in die<br />
+          Aufstieg in die{"  "}
           <a 
-            href="#" 
-            className="text-blue-600 hover:text-blue-800 hover:underline"
+            href="https://bsv-ergebnisdienst.de/index.php?saison=24&totyp=0" 
+            target="_blank"
+            className="underline hover:text-club-accent hover:underline"
           >
             Bereichsliga Süd Staffel 3
           </a>
         </p>
         <p>
           <a 
-            href="#" 
-            className="text-blue-600 hover:text-blue-800 hover:underline"
+            href="https://bsv-ergebnisdienst.de/index.php?p1=0:kt:BK9-24-4" 
+            target="_blank"
+            className="underline hover:text-club-accent hover:underline"
           >
             Mannschaft1 BSV-Ergebnisdienst - Hochrhein Bezirksklasse
           </a>
