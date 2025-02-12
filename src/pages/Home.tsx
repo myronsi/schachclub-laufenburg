@@ -17,6 +17,16 @@ const Home = () => {
               </h2>
               
               <div className="space-y-6">
+                <div className="bg-club-light p-4 rounded-lg mb-6">
+                  <h3 className="font-semibold text-lg mb-2">Aktuell</h3>
+                  <p>Bezirksklasse Hochrhein</p>
+                  <p className="mt-2">
+                    In diesem Jahr spielen wir nicht ganz um den<br />
+                    Aufstieg in die<br />
+                    Bereichsliga Süd Staffel 3
+                  </p>
+                </div>
+
                 <div>
                   <p className="font-semibold mb-2">22.11.24</p>
                   <p>
