@@ -17,18 +17,8 @@ const Home = () => {
               </h2>
               
               <div className="space-y-6">
-                <div className="bg-club-light p-4 rounded-lg mb-6">
-                  <h3 className="font-semibold text-lg mb-2">Aktuell</h3>
-                  <p>Bezirksklasse Hochrhein</p>
-                  <p className="mt-2">
-                    In diesem Jahr spielen wir nicht ganz um den<br />
-                    Aufstieg in die<br />
-                    Bereichsliga Süd Staffel 3
-                  </p>
-                </div>
-
                 <div>
-                  <p className="font-semibold mb-2">22.11.24</p>
+                  <p className="font-semibold mb-2">22.11.24:</p>
                   <p>
                     Wir sollten mal wieder Turniere spielen,<br />
                     siehe auch Turnierausschreibungen 2022 / 23
@@ -36,13 +26,8 @@ const Home = () => {
                 </div>
                 
                 <div>
-                  <p className="font-semibold">07.01.25</p>
-                  <p>Wiederaufnahme des Spielbetriebs</p>
-                </div>
-
-                <div>
-                  <p className="font-semibold">22.04.25</p>
-                  <p>Kein Spieleabend wegen Ostern</p>
+                  <p className="font-semibold">2025 wird "anders" ...</p>
+                  <p>Wiederaufnahme des Spielbetriebs Di., 07.01.25</p>
                 </div>
               </div>
             </div>
