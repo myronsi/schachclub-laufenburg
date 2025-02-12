@@ -1,3 +1,4 @@
+
 import { Card } from "@/components/ui/card";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
@@ -30,6 +31,37 @@ const TeamSection = () => {
       <h2 className="text-3xl font-bold text-center mb-12 text-club-primary">
         Unsere Teams
       </h2>
+
+      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+        <h3 className="text-xl font-semibold mb-4">Aktuell</h3>
+        <p className="mb-2">
+          <a 
+            href="#" 
+            className="text-blue-600 hover:text-blue-800 hover:underline"
+          >
+            Bezirksklasse Hochrhein
+          </a>
+        </p>
+        <p className="mb-4">
+          In diesem Jahr spielen wir nicht ganz um den<br />
+          Aufstieg in die<br />
+          <a 
+            href="#" 
+            className="text-blue-600 hover:text-blue-800 hover:underline"
+          >
+            Bereichsliga Süd Staffel 3
+          </a>
+        </p>
+        <p>
+          <a 
+            href="#" 
+            className="text-blue-600 hover:text-blue-800 hover:underline"
+          >
+            Mannschaft1 BSV-Ergebnisdienst - Hochrhein Bezirksklasse
+          </a>
+        </p>
+      </div>
+
       <div 
         ref={elementRef}
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
