@@ -76,7 +76,7 @@ const TournamentSection = () => {
         </h2>
         
         <Tabs defaultValue="vereinsmeister" className="w-full">
-          <TabsList className="w-full justify-start mb-8">
+          <TabsList className="scrollable-tabs-list">
             <TabsTrigger value="vereinsmeister">Vereinsmeister</TabsTrigger>
             <TabsTrigger value="pokalsieger">Pokalsieger</TabsTrigger>
             <TabsTrigger value="nikolausblitz">Nikolausblitz</TabsTrigger>

@@ -1,3 +1,4 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
@@ -36,6 +37,7 @@
     @apply bg-background text-foreground font-sans;
     background: linear-gradient(to bottom, #F3F4F6, #FFFFFF);
     min-height: 100vh;
+    overflow-x: hidden;
   }
 }
 
@@ -45,4 +47,18 @@
 
 .card-shadow {
   @apply shadow-lg hover:shadow-xl transition-shadow duration-300;
+}
+
+.scrollable-tabs-list {
+  @apply flex overflow-x-auto pb-2 hide-scrollbar;
+  -webkit-overflow-scrolling: touch;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
 }
