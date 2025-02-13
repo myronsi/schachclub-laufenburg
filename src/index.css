@@ -41,6 +41,19 @@
   }
 }
 
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+html {
+  scrollbar-width: none;
+}
+
+body {
+  -ms-overflow-style: none;
+}
+
 .hover-scale {
   @apply transition-transform duration-300 hover:scale-105;
 }
@@ -50,10 +63,15 @@
 }
 
 .scrollable-tabs-list {
-  @apply flex overflow-x-auto pb-2 hide-scrollbar;
+  display: flex;
+  overflow-x: auto;
+  white-space: nowrap;
   -webkit-overflow-scrolling: touch;
 }
 
+.scrollable-tabs-list .tabs-trigger {
+  flex: 0 0 auto;
+}
 .hide-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;

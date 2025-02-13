@@ -77,7 +77,7 @@ const TournamentSection = () => {
         
         <Tabs defaultValue="vereinsmeister" className="w-full">
           <TabsList className="scrollable-tabs-list">
-            <TabsTrigger value="vereinsmeister">Vereinsmeister</TabsTrigger>
+            <TabsTrigger value="vereinsmeister" style={{ marginLeft: '90px' }}>Vereinsmeister</TabsTrigger>
             <TabsTrigger value="pokalsieger">Pokalsieger</TabsTrigger>
             <TabsTrigger value="nikolausblitz">Nikolausblitz</TabsTrigger>
             <TabsTrigger value="blitzsieger">Blitzsieger</TabsTrigger>
@@ -104,11 +104,6 @@ const TournamentSection = () => {
                       <TableCell>{entry.third}</TableCell>
                     </TableRow>
                   ))}
-                  <TableRow>
-                    <TableCell colSpan={4} className="text-center italic">
-                      2000 bis 1994: Keine Meisterschaft
-                    </TableCell>
-                  </TableRow>
                 </TableBody>
               </Table>
             </div>
