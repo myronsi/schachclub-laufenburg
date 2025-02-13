@@ -11,11 +11,8 @@ const AboutSection = () => {
   const historyAnimation = useScrollAnimation();
 
   const timeline = [
-    { year: "1950", event: "Gründung des Schachclubs Laufenburg" },
-    { year: "1975", event: "Erster Aufstieg in die Bezirksliga" },
-    { year: "2000", event: "50-jähriges Jubiläum" },
-    { year: "2023", event: "Neugestaltung des Vereinsheims" },
-    { year: "2023", event: "Neugestaltung des Vereinsheims" },
+    { year: "1969", event: "Gründung des Schachclubs Laufenburg" },
+    { year: "2025", event: "Wiederaufnahme des Spielbetriebs" },
     // ToDo ..... VIELE INHALTLICHE LÜCKEN nachtragen .. //
   ];
 
