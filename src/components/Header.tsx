@@ -11,7 +11,7 @@ const Header = () => {
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center">
           <Link to="/" className="text-2xl font-bold">
-            Schachclub Laufenburg
+            Schachclub Laufenburg e. V.
           </Link>
           
           {/* Mobile Menu Button */}
@@ -30,8 +30,8 @@ const Header = () => {
             <Link to="/ueberuns" className="hover:text-club-accent transition-colors">
               Über uns
             </Link>
-            <Link to="/teams" className="hover:text-club-accent transition-colors">
-              Teams
+            <Link to="/mannschaften" className="hover:text-club-accent transition-colors">
+              Mannschaften
             </Link>
             <Link to="/jugend" className="hover:text-club-accent transition-colors">
               Jugend
@@ -40,7 +40,10 @@ const Header = () => {
               Turniere
             </Link>
             <Link to="/archiv" className="hover:text-club-accent transition-colors">
-              Medien
+              Archiv
+            </Link>
+            <Link to="/kontakt" className="hover:text-club-accent transition-colors">
+              Kontakt
             </Link>
           </nav>
 
@@ -63,11 +66,11 @@ const Header = () => {
                   Über uns
                 </Link>
                 <Link
-                  to="/teams"
+                  to="/mannschaften"
                   className="hover:text-club-accent transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  Teams
+                  Mannschaften
                 </Link>
                 <Link
                   to="/jugend"
@@ -88,7 +91,7 @@ const Header = () => {
                   className="hover:text-club-accent transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  Medien
+                  Archiv
                 </Link>
                 <Link
                   to="/kontakt"
@@ -100,18 +103,6 @@ const Header = () => {
               </div>
             </nav>
           )}
-
-          <Button
-            className="hidden lg:block bg-club-accent hover:bg-club-accent/90"
-          >
-            <Link
-                  to="/kontakt"
-                  className="hover:text-club-accent transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Kontakt
-            </Link>
-          </Button>
         </div>
       </div>
     </header>

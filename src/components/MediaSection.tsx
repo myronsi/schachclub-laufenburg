@@ -56,7 +56,7 @@ const MediaSection = () => {
     <section id="media" className="py-16 animate-fadeIn">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold text-club-primary mb-12 text-center">
-          Medien
+          Archiv
         </h2>
 
         {/* Photo Gallery */}
@@ -65,7 +65,7 @@ const MediaSection = () => {
             <Image className="text-club-accent" />
             Fotogalerie
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-6 lg:grid-cols-6 gap-4">
             {images.map((image, index) => (
               <Dialog key={index}>
                 <DialogTrigger asChild>

@@ -23,13 +23,13 @@ const teams = [
   },
 ];
 
-const TeamSection = () => {
+const MannschaftSection = () => {
   const { elementRef, isVisible } = useScrollAnimation();
 
   return (
     <section id="teams" className="py-16 container mx-auto px-4">
       <h2 className="text-3xl font-bold text-center mb-12 text-club-primary">
-        Unsere Teams
+        Unsere Mannschaften
       </h2>
 
       <div className="bg-white rounded-lg shadow-md p-6 mb-8">
@@ -94,4 +94,4 @@ const TeamSection = () => {
   );
 };
 
-export default TeamSection;
+export default MannschaftSection;
