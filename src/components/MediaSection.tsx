@@ -10,16 +10,46 @@ import {
 
 const MediaSection = () => {
   const images = [
-    "/lovable-uploads/e98db37a-c4c3-4a84-9476-ca90b1ecc551.png",
-    "/lovable-uploads/381cb2a6-79e2-46c2-a6c5-5d23fea193ed.png",
-    "/lovable-uploads/7ada8408-4612-4a55-ab4a-7775da6cfa30.png",
-    "/lovable-uploads/4a01e21d-c4fc-4741-8ded-af302cda3890.png",
-    "/lovable-uploads/90a7447d-c815-4fba-9222-4055017292b0.png",
-    "/lovable-uploads/4b84a145-14b8-4cde-9462-5e35cefe985c.png",
-    "/lovable-uploads/57add343-4fac-4d9c-b1b2-e668cf368e59.png",
-    "/lovable-uploads/a5155d07-0daa-4dd2-b74c-af197ad7dee9.png",
-    "/lovable-uploads/bfb0f5d2-4997-4c8f-b40e-e4151417e55b.png",
-    "/lovable-uploads/08258dc4-dd15-4e8a-bb58-693660380a28.png",
+    {
+      src: "/lovable-uploads/e98db37a-c4c3-4a84-9476-ca90b1ecc551.png",
+      title: "Schachturnier 2023"
+    },
+    {
+      src: "/lovable-uploads/381cb2a6-79e2-46c2-a6c5-5d23fea193ed.png",
+      title: "Jugendmannschaft beim Training"
+    },
+    {
+      src: "/lovable-uploads/7ada8408-4612-4a55-ab4a-7775da6cfa30.png",
+      title: "Vereinsmeisterschaft 2023"
+    },
+    {
+      src: "/lovable-uploads/4a01e21d-c4fc-4741-8ded-af302cda3890.png",
+      title: "Schachtraining mit Großmeister"
+    },
+    {
+      src: "/lovable-uploads/90a7447d-c815-4fba-9222-4055017292b0.png",
+      title: "Blitzturnier 2023"
+    },
+    {
+      src: "/lovable-uploads/4b84a145-14b8-4cde-9462-5e35cefe985c.png",
+      title: "Jugendturnier 2023"
+    },
+    {
+      src: "/lovable-uploads/57add343-4fac-4d9c-b1b2-e668cf368e59.png",
+      title: "Schachfestival 2023"
+    },
+    {
+      src: "/lovable-uploads/a5155d07-0daa-4dd2-b74c-af197ad7dee9.png",
+      title: "Simultanschach Event"
+    },
+    {
+      src: "/lovable-uploads/bfb0f5d2-4997-4c8f-b40e-e4151417e55b.png",
+      title: "Seniorenturnier 2023"
+    },
+    {
+      src: "/lovable-uploads/08258dc4-dd15-4e8a-bb58-693660380a28.png",
+      title: "Schachclub Weihnachtsfeier"
+    },
   ];
 
   return (
@@ -41,20 +71,20 @@ const MediaSection = () => {
                 <DialogTrigger asChild>
                   <div className="aspect-square relative cursor-pointer hover-scale overflow-hidden rounded-lg w-full max-w-[180px]">
                     <img
-                      src={image}
-                      alt={`Schachclub Bild ${index + 1}`}
+                      src={image.src}
+                      alt={image.title}
                       className="object-cover w-full h-full"
                     />
                   </div>
                 </DialogTrigger>
                 <DialogContent className="max-w-4xl">
                   <DialogHeader>
-                    <DialogTitle>Schachclub Impression {index + 1}</DialogTitle>
+                    <DialogTitle>{image.title}</DialogTitle>
                   </DialogHeader>
                   <div className="relative w-full max-h-[80vh] overflow-hidden">
                     <img
-                      src={image}
-                      alt={`Schachclub Bild ${index + 1}`}
+                      src={image.src}
+                      alt={image.title}
                       className="object-contain w-full h-full"
                     />
                   </div>
