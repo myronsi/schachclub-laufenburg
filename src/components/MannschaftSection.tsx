@@ -1,4 +1,3 @@
-
 import { Card } from "@/components/ui/card";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
@@ -7,24 +6,32 @@ const teams = [
     id: 1,
     name: "Mannschaft1 BSV-Ergebnisdienst",
     league: "Hochrhein Bezirksklasse",
-    image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
+    image: "nicht eingegeben",
   },
   {
     id: 2,
-    name: "2. Mannschaft",
-    league: "Bezirksliga",
-    image: "https://images.unsplash.com/photo-1518770660439-4636190af475",
+    name: "nicht eingegeben",
+    league: "nicht eingegeben",
+    image: "nicht eingegeben",
   },
   {
     id: 3,
-    name: "U19",
-    league: "Jugend-Regionalliga",
-    image: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7",
+    name: "nicht eingegeben",
+    league: "nicht eingegeben",
+    image: "nicht eingegeben",
   },
 ];
 
 const MannschaftSection = () => {
   const { elementRef, isVisible } = useScrollAnimation();
+
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const target = e.target as HTMLImageElement;
+    target.onerror = null; // Предотвращаем бесконечный цикл при ошибке загрузки fallback
+    target.src = "/imgs/image-off.svg";
+    target.classList.remove("object-cover", "w-full", "h-full");
+    target.classList.add("opacity-50", "w-10", "h-10");
+  };
 
   return (
     <section id="teams" className="py-16 container mx-auto px-4">
@@ -79,10 +86,14 @@ const MannschaftSection = () => {
               animationDelay: isVisible ? `${index * 0.2}s` : '0s',
             }}
           >
-            <div
-              className="h-48 bg-cover bg-center hover:scale-105 transition-transform duration-300"
-              style={{ backgroundImage: `url(${team.image})` }}
-            />
+            <div className="h-48 flex items-center justify-center hover:scale-105 transition-transform duration-300 overflow-hidden">
+              <img 
+                src={team.image}
+                alt={team.name}
+                className="object-cover w-full h-full"
+                onError={handleImageError}
+              />
+            </div>
             <div className="p-6">
               <h3 className="text-xl font-semibold mb-2">{team.name}</h3>
               <p className="text-gray-600">{team.league}</p>

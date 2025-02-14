@@ -75,7 +75,7 @@ const AboutSection = () => {
             <ul className="space-y-2">
               <li>
                 <a 
-                  href="https://example.com" 
+                  href="docs/satzung_laufenburg.pdf" 
                   className="hover:text-club-accent hover:underline"
                   target="_blank" 
                   rel="noopener noreferrer"
@@ -85,7 +85,7 @@ const AboutSection = () => {
               </li>
               <li>
                 <a 
-                  href="https://example.com" 
+                  href="docs/aufnahmeantrag.pdf" 
                   className="hover:text-club-accent hover:underline"
                   target="_blank" 
                   rel="noopener noreferrer"
@@ -95,7 +95,7 @@ const AboutSection = () => {
               </li>
               <li>
                 <a 
-                  href="https://example.com" 
+                  href="docs/aufnahme_verband.pdf" 
                   className="hover:text-club-accent hover:underline"
                   target="_blank" 
                   rel="noopener noreferrer"
