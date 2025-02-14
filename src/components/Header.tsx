@@ -1,10 +1,16 @@
+
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
+
+  const isActive = (path: string) => {
+    return location.pathname === path;
+  };
 
   return (
     <header className="bg-club-primary text-white py-4 fixed w-full top-0 z-50">
@@ -24,82 +30,53 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex gap-8">
-            <Link to="/" className="hover:text-club-accent transition-colors">
-              Home
-            </Link>
-            <Link to="/ueberuns" className="hover:text-club-accent transition-colors">
-              Über uns
-            </Link>
-            <Link to="/mannschaften" className="hover:text-club-accent transition-colors">
-              Mannschaften
-            </Link>
-            <Link to="/jugend" className="hover:text-club-accent transition-colors">
-              Jugend
-            </Link>
-            <Link to="/turniere" className="hover:text-club-accent transition-colors">
-              Turniere
-            </Link>
-            <Link to="/archiv" className="hover:text-club-accent transition-colors">
-              Archiv
-            </Link>
-            <Link to="/kontakt" className="hover:text-club-accent transition-colors">
-              Kontakt
-            </Link>
+            {[
+              { path: "/", label: "Home" },
+              { path: "/ueberuns", label: "Über uns" },
+              { path: "/mannschaften", label: "Mannschaften" },
+              { path: "/jugend", label: "Jugend" },
+              { path: "/turniere", label: "Turniere" },
+              { path: "/archiv", label: "Archiv" },
+              { path: "/kontakt", label: "Kontakt" },
+            ].map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`relative group py-2 ${
+                  isActive(item.path) ? "text-club-accent" : "text-white"
+                }`}
+              >
+                {item.label}
+                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-club-accent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out" />
+              </Link>
+            ))}
           </nav>
 
           {/* Mobile Navigation */}
           {isMenuOpen && (
             <nav className="absolute top-full left-0 w-full bg-club-primary lg:hidden">
               <div className="flex flex-col items-center py-4 gap-4">
-                <Link
-                  to="/"
-                  className="hover:text-club-accent transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Home
-                </Link>
-                <Link
-                  to="/ueberuns"
-                  className="hover:text-club-accent transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Über uns
-                </Link>
-                <Link
-                  to="/mannschaften"
-                  className="hover:text-club-accent transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Mannschaften
-                </Link>
-                <Link
-                  to="/jugend"
-                  className="hover:text-club-accent transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Jugend
-                </Link>
-                <Link
-                  to="/turniere"
-                  className="hover:text-club-accent transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Turniere
-                </Link>
-                <Link
-                  to="/archiv"
-                  className="hover:text-club-accent transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Archiv
-                </Link>
-                <Link
-                  to="/kontakt"
-                  className="hover:text-club-accent transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Kontakt
-                </Link>
+                {[
+                  { path: "/", label: "Home" },
+                  { path: "/ueberuns", label: "Über uns" },
+                  { path: "/mannschaften", label: "Mannschaften" },
+                  { path: "/jugend", label: "Jugend" },
+                  { path: "/turniere", label: "Turniere" },
+                  { path: "/archiv", label: "Archiv" },
+                  { path: "/kontakt", label: "Kontakt" },
+                ].map((item) => (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className={`relative group py-2 ${
+                      isActive(item.path) ? "text-club-accent" : "text-white"
+                    }`}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {item.label}
+                    <span className="absolute bottom-0 left-0 w-full h-0.5 bg-club-accent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out" />
+                  </Link>
+                ))}
               </div>
             </nav>
           )}
