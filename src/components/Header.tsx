@@ -15,10 +15,22 @@ const Header = () => {
     <header className="bg-club-primary text-white py-4 fixed w-full top-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center">
-          <Link to="/" className="text-2xl font-bold">
+          {/* Desktop Link */}
+          <Link 
+            to="/" 
+            className="hidden lg:inline-block text-2xl font-bold"
+          >
             Schachclub Laufenburg e. V.
           </Link>
           
+          {/* Mobile Link */}
+          <Link 
+            to="/" 
+            className="lg:hidden text-2xl font-bold"
+          >
+            Schachclub Laufenburg
+          </Link>
+
           {/* Mobile Menu Button */}
           <button
             className="lg:hidden"
