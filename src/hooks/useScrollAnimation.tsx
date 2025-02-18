@@ -1,6 +1,12 @@
+
 import { useEffect, useRef, useState } from "react";
 
-export const useScrollAnimation = () => {
+interface ScrollAnimationOptions {
+  threshold?: number;
+  rootMargin?: string;
+}
+
+export const useScrollAnimation = (options: ScrollAnimationOptions = {}) => {
   const elementRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -16,7 +22,8 @@ export const useScrollAnimation = () => {
         }
       },
       {
-        threshold: 0.1, // Animation startet, wenn 10% des Elements sichtbar sind
+        threshold: options.threshold ?? 0.01, // Reduziert auf 1%, damit die Animation früher startet
+        rootMargin: options.rootMargin ?? "100px", // Erhöht den Beobachtungsbereich
       }
     );
 
@@ -29,7 +36,7 @@ export const useScrollAnimation = () => {
         observer.unobserve(elementRef.current);
       }
     };
-  }, []);
+  }, [options.threshold, options.rootMargin]);
 
   return { elementRef, isVisible };
 };

@@ -1,14 +1,15 @@
-
 import { Info, Users, Euro, ScrollText } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 const AboutSection = () => {
   const boardAnimation = useScrollAnimation();
-  const timelineAnimation = useScrollAnimation();
+  const timelineAnimation = useScrollAnimation({
+    threshold: 0.01,
+    rootMargin: "100px"
+  });
   const feesAnimation = useScrollAnimation();
   const documentsAnimation = useScrollAnimation();
-  const historyAnimation = useScrollAnimation();
 
   const timeline = [
     {
@@ -378,7 +379,10 @@ const AboutSection = () => {
             </ul>
           </CardContent>
         </Card>
-        <div className="mb-12" ref={timelineAnimation.elementRef}>
+        <div 
+          ref={timelineAnimation.elementRef}
+          className="mb-12"
+        >
           <h3 className="text-2xl font-semibold mb-6 text-club-primary">
             Unsere Geschichte
           </h3>
@@ -392,11 +396,19 @@ const AboutSection = () => {
               {timeline.map((group, groupIndex) => (
                 <div 
                   key={group.year}
-                  className={`relative opacity-0 ${timelineAnimation.isVisible ? 'animate-slideInRight' : ''}`}
-                  style={{ animationDelay: `${groupIndex * 0.1}s` }}
+                  className={`relative transform transition-all duration-500 ease-out ${
+                    timelineAnimation.isVisible 
+                      ? 'opacity-100 translate-x-0' 
+                      : 'opacity-0 -translate-x-6'
+                  }`}
+                  style={{ 
+                    transitionDelay: `${groupIndex * 0.15}s`,
+                  }}
                 >
                   <div className="absolute -left-[42px] top-0 flex items-center gap-3">
-                    <div className="w-4 h-4 bg-club-accent rounded-full transform translate-x-[9px] z-10" />
+                    <div className={`w-4 h-4 bg-club-accent rounded-full transform translate-x-[9px] z-10 transition-all duration-300 ${
+                      timelineAnimation.isVisible ? 'scale-100' : 'scale-0'
+                    }`} />
                     <h4 className="text-xl font-semibold text-club-primary bg-background pr-2">
                       {group.year}
                     </h4>
@@ -404,7 +416,17 @@ const AboutSection = () => {
 
                   <div className="pt-8 pl-4 space-y-4">
                     {group.events.map((event, eventIndex) => (
-                      <div key={eventIndex} className="flex gap-3">
+                      <div 
+                        key={eventIndex} 
+                        className={`flex gap-3 transform transition-all duration-500 ease-out ${
+                          timelineAnimation.isVisible 
+                            ? 'opacity-100 translate-x-0' 
+                            : 'opacity-0 -translate-x-6'
+                        }`}
+                        style={{ 
+                          transitionDelay: `${groupIndex * 0.15 + eventIndex * 0.1}s`,
+                        }}
+                      >
                         {event.date && (
                           <div className="w-20 shrink-0 text-sm text-club-accent font-medium">
                             {event.date}
