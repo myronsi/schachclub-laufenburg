@@ -290,7 +290,7 @@ const AboutSection = () => {
   ];
 
   return (
-    <section id="about" className="py-16">
+    <section id="about" className="py-8 md:py-16">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold text-club-primary mb-12 text-center">
           Über den Verein
@@ -381,18 +381,18 @@ const AboutSection = () => {
         </Card>
         <div 
           ref={timelineAnimation.elementRef}
-          className="mb-12"
+          className="mb-8 md:mb-12"
         >
-          <h3 className="text-2xl font-semibold mb-6 text-club-primary">
+          <h2 className="text-2xl md:text-2xl font-semibold mb-4 md:mb-6 text-club-primary px-2 md:px-0">
             Unsere Geschichte
-          </h3>
-          <div className="relative ml-12">
+          </h2>
+          <div className="relative ml-4 md:ml-12 max-w-[calc(100%-2rem)] md:max-w-[calc(100%-3rem)]">
             <div 
-              className="absolute left-[19px] top-4 bottom-0 w-[2px] bg-club-accent"
+              className="absolute left-[15px] md:left-[19px] top-4 bottom-0 w-[2px] bg-club-accent"
               style={{ height: "calc(100% - 1rem)" }}
             />
 
-            <div className="space-y-8 relative pl-8">
+            <div className="space-y-6 md:space-y-8 relative pl-4 md:pl-8">
               {timeline.map((group, groupIndex) => (
                 <div 
                   key={group.year}
@@ -401,38 +401,35 @@ const AboutSection = () => {
                       ? 'opacity-100 translate-x-0' 
                       : 'opacity-0 -translate-x-6'
                   }`}
-                  style={{ 
-                    transitionDelay: `${groupIndex * 0.15}s`,
-                  }}
+                  style={{ transitionDelay: `${groupIndex * 0.15}s` }}
                 >
-                  <div className="absolute -left-[42px] top-0 flex items-center gap-3">
-                    <div className={`w-4 h-4 bg-club-accent rounded-full transform translate-x-[9px] z-10 transition-all duration-300 ${
+                  <div className="absolute -left-[32px] md:-left-[42px] top-0 flex items-center gap-2 mb-4"> {/* Добавлен mb-4 */}
+                    <div className={`w-3 h-3 md:w-4 md:h-4 bg-club-accent rounded-full transform translate-x-[7px] md:translate-x-[9px] z-10 transition-all duration-300 ${
                       timelineAnimation.isVisible ? 'scale-100' : 'scale-0'
                     }`} />
-                    <h4 className="text-xl font-semibold text-club-primary bg-background pr-2">
+                    <h4 className="text-lg md:text-xl font-semibold text-club-primary bg-[#F3F4F6] pr-2 ml-1">
                       {group.year}
                     </h4>
                   </div>
 
-                  <div className="pt-8 pl-4 space-y-4">
+                  {/* Изменено pt-6 md:pt-8 на pt-10 md:pt-12 */}
+                  <div className="pt-10 md:pt-12 pl-2 md:pl-4 space-y-3 md:space-y-4">
                     {group.events.map((event, eventIndex) => (
                       <div 
                         key={eventIndex} 
-                        className={`flex gap-3 transform transition-all duration-500 ease-out ${
+                        className={`flex gap-2 md:gap-3 transform transition-all duration-500 ease-out ${
                           timelineAnimation.isVisible 
                             ? 'opacity-100 translate-x-0' 
                             : 'opacity-0 -translate-x-6'
                         }`}
-                        style={{ 
-                          transitionDelay: `${groupIndex * 0.15 + eventIndex * 0.1}s`,
-                        }}
+                        style={{ transitionDelay: `${groupIndex * 0.15 + eventIndex * 0.1}s` }}
                       >
                         {event.date && (
-                          <div className="w-20 shrink-0 text-sm text-club-accent font-medium">
+                          <div className="w-16 md:w-20 shrink-0 text-xs md:text-sm text-club-accent font-medium">
                             {event.date}
                           </div>
                         )}
-                        <p className="text-gray-600 leading-relaxed">
+                        <p className="text-gray-600 leading-relaxed text-sm md:text-base break-words hyphens-auto">
                           {event.text}
                         </p>
                       </div>

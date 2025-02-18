@@ -30,12 +30,14 @@
   }
 
   * {
+   /* outline: 2px solid rgba(255, 0, 0, 0.5) !important;
+    box-shadow: 0 0 0 2px rgba(0, 255, 0, 0.5) !important; */
     @apply border-border;
   }
 
   body {
     @apply bg-background text-foreground font-sans;
-    background: linear-gradient(to bottom, #F3F4F6, #FFFFFF);
+    background: #F3F4F6;
     min-height: 100vh;
     overflow-x: hidden;
   }
