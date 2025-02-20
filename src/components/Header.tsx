@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -63,34 +64,36 @@ const Header = () => {
             ))}
           </nav>
 
-          {/* Mobile Navigation */}
-          {isMenuOpen && (
-            <nav className="absolute top-full left-0 w-full bg-club-primary lg:hidden">
-              <div className="flex flex-col items-center py-4 gap-4">
-                {[
-                  { path: "/", label: "Home" },
-                  { path: "/ueberuns", label: "Über uns" },
-                  { path: "/mannschaften", label: "Mannschaften" },
-                  { path: "/jugend", label: "Jugend" },
-                  { path: "/turniere", label: "Turniere" },
-                  { path: "/archiv", label: "Archiv" },
-                  { path: "/kontakt", label: "Kontakt" },
-                ].map((item) => (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    className={`relative group py-2 ${
-                      isActive(item.path) ? "text-club-accent" : "text-white"
-                    }`}
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {item.label}
-                    <span className="absolute bottom-0 left-0 w-full h-0.5 bg-club-accent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out" />
-                  </Link>
-                ))}
-              </div>
+          {/* Mobile Navigation mit Animation */}
+          <div 
+            className={`fixed inset-x-0 top-[64px] bg-club-primary lg:hidden transition-all duration-300 ease-in-out transform ${
+              isMenuOpen ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
+            }`}
+          >
+            <nav className="flex flex-col items-center py-4 gap-4">
+              {[
+                { path: "/", label: "Home" },
+                { path: "/ueberuns", label: "Über uns" },
+                { path: "/mannschaften", label: "Mannschaften" },
+                { path: "/jugend", label: "Jugend" },
+                { path: "/turniere", label: "Turniere" },
+                { path: "/archiv", label: "Archiv" },
+                { path: "/kontakt", label: "Kontakt" },
+              ].map((item, index) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`relative group py-2 transition-all duration-300 delay-[${index * 50}ms] transform ${
+                    isMenuOpen ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'
+                  } ${isActive(item.path) ? "text-club-accent" : "text-white"}`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {item.label}
+                  <span className="absolute bottom-0 left-0 w-full h-0.5 bg-club-accent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out" />
+                </Link>
+              ))}
             </nav>
-          )}
+          </div>
         </div>
       </div>
     </header>
