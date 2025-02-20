@@ -14,10 +14,8 @@ const Header = () => {
 
   // Explizite Funktion zum Umschalten des Menüs
   const handleMenuClick = useCallback(() => {
-    console.log("Button clicked"); // Debug-Log vor der Statusänderung
     setIsMenuOpen(prevState => {
       const newState = !prevState;
-      console.log("Menu state changing to:", newState); // Debug-Log nach der Statusänderung
       return newState;
     });
   }, []);
@@ -42,18 +40,19 @@ const Header = () => {
             Schachclub Laufenburg
           </Link>
 
-          {/* Mobile Menu Button - Größer gemacht */}
+          {/* Mobile Menu Button */}
           <div className="lg:hidden">
-            <Button
-              type="button"
-              variant="ghost"
-              className="text-white hover:text-club-accent p-3 h-12 w-12" // Erhöhte Größe und Padding
+            <button
               onClick={handleMenuClick}
-              aria-expanded={isMenuOpen}
+              className="p-3 hover:text-club-accent transition-colors" // Увеличиваем padding
               aria-label="Menü öffnen"
             >
-              {isMenuOpen ? <X size={32} /> : <Menu size={32} />} {/* Größeres Icon */}
-            </Button>
+              {isMenuOpen ? (
+                <X size={24} className="w-6 h-6" /> // Явно задаем размеры через классы
+              ) : (
+                <Menu size={24} className="w-6 h-6" />
+              )}
+            </button>
           </div>
 
           {/* Desktop Navigation */}

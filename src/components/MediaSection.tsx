@@ -1,7 +1,6 @@
-
 import { useState } from "react";
 import { Image, SortDesc } from "lucide-react";
-import { ImageItem, images } from "./mediaImages";
+import { ImageItem, images } from "./arrays/mediaImages";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -47,25 +46,25 @@ const MediaSection = () => {
   return (
     <section id="media" className="py-16 animate-fadeIn">
       <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center mb-12">
-          <h2 className="text-3xl font-bold text-club-primary">
+          <h2 className="text-3xl font-bold text-club-primary mb-12 text-center">
             Archiv
           </h2>
-          <Button
-            variant="outline"
-            onClick={() => setIsReversed(!isReversed)}
-            className="flex items-center gap-2"
-          >
-            <SortDesc className="h-4 w-4" />
-            {isReversed ? "Neueste zuerst" : "Älteste zuerst"}
-          </Button>
-        </div>
 
         <div className="mb-13">
-          <h3 className="text-2xl font-semibold mb-6 text-club-primary flex items-center gap-2">
-            <Image className="text-club-accent" />
-            Fotogalerie
-          </h3>
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-2xl font-semibold text-club-primary flex items-center gap-2">
+              <Image className="text-club-accent" />
+              Fotogalerie
+            </h3>
+            <Button
+              variant="outline"
+              onClick={() => setIsReversed(!isReversed)}
+              className="flex items-center gap-2"
+            >
+              <SortDesc className="h-4 w-4" />
+              {isReversed ? "Neueste zuerst" : "Älteste zuerst"}
+            </Button>
+          </div>
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-6 lg:grid-cols-6 gap-4">
             {sortedImages.map((image, index) => (
               <Dialog key={index}>
