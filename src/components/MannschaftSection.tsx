@@ -23,7 +23,7 @@ const teams = [
 ];
 
 const MannschaftSection = () => {
-  const { elementRef, isVisible } = useScrollAnimation();
+  const { elementRef } = useScrollAnimation();
 
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const target = e.target as HTMLImageElement;
@@ -79,12 +79,7 @@ const MannschaftSection = () => {
         {teams.map((team, index) => (
           <Card
             key={team.id}
-            className={`overflow-hidden opacity-0 ${
-              isVisible ? 'animate-slideInRight' : ''
-            }`}
-            style={{
-              animationDelay: isVisible ? `${index * 0.2}s` : '0s',
-            }}
+            className={`overflow-hidden`}
           >
             <div className="h-48 flex items-center justify-center hover:scale-105 transition-transform duration-300 overflow-hidden">
               <img 
