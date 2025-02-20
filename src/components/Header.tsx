@@ -12,6 +12,11 @@ const Header = () => {
     return location.pathname === path;
   };
 
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+    console.log("Menu toggled:", !isMenuOpen); // Debug-Log
+  };
+
   return (
     <header className="bg-club-primary text-white py-4 fixed w-full top-0 z-50">
       <div className="container mx-auto px-4">
@@ -33,12 +38,14 @@ const Header = () => {
           </Link>
 
           {/* Mobile Menu Button */}
-          <button
-            className="lg:hidden"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          <Button
+            type="button"
+            variant="ghost"
+            className="lg:hidden text-white hover:text-club-accent p-2"
+            onClick={toggleMenu}
           >
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          </Button>
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex gap-8">
@@ -64,7 +71,7 @@ const Header = () => {
             ))}
           </nav>
 
-          {/* Mobile Navigation mit Animation */}
+          {/* Mobile Navigation */}
           <div 
             className={`fixed inset-x-0 top-[64px] bg-club-primary lg:hidden transition-all duration-300 ease-in-out transform ${
               isMenuOpen ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
@@ -83,9 +90,14 @@ const Header = () => {
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`relative group py-2 transition-all duration-300 delay-[${index * 50}ms] transform ${
-                    isMenuOpen ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'
-                  } ${isActive(item.path) ? "text-club-accent" : "text-white"}`}
+                  className={`relative group py-2 transition-all duration-300 ${
+                    isActive(item.path) ? "text-club-accent" : "text-white"
+                  }`}
+                  style={{
+                    transitionDelay: `${index * 50}ms`,
+                    opacity: isMenuOpen ? 1 : 0,
+                    transform: isMenuOpen ? 'translateY(0)' : 'translateY(-10px)'
+                  }}
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {item.label}
