@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "react-router-dom";
@@ -12,10 +12,15 @@ const Header = () => {
     return location.pathname === path;
   };
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-    console.log("Menu toggled:", !isMenuOpen); // Debug-Log
-  };
+  // Explizite Funktion zum Umschalten des Menüs
+  const handleMenuClick = useCallback(() => {
+    console.log("Button clicked"); // Debug-Log vor der Statusänderung
+    setIsMenuOpen(prevState => {
+      const newState = !prevState;
+      console.log("Menu state changing to:", newState); // Debug-Log nach der Statusänderung
+      return newState;
+    });
+  }, []);
 
   return (
     <header className="bg-club-primary text-white py-4 fixed w-full top-0 z-50">
@@ -38,14 +43,18 @@ const Header = () => {
           </Link>
 
           {/* Mobile Menu Button */}
-          <Button
-            type="button"
-            variant="ghost"
-            className="lg:hidden text-white hover:text-club-accent p-2"
-            onClick={toggleMenu}
-          >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </Button>
+          <div className="lg:hidden">
+            <Button
+              type="button"
+              variant="ghost"
+              className="text-white hover:text-club-accent p-2"
+              onClick={handleMenuClick}
+              aria-expanded={isMenuOpen}
+              aria-label="Menü öffnen"
+            >
+              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </Button>
+          </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex gap-8">
@@ -73,8 +82,8 @@ const Header = () => {
 
           {/* Mobile Navigation */}
           <div 
-            className={`fixed inset-x-0 top-[64px] bg-club-primary lg:hidden transition-all duration-300 ease-in-out transform ${
-              isMenuOpen ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
+            className={`fixed left-0 right-0 top-[64px] bg-club-primary lg:hidden transition-all duration-300 ease-in-out ${
+              isMenuOpen ? 'translate-y-0 opacity-100 visible' : '-translate-y-full opacity-0 invisible'
             }`}
           >
             <nav className="flex flex-col items-center py-4 gap-4">
