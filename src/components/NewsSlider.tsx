@@ -18,7 +18,7 @@ const news = [
     id: 3,
     title: "Sommerfest 2024",
     description: "Save the Date: 15. Juli 2024",
-    image: "https://images.unsplash.com/photo-1582127832282-0c3d5fd5d5f7",
+    image: "https://images.unsplash.com/photo-1580541832626-2a7131ee809f",
   },
 ];
 
@@ -50,26 +50,34 @@ const NewsSlider = () => {
       }).catch((error) => console.log("Error sharing:", error));
     }
   };
-
+  
   return (
-    <div className="relative h-[500px] w-full overflow-hidden mt-16">
+    <div className="relative h-screen w-full overflow-hidden pt-16 md:pt-20">
       {news.map((item, index) => (
         <div
           key={item.id}
-          className={`absolute w-full h-full transition-opacity duration-500 ${
+          className={`absolute inset-0 w-full h-full transition-opacity duration-500 ${
             index === currentSlide ? "opacity-100" : "opacity-0"
           }`}
         >
           <div
             className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${item.image})` }}
+            style={{ 
+              backgroundImage: `url(${item.image})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center center'
+            }}
           >
             <div className="absolute inset-0 bg-black/50" />
           </div>
           <div className="relative h-full flex items-center justify-center text-center text-white px-4">
-            <div className="max-w-2xl animate-fadeIn">
-              <h2 className="text-4xl font-bold mb-4">{item.title}</h2>
-              <p className="text-xl mb-6">{item.description}</p>
+            <div className="max-w-2xl animate-fadeIn mx-4">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6">
+                {item.title}
+              </h2>
+              <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl mb-6 md:mb-8">
+                {item.description}
+              </p>
             </div>
           </div>
         </div>
@@ -79,21 +87,21 @@ const NewsSlider = () => {
         onClick={prevSlide}
         className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 p-2 rounded-full transition-colors"
       >
-        <ChevronLeft className="text-white" size={24} />
+        <ChevronLeft className="text-white w-8 h-8 md:w-10 md:h-10" />
       </button>
       <button
         onClick={nextSlide}
         className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 p-2 rounded-full transition-colors"
       >
-        <ChevronRight className="text-white" size={24} />
+        <ChevronRight className="text-white w-8 h-8 md:w-10 md:h-10" />
       </button>
 
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3">
         {news.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentSlide(index)}
-            className={`w-3 h-3 rounded-full transition-colors ${
+            className={`w-3 h-3 md:w-4 md:h-4 rounded-full transition-colors ${
               index === currentSlide ? "bg-club-accent" : "bg-white/50"
             }`}
           />
