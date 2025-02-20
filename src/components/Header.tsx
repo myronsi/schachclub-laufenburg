@@ -42,17 +42,17 @@ const Header = () => {
             Schachclub Laufenburg
           </Link>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Button - Größer gemacht */}
           <div className="lg:hidden">
             <Button
               type="button"
               variant="ghost"
-              className="text-white hover:text-club-accent p-2"
+              className="text-white hover:text-club-accent p-3 h-12 w-12" // Erhöhte Größe und Padding
               onClick={handleMenuClick}
               aria-expanded={isMenuOpen}
               aria-label="Menü öffnen"
             >
-              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              {isMenuOpen ? <X size={32} /> : <Menu size={32} />} {/* Größeres Icon */}
             </Button>
           </div>
 
