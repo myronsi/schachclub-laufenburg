@@ -83,10 +83,7 @@ const MediaSection = () => {
                     <p className="text-sm text-center text-gray-600">{image.title}</p>
                   </div>
                 </DialogTrigger>
-                <DialogContent 
-                  className="max-w-4xl h-[90vh] overflow-y-auto"
-                  style={{ top: '5vh' }}
-                >
+                <DialogContent className="max-w-4xl h-[90vh] overflow-y-auto">
                   <DialogHeader className="space-y-2">
                     <DialogTitle>{image.title}</DialogTitle>
                     {image.description && (
