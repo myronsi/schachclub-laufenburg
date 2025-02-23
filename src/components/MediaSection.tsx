@@ -21,8 +21,8 @@ const MediaSection = () => {
   const renderImages = (items: ImageItem[]) => (
     <div className="space-y-4">
       {items.map((item, index) => (
-        <div key={index} className="space-y-2">
-          <div className="rounded-lg overflow-hidden my-4">
+        <div key={index} className="flex flex-col items-center gap-2">
+          <div className="rounded-lg overflow-hidden">
             <img
               src={item.src}
               alt={item.title}
@@ -34,10 +34,10 @@ const MediaSection = () => {
             />
           </div>
           {item.description && (
-            <p className="text-sm text-gray-600 text-center mb-4">{item.description}</p>
+            <p className="text-sm text-gray-600 text-center">{item.description}</p>
           )}
           {selectedImage?.src === item.src && item.children && (
-            <div className="pl-4 border-l-2 border-gray-200">
+            <div className="pl-4 border-l-2 border-gray-200 w-full">
               {renderImages(item.children)}
             </div>
           )}
@@ -85,20 +85,21 @@ const MediaSection = () => {
                 </DialogTrigger>
                 <DialogContent 
                   className="max-w-4xl overflow-y-auto"
-                  onInteractOutside={() => setSelectedImage(null)}
                 >
-                  <DialogHeader>
+                  <DialogHeader className="space-y-2">
                     <DialogTitle>{image.title}</DialogTitle>
-                    <DialogDescription>{image.description}</DialogDescription>
+                    {image.description && (
+                      <DialogDescription>{image.description}</DialogDescription>
+                    )}
                   </DialogHeader>
-                  <div className="flex justify-center">
+                  <div className="flex flex-col items-center gap-4">
                     <img
                       src={image.src}
                       alt={image.title}
                       className="object-contain w-full max-h-[500px]"
                     />
+                    {image.children && renderImages(image.children)}
                   </div>
-                  {renderImages(image.children || [])}
                 </DialogContent>
               </Dialog>
             ))}
@@ -110,4 +111,3 @@ const MediaSection = () => {
 };
 
 export default MediaSection;
-
