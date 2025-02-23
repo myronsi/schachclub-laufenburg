@@ -21,15 +21,17 @@ const MediaSection = () => {
     <div className="space-y-4">
       {items.map((item, index) => (
         <div key={index} className="space-y-2">
-          <img
-            src={item.src}
-            alt={item.title}
-            className="object-cover w-full rounded-lg cursor-pointer"
-            onClick={(e) => {
-              e.stopPropagation();
-              setSelectedImage(item);
-            }}
-          />
+          <div className="rounded-lg overflow-hidden max-h-[80vh] my-4">
+            <img
+              src={item.src}
+              alt={item.title}
+              className="object-contain w-full h-full cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedImage(item);
+              }}
+            />
+          </div>
           {item.description && (
             <p className="text-sm text-gray-600">{item.description}</p>
           )}
