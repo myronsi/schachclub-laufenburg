@@ -6,7 +6,7 @@ export type ImageItem = {
 };
 
 // BASISVORLAGE 
-// {
+// { 
 //   src: "/path/to/image",
 //   title: "Titel",
 //   children: [
