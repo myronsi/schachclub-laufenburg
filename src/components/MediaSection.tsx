@@ -84,7 +84,8 @@ const MediaSection = () => {
                   </div>
                 </DialogTrigger>
                 <DialogContent 
-                  className="max-w-4xl overflow-y-auto"
+                  className="max-w-4xl h-[90vh] overflow-y-auto"
+                  style={{ top: '5vh' }}
                 >
                   <DialogHeader className="space-y-2">
                     <DialogTitle>{image.title}</DialogTitle>
@@ -111,3 +112,4 @@ const MediaSection = () => {
 };
 
 export default MediaSection;
+
