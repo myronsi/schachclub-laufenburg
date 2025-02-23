@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Image, SortDesc } from "lucide-react";
 import { ImageItem, images } from "./arrays/mediaImages";
@@ -21,11 +22,11 @@ const MediaSection = () => {
     <div className="space-y-4">
       {items.map((item, index) => (
         <div key={index} className="space-y-2">
-          <div className="rounded-lg overflow-hidden max-h-[80vh] my-4">
+          <div className="rounded-lg overflow-hidden my-4">
             <img
               src={item.src}
               alt={item.title}
-              className="object-contain w-full h-full cursor-pointer"
+              className="object-contain w-full max-h-[500px] cursor-pointer mx-auto"
               onClick={(e) => {
                 e.stopPropagation();
                 setSelectedImage(item);
@@ -33,7 +34,7 @@ const MediaSection = () => {
             />
           </div>
           {item.description && (
-            <p className="text-sm text-gray-600">{item.description}</p>
+            <p className="text-sm text-gray-600 text-center mb-4">{item.description}</p>
           )}
           {selectedImage?.src === item.src && item.children && (
             <div className="pl-4 border-l-2 border-gray-200">
@@ -48,9 +49,9 @@ const MediaSection = () => {
   return (
     <section id="media" className="py-16 animate-fadeIn">
       <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-club-primary mb-12 text-center">
-            Archiv
-          </h2>
+        <h2 className="text-3xl font-bold text-club-primary mb-12 text-center">
+          Archiv
+        </h2>
 
         <div className="mb-13">
           <div className="flex justify-between items-center mb-6">
@@ -71,22 +72,32 @@ const MediaSection = () => {
             {sortedImages.map((image, index) => (
               <Dialog key={index}>
                 <DialogTrigger asChild>
-                  <div className="aspect-square relative cursor-pointer hover-scale overflow-hidden rounded-lg">
-                    <img
-                      src={image.src}
-                      alt={image.title}
-                      className="object-cover w-full h-full"
-                    />
+                  <div className="flex flex-col gap-2 cursor-pointer">
+                    <div className="aspect-square relative hover-scale overflow-hidden rounded-lg">
+                      <img
+                        src={image.src}
+                        alt={image.title}
+                        className="object-cover w-full h-full"
+                      />
+                    </div>
+                    <p className="text-sm text-center text-gray-600">{image.title}</p>
                   </div>
                 </DialogTrigger>
                 <DialogContent 
-                  className="max-w-4xl max-h-[90vh] overflow-y-auto"
+                  className="max-w-4xl overflow-y-auto"
                   onInteractOutside={() => setSelectedImage(null)}
                 >
                   <DialogHeader>
                     <DialogTitle>{image.title}</DialogTitle>
                     <DialogDescription>{image.description}</DialogDescription>
                   </DialogHeader>
+                  <div className="flex justify-center">
+                    <img
+                      src={image.src}
+                      alt={image.title}
+                      className="object-contain w-full max-h-[500px]"
+                    />
+                  </div>
                   {renderImages(image.children || [])}
                 </DialogContent>
               </Dialog>
@@ -99,3 +110,4 @@ const MediaSection = () => {
 };
 
 export default MediaSection;
+
