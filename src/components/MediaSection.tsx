@@ -92,8 +92,6 @@ const MediaSection = () => {
                   </DialogHeader>
                   <div className="flex flex-col items-center gap-4">
                     <img
-                      src={image.src}
-                      alt={image.title}
                       className="object-contain w-full max-h-[500px]"
                     />
                     {image.children && renderImages(image.children)}
