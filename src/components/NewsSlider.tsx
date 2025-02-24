@@ -4,20 +4,20 @@ import { ChevronLeft, ChevronRight, Share2 } from "lucide-react";
 const news = [
   {
     id: 1,
-    title: "Erfolg beim Bezirksturnier",
-    description: "Unsere Jugendmannschaft sichert sich den ersten Platz",
+    title: "Osterdienstag",
+    description: "Am Dienstag, 22. April, findet kein Spieleabend statt.",
     image: "https://images.unsplash.com/photo-1580541832626-2a7131ee809f",
   },
   {
     id: 2,
-    title: "Neue Jugendgruppe",
-    description: "Start der U12-Gruppe im kommenden Monat",
+    title: "...",
+    description: "...",
     image: "https://images.unsplash.com/photo-1529699211952-734e80c4d42b",
   },
   {
     id: 3,
-    title: "Sommerfest 2024",
-    description: "Save the Date: 15. Juli 2024",
+    title: "...",
+    description: "...",
     image: "https://images.unsplash.com/photo-1580541832626-2a7131ee809f",
   },
 ];
