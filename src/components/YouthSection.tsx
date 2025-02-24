@@ -1,8 +1,6 @@
 
-import { Calendar, Image, MapPin, CircleHelp, ImageOff } from "lucide-react";
+import { Calendar, Image, Mail, MapPin, Video, CircleHelp, } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useState } from "react";
-
 
 const imageUrls = [
   {
@@ -28,7 +26,6 @@ const imageUrls = [
 ];
 
 const YouthSection = () => {
-  const [imageErrors, setImageErrors] = useState<{[key: number]: boolean}>({});
 
   return (
     <section id="youth" className="py-16 bg-club-light animate-fadeIn">
@@ -108,22 +105,22 @@ const YouthSection = () => {
             {imageUrls.map((image, index) => (
               <div
                 key={index}
-                className="aspect-square rounded-lg overflow-hidden hover-scale transition-transform duration-300 flex items-center justify-center bg-gray-100"
+                className="aspect-square rounded-lg overflow-hidden hover-scale transition-transform duration-300 flex items-center justify-center" // Добавлены flex и центрирование
               >
-                {imageErrors[index] ? (
-                  <div className="flex flex-col items-center gap-2 text-gray-400">
-                    <ImageOff className="w-10 h-10 opacity-50" />
-                    <span className="text-xs text-center">Image not available</span>
-                  </div>
-                ) : (
-                  <img
-                    src={image.src}
-                    alt={image.alt || `Youth event ${index + 1}`}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                    onError={() => setImageErrors(prev => ({...prev, [index]: true}))}
-                  />
-                )}
+                <img
+                  src={image.src}
+                  alt={image.alt || `${index + 1}`}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                  onError={(e) => {
+                    const img = e.target as HTMLImageElement;
+                    img.src = 'imgs/image-off.svg';
+                    img.style.width = '40px';
+                    img.style.height = '40px';
+                    img.style.opacity = '0.5';
+                    img.style.objectFit = 'contain';
+                  }}
+                />
               </div>
             ))}
           </div>
