@@ -1,4 +1,4 @@
-import { Info, Users, Euro, ScrollText } from "lucide-react";
+import { Info, Euro, ScrollText } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { timeline} from "./arrays/historyList"

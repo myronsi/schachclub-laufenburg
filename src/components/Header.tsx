@@ -1,7 +1,6 @@
 
 import { useState, useCallback } from "react";
 import { Menu, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "react-router-dom";
 
 const Header = () => {
@@ -58,7 +57,7 @@ const Header = () => {
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex gap-8">
             {[
-              { path: "/", label: "Home" },
+              { path: "/", label: "Aktuelles" },
               { path: "/ueberuns", label: "Über uns" },
               { path: "/mannschaften", label: "Mannschaften" },
               { path: "/jugend", label: "Jugend" },
@@ -87,7 +86,7 @@ const Header = () => {
           >
             <nav className="flex flex-col items-center py-4 gap-4">
               {[
-                { path: "/", label: "Home" },
+                { path: "/", label: "Aktuelles" },
                 { path: "/ueberuns", label: "Über uns" },
                 { path: "/mannschaften", label: "Mannschaften" },
                 { path: "/jugend", label: "Jugend" },

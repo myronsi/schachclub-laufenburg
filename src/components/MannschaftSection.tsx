@@ -1,5 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import { ImageOff } from "lucide-react";
+import { useState } from "react";
 
 const teams = [
   {
@@ -24,13 +26,10 @@ const teams = [
 
 const MannschaftSection = () => {
   const { elementRef } = useScrollAnimation();
+  const [imageErrors, setImageErrors] = useState<{[key: number]: boolean}>({});
 
-  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    const target = e.target as HTMLImageElement;
-    target.onerror = null; // Предотвращаем бесконечный цикл при ошибке загрузки fallback
-    target.src = "/imgs/image-off.svg";
-    target.classList.remove("object-cover", "w-full", "h-full");
-    target.classList.add("opacity-50", "w-10", "h-10");
+  const handleImageError = (teamId: number) => {
+    setImageErrors(prev => ({...prev, [teamId]: true}));
   };
 
   return (
@@ -76,18 +75,21 @@ const MannschaftSection = () => {
         ref={elementRef}
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
       >
-        {teams.map((team, index) => (
-          <Card
-            key={team.id}
-            className={`overflow-hidden`}
-          >
+        {teams.map((team) => (
+          <Card key={team.id} className="overflow-hidden">
             <div className="h-48 flex items-center justify-center hover:scale-105 transition-transform duration-300 overflow-hidden">
-              <img 
-                src={team.image}
-                alt={team.name}
-                className="object-cover w-full h-full"
-                onError={handleImageError}
-              />
+              {imageErrors[team.id] || team.image === "nicht eingegeben" ? (
+                <div className="flex items-center justify-center w-full h-full bg-gray-100">
+                  <ImageOff className="w-10 h-10 opacity-50 text-gray-400" />
+                </div>
+              ) : (
+                <img 
+                  src={team.image}
+                  alt={team.name}
+                  className="object-cover w-full h-full"
+                  onError={() => handleImageError(team.id)}
+                />
+              )}
             </div>
             <div className="p-6">
               <h3 className="text-xl font-semibold mb-2">{team.name}</h3>

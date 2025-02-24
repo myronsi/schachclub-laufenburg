@@ -794,7 +794,7 @@ export const images: ImageItem[] = [
       },
       {
         src: "pics/u20_mannsch_09/u20_m_09_01.jpg",
-        title: "U20-Mannschaftsmeisterschaft 09",
+        title: "U20-Mannschafts meisterschaft 09",
         children: [
           { src: "pics/u20_mannsch_09/u20_m_09_01.jpg", 
             title: "U20-Mannschaftsmeisterschaft 09",
@@ -1148,7 +1148,7 @@ export const images: ImageItem[] = [
       },
       {
         src: "pics/majufinale08/majufinale08_01.jpg",
-        title: "Mannschaftsjugendmeisterschaft",
+        title: "Mannschafts jugendmeisterschaft",
         children: [
           { src: "pics/majufinale08/majufinale08_01.jpg", 
             title: "Mannschaftsjugendmeisterschaft",
