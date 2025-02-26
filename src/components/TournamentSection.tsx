@@ -12,8 +12,24 @@ const TournamentSection = () => {
         
         <Tabs defaultValue="vereinsmeister" className="w-full">
           <TabsList className="scrollable-tabs-list">
-            <TabsTrigger value="vereinsmeister" style={{ marginLeft: '90px' }}>Vereinsmeister</TabsTrigger>
-            <TabsTrigger value="pokalsieger">Pokalsieger</TabsTrigger>
+            <TabsTrigger 
+              value="vereinsmeister" 
+              className="md:ml-[90px] ml-4 md:whitespace-nowrap"
+            >
+              <span className="md:hidden text-left">
+                Vereins<br/>meister
+              </span>
+              <span className="hidden md:inline">
+                Vereinsmeister
+              </span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="pokalsieger" 
+              className="md:whitespace-nowrap"
+            >
+              <span className="md:hidden">Pokal<br/>sieger</span>
+              <span className="hidden md:inline">Pokalsieger</span>
+            </TabsTrigger>
             <TabsTrigger value="nikolausblitz">Nikolausblitz</TabsTrigger>
             <TabsTrigger value="blitzsieger">Blitzsieger</TabsTrigger>
           </TabsList>

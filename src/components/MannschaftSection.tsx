@@ -2,27 +2,7 @@ import { Card } from "@/components/ui/card";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { ImageOff } from "lucide-react";
 import { useState } from "react";
-
-const teams = [
-  {
-    id: 1,
-    name: "Mannschaft1 BSV-Ergebnisdienst",
-    league: "Hochrhein Bezirksklasse",
-    image: "nicht eingegeben",
-  },
-  {
-    id: 2,
-    name: "nicht eingegeben",
-    league: "nicht eingegeben",
-    image: "nicht eingegeben",
-  },
-  {
-    id: 3,
-    name: "nicht eingegeben",
-    league: "nicht eingegeben",
-    image: "nicht eingegeben",
-  },
-];
+import { teams} from "./arrays/mannschaftenList";
 
 const MannschaftSection = () => {
   const { elementRef } = useScrollAnimation();
@@ -77,6 +57,10 @@ const MannschaftSection = () => {
       >
         {teams.map((team) => (
           <Card key={team.id} className="overflow-hidden">
+            <a href={team.url}
+              target="_blank"
+              className="underline hover:text-club-accent hover:underline"
+            >
             <div className="h-48 flex items-center justify-center hover:scale-105 transition-transform duration-300 overflow-hidden">
               {imageErrors[team.id] || team.image === "nicht eingegeben" ? (
                 <div className="flex items-center justify-center w-full h-full bg-gray-100">
@@ -91,10 +75,11 @@ const MannschaftSection = () => {
                 />
               )}
             </div>
-            <div className="p-6">
-              <h3 className="text-xl font-semibold mb-2">{team.name}</h3>
-              <p className="text-gray-600">{team.league}</p>
-            </div>
+              <div className="p-6">
+                <h3 className="text-xl font-semibold mb-2">{team.name}</h3>
+                <p className="text-gray-600">{team.league}</p>
+              </div>
+            </a>
           </Card>
         ))}
       </div>

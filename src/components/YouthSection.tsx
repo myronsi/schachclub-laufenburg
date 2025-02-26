@@ -2,29 +2,7 @@
 import { Calendar, Image, MapPin, CircleHelp, ImageOff } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useState } from "react";
-
-const imageUrls = [
-  {
-    src: "imgs/jugendspiele.jpg",
-    alt: "Laufenburger Kindersommer 30.07.12 - 01.08.12"
-  },
-  {
-    src: "imgs/jugendspiele1.jpg",
-  },
-  {
-    src: "imgs/jugendspiele2.jpg"
-  },
-  {
-    src: "imgs/jugendspiele3.jpg"
-  },
-  {
-    src: "imgs/jugendspiele4.jpg"
-  },
-  {
-    src: "imgs/jugendspiele5.jpg"
-  },
-
-];
+import { imageUrls} from "./arrays/youthList"
 
 const YouthSection = () => {
   const [imageErrors, setImageErrors] = useState<{[key: number]: boolean}>({});
@@ -80,7 +58,7 @@ const YouthSection = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p>Dienstags, 17.00 - 19.30</p>
+              <p>Dienstags, 17.00</p>
             </CardContent>
           </Card>
 

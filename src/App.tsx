@@ -13,6 +13,8 @@ import Youth from "./pages/Youth";
 import Tournaments from "./pages/Tournaments";
 import Media from "./pages/Media";
 import Contact from "./pages/Contact";
+import Impressum from "./pages/Impessum";
+import Footer from "./components/Footer";
 
 const queryClient = new QueryClient();
 
@@ -23,16 +25,20 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <ScrollToTop />
-        <Header />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/ueberuns" element={<About />} />
-          <Route path="/mannschaften" element={<Mannschaften />} />
-          <Route path="/jugend" element={<Youth />} />
-          <Route path="/turniere" element={<Tournaments />} />
-          <Route path="/archiv" element={<Media />} />
-          <Route path="/kontakt" element={<Contact />} />
-        </Routes>
+        <div className="min-h-screen flex flex-col">
+          <Header />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/ueberuns" element={<About />} />
+            <Route path="/mannschaften" element={<Mannschaften />} />
+            <Route path="/jugend" element={<Youth />} />
+            <Route path="/turniere" element={<Tournaments />} />
+            <Route path="/archiv" element={<Media />} />
+            <Route path="/kontakt" element={<Contact />} />
+            <Route path="/impressum" element={<Impressum />} />
+          </Routes>
+          <Footer />
+        </div>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

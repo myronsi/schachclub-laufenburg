@@ -1,7 +1,7 @@
-import { Info, Euro, ScrollText } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Info, Euro, ScrollText, Users } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, } from "@/components/ui/card";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
-import { timeline} from "./arrays/historyList"
+import { timeline} from "./arrays/historyList";
 
 const AboutSection = () => {
   const boardAnimation = useScrollAnimation();
@@ -26,6 +26,25 @@ const AboutSection = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Info className="text-club-accent" />
+              Hauptinfos
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-2">
+              <li>Speillokal: Feuerwehrhaus Hochsal Obergeschoss Bertastraße 6 79725 Laufenburg-Hochsal (Baden)</li>
+              <li>Spielabend: Dienstags, 18:30 Uhr</li>
+              <li>Jugendtraining: Dienstags, 17:00 Uhr</li>
+            </ul>
+          </CardContent>
+        </Card>
+
+        <Card 
+          ref={boardAnimation.elementRef}
+          className={`mb-12 opacity-0 ${boardAnimation.isVisible ? 'animate-slideInLeft' : ''}`}
+        >
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Users className="text-club-accent" />
               Der Vorstand
             </CardTitle>
           </CardHeader>
@@ -91,7 +110,7 @@ const AboutSection = () => {
               </li>
               <li>
                 <a 
-                  href="docs/aufnahme_verband.pdf" 
+                  href="docs/mitgliederanmeldung_bsv_2018.pdf" 
                   className="hover:text-club-accent hover:underline"
                   target="_blank" 
                   rel="noopener noreferrer"

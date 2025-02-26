@@ -1,8 +1,8 @@
-
 import { useState } from "react";
 import { Image, SortDesc } from "lucide-react";
 import { ImageItem, images } from "./arrays/mediaImages";
 import { Button } from "@/components/ui/button";
+import { ButtonToTop } from "@/components/ui/arrowToTop";
 import {
   Dialog,
   DialogContent,
@@ -15,8 +15,14 @@ import {
 const MediaSection = () => {
   const [selectedImage, setSelectedImage] = useState<ImageItem | null>(null);
   const [isReversed, setIsReversed] = useState(false);
+  const [openDialogsCount, setOpenDialogsCount] = useState(0);
 
   const sortedImages = isReversed ? [...images].reverse() : images;
+
+  const handleDialogOpenChange = (open: boolean) => {
+    setOpenDialogsCount(prev => open ? prev + 1 : Math.max(prev - 1, 0));
+    if (!open) setSelectedImage(null);
+  };
 
   const renderImages = (items: ImageItem[]) => (
     <div className="space-y-4">
@@ -47,64 +53,67 @@ const MediaSection = () => {
   );
 
   return (
-    <section id="media" className="py-16 animate-fadeIn">
-      <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-club-primary mb-12 text-center">
-          Archiv
-        </h2>
+    <>
+      <section id="media" className="py-16 animate-fadeIn relative">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-club-primary mb-12 text-center">
+            Archiv
+          </h2>
 
-        <div className="mb-13">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-2xl font-semibold text-club-primary flex items-center gap-2">
-              <Image className="text-club-accent" />
-              Fotogalerie
-            </h3>
-            <Button
-              variant="outline"
-              onClick={() => setIsReversed(!isReversed)}
-              className="flex items-center gap-2"
-            >
-              <SortDesc className="h-4 w-4" />
-              {isReversed ? "Neueste zuerst" : "Älteste zuerst"}
-            </Button>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-6 lg:grid-cols-6 gap-4">
-            {sortedImages.map((image, index) => (
-              <Dialog key={index}>
-                <DialogTrigger asChild>
-                  <div className="flex flex-col gap-2 cursor-pointer">
-                    <div className="aspect-square relative hover-scale overflow-hidden rounded-lg">
-                      <img
-                        src={image.src}
-                        alt={image.title}
-                        className="object-cover w-full h-full"
-                      />
+          <div className="mb-13">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-2xl font-semibold text-club-primary flex items-center gap-2">
+                <Image className="text-club-accent" />
+                Fotogalerie
+              </h3>
+              <Button
+                variant="outline"
+                onClick={() => setIsReversed(!isReversed)}
+                className="flex items-center gap-2"
+              >
+                <SortDesc className="h-4 w-4" />
+                {isReversed ? "Älteste ist zuerst" : "Neuste ist zuerst"}
+              </Button>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-6 lg:grid-cols-6 gap-4">
+              {sortedImages.map((image, index) => (
+                <Dialog 
+                  key={index}
+                  onOpenChange={handleDialogOpenChange}
+                >
+                  <DialogTrigger asChild>
+                    <div className="flex flex-col gap-2 cursor-pointer">
+                      <div className="aspect-square relative hover:scale-105 transition-transform overflow-hidden rounded-lg">
+                        <img
+                          src={image.src}
+                          alt={image.title}
+                          className="object-cover w-full h-full"
+                        />
+                      </div>
+                      <p className="text-sm text-center text-gray-600">{image.title}</p>
                     </div>
-                    <p className="text-sm text-center text-gray-600">{image.title}</p>
-                  </div>
-                </DialogTrigger>
-                <DialogContent className="max-w-4xl h-[90vh] overflow-y-auto">
-                  <DialogHeader className="space-y-2">
-                    <DialogTitle>{image.title}</DialogTitle>
-                    {image.description && (
-                      <DialogDescription>{image.description}</DialogDescription>
-                    )}
-                  </DialogHeader>
-                  <div className="flex flex-col items-center gap-4">
-                    <img
-                      className="object-contain w-full max-h-[500px]"
-                    />
-                    {image.children && renderImages(image.children)}
-                  </div>
-                </DialogContent>
-              </Dialog>
-            ))}
+                  </DialogTrigger>
+                  <DialogContent className="max-w-4xl h-[90vh] overflow-y-auto">
+                    <DialogHeader className="space-y-2">
+                      <DialogTitle>{image.title}</DialogTitle>
+                      {image.description && (
+                        <DialogDescription>{image.description}</DialogDescription>
+                      )}
+                    </DialogHeader>
+                    <div className="flex flex-col items-center gap-4">
+                      {image.children && renderImages(image.children)}
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      <ButtonToTop forceHide={openDialogsCount > 0} />
+    </>
   );
 };
 
 export default MediaSection;
-
