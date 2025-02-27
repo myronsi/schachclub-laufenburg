@@ -1129,7 +1129,7 @@ export const images: ImageItem[] = [
           },
           { src: "pics/niko_08/niko08_04.jpg", 
             title: "Nikolausblitz 2008",
-            description: "Thomas (links) war ob des 3. Platzes ein wenig unscharf. Bahni als 2. schon glücklicher."
+            description: "Thomas war ob des 3. Platzes ein wenig unscharf. Bahni als 2. schon glücklicher."
           },
           { src: "pics/niko_08/niko08_05.jpg", 
             title: "Nikolausblitz 2008",

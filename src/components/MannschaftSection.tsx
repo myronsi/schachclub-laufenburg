@@ -13,7 +13,7 @@ const MannschaftSection = () => {
   };
 
   return (
-    <section id="teams" className="py-16 container mx-auto px-4">
+    <section id="teams" className="py-16 container mx-auto px-4 animate-fadeIn">
       <h2 className="text-3xl font-bold text-center mb-12 text-club-primary">
         Unsere Mannschaften
       </h2>

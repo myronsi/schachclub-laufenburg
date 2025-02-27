@@ -70,14 +70,14 @@ const ContactSection = () => {
   };
 
   return (
-    <section id="contact" className="py-16 container mx-auto px-4">
+    <section id="contact" className="py-16 container mx-auto px-4 animate-fadeIn">
       <h2 className="text-3xl font-bold text-center mb-12 text-club-primary">
         Kontakt
       </h2>
-      <div className="grid md:grid-cols-2 gap-8">
+      <div className="flex flex-col items-center">
         <Card 
           ref={infoAnimation.elementRef}
-          className={`p-6 opacity-0 ${infoAnimation.isVisible ? 'animate-slideInLeft' : ''}`}
+          className={`p-6 opacity-0 w-full max-w-2xl mb-8 ${infoAnimation.isVisible ? 'animate-slideInLeft' : ''}`}
         >
           <h3 className="text-xl font-semibold mb-6">Kontaktinformationen</h3>
           <div className="space-y-4">
@@ -96,10 +96,9 @@ const ContactSection = () => {
             </div>
           </div>
         </Card>
-
         <Card 
           ref={formAnimation.elementRef}
-          className={`p-6 opacity-0 ${formAnimation.isVisible ? 'animate-slideInRight' : ''}`}
+          className={`p-6 opacity-0 w-full max-w-2xl ${formAnimation.isVisible ? 'animate-slideInRight' : ''}`}
         >
           <h3 className="text-xl font-semibold mb-6">Schreiben Sie uns</h3>
           <form onSubmit={handleSubmit} className="space-y-4">

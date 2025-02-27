@@ -1,7 +1,9 @@
-import { Info, Euro, ScrollText, Users } from "lucide-react";
+import { Info, Euro, ScrollText, Users, ArrowBigDown, ArrowBigUp, Download } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, } from "@/components/ui/card";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { timeline} from "./arrays/historyList";
+import { useRef } from "react";
+import { ScrollButton } from "@/components/ui/scroll-button"; 
 
 const AboutSection = () => {
   const boardAnimation = useScrollAnimation();
@@ -12,8 +14,20 @@ const AboutSection = () => {
   const feesAnimation = useScrollAnimation();
   const documentsAnimation = useScrollAnimation();
 
+  // Refs для прокрутки
+  const historySectionRef = useRef<HTMLDivElement>(null);
+  const timelineEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToTimelineEnd = () => {
+    timelineEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
+
+  const scrollToHistoryStart = () => {
+    historySectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
+
   return (
-    <section id="about" className="py-8 md:py-16">
+    <section id="about" className="py-8 md:py-16 animate-fadeIn">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold text-club-primary mb-12 text-center">
           Über den Verein
@@ -21,12 +35,12 @@ const AboutSection = () => {
 
         <Card 
           ref={boardAnimation.elementRef}
-          className={`mb-12 opacity-0 ${boardAnimation.isVisible ? 'animate-slideInLeft' : ''}`}
+          className={`mb-12 opacity-0 ${boardAnimation.isVisible ? 'animate-slideInRight' : ''}`}
         >
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Info className="text-club-accent" />
-              Hauptinfos
+              Hauptinformationen
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -125,9 +139,39 @@ const AboutSection = () => {
           ref={timelineAnimation.elementRef}
           className="mb-8 md:mb-12"
         >
-          <h2 className="text-2xl md:text-2xl font-semibold mb-4 md:mb-6 text-club-primary px-2 md:px-0">
-            Unsere Geschichte
-          </h2>
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-y-4 md:gap-y-0 mb-4 md:mb-6 px-2 md:px-0">
+            <div 
+              ref={historySectionRef}
+              className="flex items-center gap-3"
+            >
+              <h2 className="text-2xl md:text-2xl font-semibold text-club-primary">
+                Unsere Geschichte
+              </h2>
+              <ScrollButton 
+                onClick={scrollToTimelineEnd}
+                icon={<ArrowBigDown className="w-5 h-5" />}
+                className="md:-mt-1"
+              />
+              <span 
+                className="text-dark font-medium bg-[#F3F4F6] py-6 hover:underline hover:text-club-accent hover:cursor-pointer"
+                onClick={scrollToTimelineEnd}
+              >
+                zum Gründung
+              </span>
+            </div>
+            
+            <a
+              href="/docs/geschichte.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-club-accent text-white px-4 py-2 rounded hover:bg-club-dark transition-colors whitespace-nowrap inline-flex items-center justify-center w-full md:w-auto mt-2 md:mt-0"
+            >
+              <Download
+                className="pr-2"
+              />
+              Vollständige Geschichte (PDF)
+            </a>
+          </div>
           <div className="relative ml-4 md:ml-12 max-w-[calc(100%-2rem)] md:max-w-[calc(100%-3rem)]">
             <div 
               className="absolute left-[15px] md:left-[19px] top-4 bottom-0 w-[2px] bg-club-accent"
@@ -179,6 +223,23 @@ const AboutSection = () => {
                   </div>
                 </div>
               ))}
+            </div>
+            <div 
+              ref={timelineEndRef}
+              className="relative flex items-center gap-2 mt-6 hover:cursor-pointer"
+              onClick={scrollToHistoryStart}
+              style={{
+                left: "10px",
+                marginLeft: "4px",
+                width: "calc(100% - 19px)"
+              }}
+            >
+              <span className="text-dark font-medium bg-[#F3F4F6] py-6 hover:underline hover:text-club-accent">
+                zum aktuellster Eintrag
+              </span>
+              <ScrollButton 
+                icon={<ArrowBigUp className="w-5 h-5" />}
+              />
             </div>
           </div>
         </div>

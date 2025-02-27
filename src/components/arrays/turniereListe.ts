@@ -40,6 +40,18 @@ export const vereinsmeisterData = [
     { year: "1986", winner: "Franz Baumgartner" },
   ];
   
+  export const nikolausblitzData = [
+    { year: "2017", first: "Tobias Oelschlegel", second: "Nico Zorn", third: "Elmar Kohlhöfer" },
+    { year: "2010", first: "Jens Werther", second: "Ralf Sterzig", third: "Elmar Kohlhöfer" },
+    { year: "2009", first: "Jochen Bahner", second: "Tobias Oelschlegel", third: "Rafael Sterzik" },
+    { year: "2008", first: "Stefan Frommherz", second: "Roland Bahner", third: "Wolfgang Scheina" },
+    { year: "2007", first: "Stefan Frommherz", second: "Bernhard Bürgin", third: "Roland Bahner" },
+    { year: "2006", first: "Bernhard Bürgin", second: "Roland Bahner", third: "Wolfgang Scheina" },
+    { year: "2005", first: "Roland Bahner", second: "Wolfgang Scheina", third: "Bernhard Bürgin" },
+    { year: "2004", first: "Bernhard Bürgin", second: "Josef Jurgetz", third: "Wolfgang Scheina" },
+    { year: "2003", first: "Karl-Heinz Pflaum", second: "Heinz Meyer", third: "Waldemar Schlothauer" },
+  ]
+
   export const blitzsiegerData = [
     { year: "2017", winner: "Tobias Oelschlegel" },
     { year: "2016", winner: "Tobias Oelschlegel" },

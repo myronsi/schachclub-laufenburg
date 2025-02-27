@@ -1,10 +1,10 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { vereinsmeisterData, pokalsiegerData, blitzsiegerData} from "./arrays/turniereListe"
+import { vereinsmeisterData, pokalsiegerData, nikolausblitzData, blitzsiegerData} from "./arrays/turniereListe"
 
 const TournamentSection = () => {
   return (
-    <section id="tournaments" className="py-16 bg-club-light">
+    <section id="tournaments" className="py-16 bg-club-light animate-fadeIn">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold text-center mb-12 text-club-primary">
           Turniere und Sieger
@@ -85,7 +85,26 @@ const TournamentSection = () => {
           <TabsContent value="nikolausblitz">
             <div className="bg-white rounded-lg shadow-md p-6">
               <h3 className="text-2xl font-bold mb-6">Nikolausblitz</h3>
-              <p className="text-gray-600 italic">Noch keine Einträge vorhanden</p>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Jahr</TableHead>
+                    <TableHead>1. Platz</TableHead>
+                    <TableHead>2. Platz</TableHead>
+                    <TableHead>3. Platz</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {nikolausblitzData.map((entry) => (
+                    <TableRow key={entry.year}>
+                      <TableCell>{entry.year}</TableCell>
+                      <TableCell>{entry.first}</TableCell>
+                      <TableCell>{entry.second}</TableCell>
+                      <TableCell>{entry.third}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </div>
           </TabsContent>
 
