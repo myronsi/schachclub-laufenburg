@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -14,8 +13,8 @@ import Tournaments from "./pages/Tournaments";
 import Media from "./pages/Media";
 import Contact from "./pages/Contact";
 import Impressum from "./pages/Impessum";
-import Footer from "./components/Footer";
-
+import Footer from "@/components/Footer";
+import NotFound from "./pages/notFound";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -36,6 +35,7 @@ const App = () => (
             <Route path="/archiv" element={<Media />} />
             <Route path="/kontakt" element={<Contact />} />
             <Route path="/impressum" element={<Impressum />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
           <Footer />
         </div>
@@ -45,4 +45,3 @@ const App = () => (
 );
 
 export default App;
-
