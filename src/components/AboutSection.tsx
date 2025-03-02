@@ -27,7 +27,7 @@ const AboutSection = () => {
   };
 
   return (
-    <section id="about" className="py-8 md:py-16 animate-fadeIn">
+    <section id="about" className="py-16 animate-fadeIn">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold text-club-primary mb-12 text-center">
           Über den Verein
@@ -37,15 +37,17 @@ const AboutSection = () => {
           ref={boardAnimation.elementRef}
           className={`mb-12 opacity-0 ${boardAnimation.isVisible ? 'animate-slideInRight' : ''}`}
         >
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Info className="text-club-accent" />
-              Hauptinformationen
-            </CardTitle>
-          </CardHeader>
           <CardContent>
-            <ul className="space-y-2">
-              <li>Speillokal: Feuerwehrhaus Hochsal Obergeschoss Bertastraße 6 79725 Laufenburg-Hochsal (Baden)</li>
+            <ul className="space-y-2 pt-6 text-center text-lg">
+              <li>
+                <div className="flex items-center justify-center gap-2">
+                  <Info className="text-club-accent" />
+                  Speillokal
+                </div>
+                <b>Feuerwehrhaus Hochsal</b><br/>
+                Bertastraße 6, Obergeschoss <br/>
+                79725 Laufenburg-Hochsal (Baden)
+              </li>
               <li>Spielabend: Dienstags, 18:30 Uhr</li>
               <li>Jugendtraining: Dienstags, 17:00 Uhr</li>
             </ul>
@@ -156,7 +158,7 @@ const AboutSection = () => {
                 className="text-dark font-medium bg-[#F3F4F6] py-6 hover:underline hover:text-club-accent hover:cursor-pointer"
                 onClick={scrollToTimelineEnd}
               >
-                zum Gründung
+                zur Gründung
               </span>
             </div>
             
@@ -235,7 +237,7 @@ const AboutSection = () => {
               }}
             >
               <span className="text-dark font-medium bg-[#F3F4F6] py-6 hover:underline hover:text-club-accent">
-                zum aktuellster Eintrag
+                zum aktuellsten Eintrag
               </span>
               <ScrollButton 
                 icon={<ArrowBigUp className="w-5 h-5" />}

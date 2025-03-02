@@ -13,6 +13,7 @@ import Tournaments from "./pages/Tournaments";
 import Media from "./pages/Media";
 import Contact from "./pages/Contact";
 import Impressum from "./pages/Impessum";
+import Datenschutz from "./pages/Datenschutz";
 import Footer from "@/components/Footer";
 import NotFound from "./pages/notFound";
 const queryClient = new QueryClient();
@@ -35,6 +36,7 @@ const App = () => (
             <Route path="/archiv" element={<Media />} />
             <Route path="/kontakt" element={<Contact />} />
             <Route path="/impressum" element={<Impressum />} />
+            <Route path="/datenschutz" element={<Datenschutz />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Footer />

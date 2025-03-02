@@ -33,20 +33,11 @@ const MannschaftSection = () => {
           In diesem Jahr spielen wir nicht ganz um den<br />
           Aufstieg in die{"  "}
           <a 
-            href="https://bsv-ergebnisdienst.de/index.php?saison=24&totyp=0" 
+            href="https://bsv-ergebnisdienst.de/index.php?p1=0:pa:BLS3-24-7" 
             target="_blank"
             className="underline hover:text-club-accent hover:underline"
           >
             Bereichsliga Süd Staffel 3
-          </a>
-        </p>
-        <p>
-          <a 
-            href="https://bsv-ergebnisdienst.de/index.php?p1=0:kt:BK9-24-4" 
-            target="_blank"
-            className="underline hover:text-club-accent hover:underline"
-          >
-            Mannschaft1 BSV-Ergebnisdienst - Hochrhein Bezirksklasse
           </a>
         </p>
       </div>
