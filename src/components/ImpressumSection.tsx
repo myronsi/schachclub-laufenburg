@@ -76,7 +76,7 @@ const ImpressumSection = () => {
           <div className="space-y-4">
           <div className="flex items-center gap-3">
               <Users className="text-club-accent" size={20} />
-              <span>Myron Ilchneko</span>
+              <span>Myron Ilchenko</span>
             </div>
           </div>
         </Card>
