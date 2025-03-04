@@ -65,15 +65,18 @@ const ImpressumSection = () => {
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <Users className="text-club-accent" size={20} />
-              <span>Jochen Bahner</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <Users className="text-club-accent" size={20} />
               <span>Jürgen Keßler</span>
             </div>
             <div className="flex items-center gap-3">
               <Mail className="text-club-accent" size={20} />
               <a href="mailto:info@sc-laufenburg.de" className="underline hover:text-club-accent">info@sc-laufenburg.de</a>
+            </div>
+          </div>
+          <h3 className="text-xl font-semibold mb-6 mt-4">Webdesigner</h3>
+          <div className="space-y-4">
+          <div className="flex items-center gap-3">
+              <Users className="text-club-accent" size={20} />
+              <span>Myron Ilchneko</span>
             </div>
           </div>
         </Card>

@@ -93,7 +93,7 @@ const DatenschutzSection = () => {
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                         <ClipboardList className="text-club-accent" />
-                        Datenverarbeitungs zwecke
+                        Datenverarbeitungs-<br></br> zwecke
                         </CardTitle>
                     </CardHeader>
                     <CardContent>

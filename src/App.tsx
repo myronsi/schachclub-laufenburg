@@ -37,6 +37,7 @@ const App = () => (
             <Route path="/kontakt" element={<Contact />} />
             <Route path="/impressum" element={<Impressum />} />
             <Route path="/datenschutz" element={<Datenschutz />} />
+            <Route path="/index_NEW.html" element={<Home />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Footer />

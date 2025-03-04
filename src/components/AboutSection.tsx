@@ -42,7 +42,7 @@ const AboutSection = () => {
               <li>
                 <div className="flex items-center justify-center gap-2">
                   <Info className="text-club-accent" />
-                  Speillokal
+                  Spiellokal
                 </div>
                 <b>Feuerwehrhaus Hochsal</b><br/>
                 Bertastraße 6, Obergeschoss <br/>
