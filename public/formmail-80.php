@@ -5,7 +5,7 @@
 #
 # COPYRIGHT NOTICE
 #
-# FormMail.php v8.1   updated for React integration myron 05.02.24
+# FormMail.php v8.1   updated for React integration myron 12.03.25
 #
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
