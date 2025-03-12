@@ -10,63 +10,47 @@ import { Link } from "react-router-dom";
 const ContactSection = () => {
   const infoAnimation = useScrollAnimation();
   const formAnimation = useScrollAnimation();
-  
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    message: ''
+    message: '',
+    subject: 'Kontaktanfrage von Website'
   });
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
-
-  const validateForm = () => {
-    const newErrors: { [key: string]: string } = {};
-    if (!formData.name.trim()) newErrors.name = 'Name ist erforderlich';
-    if (!formData.email.trim()) {
-      newErrors.email = 'E-Mail ist erforderlich';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Ungültige E-Mail-Adresse';
-    }
-    if (!formData.message.trim()) newErrors.message = 'Nachricht ist erforderlich';
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!validateForm()) return;
-
-    setIsSubmitting(true);
-    setSubmitStatus('idle');
+    setSubmitting(true);
+    setError('');
 
     try {
-        const response = await fetch('http://localhost:3001/send-email', {
+      const response = await fetch('/formmail-80.php', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: JSON.stringify(formData),
+        body: new URLSearchParams(formData),
       });
 
       if (response.ok) {
-        setFormData({ name: '', email: '', message: '' });
-        setSubmitStatus('success');
+        console.log("gesendet")
+        //window.location.href = '/kontakt-ok.html';
       } else {
-        setSubmitStatus('error');
+        setError('Fehler beim Senden der Nachricht. Bitte versuchen Sie es später erneut.');
       }
-    } catch (error) {
-      setSubmitStatus('error');
+    } catch (err) {
+      setError('Ein Verbindungsfehler ist aufgetreten. Bitte überprüfen Sie Ihre Internetverbindung.');
     } finally {
-      setIsSubmitting(false);
+      setSubmitting(false);
     }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    // Clear error when user starts typing
-    if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
   };
 
   return (
@@ -103,69 +87,62 @@ const ContactSection = () => {
           <h3 className="text-xl font-semibold mb-6">Schreiben Sie uns</h3>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium mb-1">
-                Name
-              </label>
-              <Input
-                id="name"
+              <p className='text-sm/5 font-medium pb-1'>Name</p>
+              <Input 
                 name="name"
-                placeholder="Name"
+                placeholder="Name" 
                 value={formData.name}
                 onChange={handleChange}
-                disabled={isSubmitting}
+                required
               />
-              {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
             </div>
             <div>
-              <label htmlFor="email" className="block text-sm font-medium mb-1">
-                E-Mail
-              </label>
-              <Input
-                id="email"
+              <p className='text-sm/5 font-medium pb-1'>E-Mail</p>
+              <Input 
                 type="email"
                 name="email"
-                placeholder="E-Mail"
+                placeholder="E-Mail" 
                 value={formData.email}
                 onChange={handleChange}
-                disabled={isSubmitting}
+                required
               />
-              {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
             </div>
             <div>
-              <label htmlFor="message" className="block text-sm font-medium mb-1">
-                Ihre Nachricht
-              </label>
-              <Textarea
-                id="message"
+              <p className='text-sm/5 font-medium pb-1'>Betreff</p>
+              <Input 
+                name="subject"
+                placeholder="Betreff" 
+                value={formData.subject}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div>
+             <p className='text-sm/5 font-medium pb-1'>Ihre Nachricht</p> 
+              <Textarea 
                 name="message"
-                placeholder="Ihre Nachricht"
+                placeholder="Ihre Nachricht" 
                 className="min-h-[120px]"
                 value={formData.message}
                 onChange={handleChange}
-                disabled={isSubmitting}
+                required
               />
-              {errors.message && <p className="text-red-500 text-sm mt-1">{errors.message}</p>}
             </div>
-            
-            {submitStatus === 'success' && (
-              <p className="text-green-500 text-center animate-fadeInOut">
-                Nachricht erfolgreich gesendet!
-              </p>
-            )}
-            {submitStatus === 'error' && (
-              <p className="text-red-500 text-center">
-                Fehler beim Senden der Nachricht. Bitte versuchen Sie es später erneut.
-              </p>
-            )}
-
+            {error && <div className="text-red-500 text-sm">{error}</div>}
             <Button 
               type="submit"
               className="w-full bg-club-accent hover:bg-club-accent/90"
-              disabled={isSubmitting}
+              disabled={submitting}
             >
-              {isSubmitting ? 'Wird gesendet...' : 'Nachricht senden'}
+              {submitting ? 'Wird gesendet...' : 'Nachricht senden'}
             </Button>
           </form>
+          <p className="text-sm mt-4 text-center">
+            Mit dem Absenden akzeptieren Sie unsere{' '}
+            <Link to="/datenschutz" className="underline hover:text-club-accent">
+              Datenschutzerklärung
+            </Link>
+          </p>
         </Card>
       </div>
     </section>
