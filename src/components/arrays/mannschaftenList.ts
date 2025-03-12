@@ -6,11 +6,4 @@ export const teams = [
       image: "imgs/photo_mannschaften1.png",
       url: "https://bsv-ergebnisdienst.de/index.php?p1=0:rm:BK9-24"
     },
-    {
-      id: 2,
-      name: "Jugend-Mannschaft BSV-Ergebnisdienst",
-      league: "Hochrhein Newcomerklasse",
-      image: "imgs/photo_mannschaften1.png",
-      url: "https://bsv-ergebnisdienst.de/index.php?p1=0:rm:BK9-24"
-    }
   ];
