@@ -3,7 +3,7 @@ export const news = [
       id: 1,
       title: "Osterdienstag",
       description: "Am Dienstag, 22. April, findet kein Spieleabend statt.",
-      image: "https://images.unsplash.com/photo-1580541832626-2a7131ee809f",
+      image: "/imgs/schach_bunt.png",
     },
     // {
     //   id: 2,
