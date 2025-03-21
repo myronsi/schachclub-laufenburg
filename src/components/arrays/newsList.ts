@@ -5,12 +5,12 @@ export const news = [
       description: "Am Dienstag, 22. April, findet kein Spieleabend statt.",
       image: "/imgs/schach_bunt.png",
     },
-    // {
-    //   id: 2,
-    //   title: "...",
-    //   description: "...",
-    //   image: "https://images.unsplash.com/photo-1529699211952-734e80c4d42b",
-    // },
+    {
+      id: 2,
+      title: "Neue HomePage !!",
+      description: "NACH 9 JAHREN haben wir endlich einen frischen modernen pflegeleichten Java-Code unter Homepage",
+      image: "/imgs/schach_bunt.png",
+    },
     // {
     //   id: 3,
     //   title: "...",
