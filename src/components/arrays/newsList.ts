@@ -8,8 +8,8 @@ export const news = [
     {
       id: 2,
       title: "Neue HomePage !!",
-      description: "NACH 9 JAHREN haben wir endlich einen frischen modernen pflegeleichten Java-Code unter Homepage",
-      image: "/imgs/schach_bunt.png",
+      description: "NACH 9 JAHREN haben wir endlich einen frischen modernen pflegeleichten Java-Code unter der Homepage",
+      image: "/imgs/DALL-E_16x9-robot hand moving chess pieces.webp",
     },
     // {
     //   id: 3,
