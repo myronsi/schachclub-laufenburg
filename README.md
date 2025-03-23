@@ -4,7 +4,7 @@
 
 **URL**: https://www.sc-laufenburg.de/
 
-**Contributors** Jürgen Keßler, Myron Ilchenko
+**Contributors**: Jürgen Keßler, Myron Ilchenko
 
 ## Follow these steps
 
