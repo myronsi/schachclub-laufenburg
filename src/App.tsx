@@ -12,6 +12,7 @@ import Youth from "./pages/Youth";
 import Tournaments from "./pages/Tournaments";
 import Media from "./pages/Media";
 import Contact from "./pages/Contact";
+import ContactOk from "./pages/ContactOk";
 import Impressum from "./pages/Impessum";
 import Datenschutz from "./pages/Datenschutz";
 import Footer from "@/components/Footer";
@@ -35,6 +36,7 @@ const App = () => (
             <Route path="/turniere" element={<Tournaments />} />
             <Route path="/archiv" element={<Media />} />
             <Route path="/kontakt" element={<Contact />} />
+            <Route path="/kontakt-ok" element={<ContactOk />} />
             <Route path="/impressum" element={<Impressum />} />
             <Route path="/datenschutz" element={<Datenschutz />} />
             <Route path="/index.html" element={<Home />} />

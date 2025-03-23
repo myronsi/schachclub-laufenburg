@@ -1,17 +1,32 @@
 import { useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight, Share2 } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { news} from "./arrays/newsList"
 
 const NewsSlider = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   useEffect(() => {
-    const timer = setInterval(() => {
+    const timer = setTimeout(() => {
       setCurrentSlide((prev) => (prev + 1) % news.length);
     }, 15000);
+  
+    return () => clearTimeout(timer);
+  }, [currentSlide]);
 
-    return () => clearInterval(timer);
-  }, []);
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") {
+        nextSlide();
+      } else if (e.key === "ArrowLeft") {
+        prevSlide();
+      }
+    };
+  
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);  
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % news.length);
@@ -19,16 +34,6 @@ const NewsSlider = () => {
 
   const prevSlide = () => {
     setCurrentSlide((prev) => (prev - 1 + news.length) % news.length);
-  };
-
-  const handleShare = (title: string) => {
-    if (navigator.share) {
-      navigator.share({
-        title: "Schachclub Laufenburg News",
-        text: title,
-        url: window.location.href,
-      }).catch((error) => console.log("Error sharing:", error));
-    }
   };
   
   return (

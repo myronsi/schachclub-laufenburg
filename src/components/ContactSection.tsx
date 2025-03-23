@@ -34,8 +34,7 @@ const ContactSection = () => {
       });
 
       if (response.ok) {
-        console.log("gesendet")
-        //window.location.href = '/kontakt-ok.html';
+        window.location.href = '/kontakt-ok';
       } else {
         setError('Fehler beim Senden der Nachricht. Bitte versuchen Sie es später erneut.');
       }

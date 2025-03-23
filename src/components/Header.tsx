@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from "react";
 import { Menu, X } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
@@ -7,16 +6,28 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
 
-  const isActive = (path: string) => {
-    return location.pathname === path;
+  // Массив с меню-элементами. Для 'Aktuelles' указываем два пути.
+  const navItems = [
+    { paths: ["/", "/index.html"], label: "Aktuelles" },
+    { paths: "/ueberuns", label: "Über uns" },
+    { paths: "/mannschaften", label: "Mannschaften" },
+    { paths: "/jugend", label: "Jugend" },
+    { paths: "/turniere", label: "Turniere" },
+    { paths: "/archiv", label: "Archiv" },
+    { paths: "/kontakt", label: "Kontakt" },
+  ];
+
+  // Функция проверки активности, принимающая либо строку, либо массив строк
+  const isActive = (paths: string | string[]) => {
+    if (Array.isArray(paths)) {
+      return paths.includes(location.pathname);
+    }
+    return location.pathname === paths;
   };
 
-  // Explizite Funktion zum Umschalten des Menüs
+  // Функция для переключения состояния мобильного меню
   const handleMenuClick = useCallback(() => {
-    setIsMenuOpen(prevState => {
-      const newState = !prevState;
-      return newState;
-    });
+    setIsMenuOpen((prevState) => !prevState);
   }, []);
 
   return (
@@ -24,18 +35,12 @@ const Header = () => {
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center">
           {/* Desktop Link */}
-          <Link 
-            to="/" 
-            className="hidden lg:inline-block text-2xl font-bold"
-          >
+          <Link to="/" className="hidden lg:inline-block text-2xl font-bold">
             Schachclub Laufenburg e. V.
           </Link>
           
           {/* Mobile Link */}
-          <Link 
-            to="/" 
-            className="lg:hidden text-2xl font-bold"
-          >
+          <Link to="/" className="lg:hidden text-2xl font-bold">
             Schachclub Laufenburg
           </Link>
 
@@ -43,11 +48,11 @@ const Header = () => {
           <div className="lg:hidden">
             <button
               onClick={handleMenuClick}
-              className="p-3 hover:text-club-accent transition-colors" // Увеличиваем padding
+              className="p-3 hover:text-club-accent transition-colors"
               aria-label="Menü öffnen"
             >
               {isMenuOpen ? (
-                <X size={24} className="w-6 h-6" /> // Явно задаем размеры через классы
+                <X size={24} className="w-6 h-6" />
               ) : (
                 <Menu size={24} className="w-6 h-6" />
               )}
@@ -56,20 +61,12 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex gap-8">
-            {[
-              { path: "/", label: "Aktuelles" },
-              { path: "/ueberuns", label: "Über uns" },
-              { path: "/mannschaften", label: "Mannschaften" },
-              { path: "/jugend", label: "Jugend" },
-              { path: "/turniere", label: "Turniere" },
-              { path: "/archiv", label: "Archiv" },
-              { path: "/kontakt", label: "Kontakt" },
-            ].map((item) => (
+            {navItems.map((item) => (
               <Link
-                key={item.path}
-                to={item.path}
+                key={item.label}
+                to={Array.isArray(item.paths) ? item.paths[0] : item.paths}
                 className={`relative group py-2 ${
-                  isActive(item.path) ? "text-club-accent" : "text-white"
+                  isActive(item.paths) ? "text-club-accent" : "text-white"
                 }`}
               >
                 {item.label}
@@ -79,31 +76,23 @@ const Header = () => {
           </nav>
 
           {/* Mobile Navigation */}
-          <div 
+          <div
             className={`fixed left-0 right-0 top-[64px] bg-club-primary lg:hidden transition-all duration-300 ease-in-out ${
-              isMenuOpen ? 'translate-y-0 opacity-100 visible' : '-translate-y-full opacity-0 invisible'
+              isMenuOpen ? "translate-y-0 opacity-100 visible" : "-translate-y-full opacity-0 invisible"
             }`}
           >
             <nav className="flex flex-col items-center py-4 gap-4">
-              {[
-                { path: "/", label: "Aktuelles" },
-                { path: "/ueberuns", label: "Über uns" },
-                { path: "/mannschaften", label: "Mannschaften" },
-                { path: "/jugend", label: "Jugend" },
-                { path: "/turniere", label: "Turniere" },
-                { path: "/archiv", label: "Archiv" },
-                { path: "/kontakt", label: "Kontakt" },
-              ].map((item, index) => (
+              {navItems.map((item, index) => (
                 <Link
-                  key={item.path}
-                  to={item.path}
+                  key={item.label}
+                  to={Array.isArray(item.paths) ? item.paths[0] : item.paths}
                   className={`relative group py-2 transition-all duration-300 ${
-                    isActive(item.path) ? "text-club-accent" : "text-white"
+                    isActive(item.paths) ? "text-club-accent" : "text-white"
                   }`}
                   style={{
                     transitionDelay: `${index * 50}ms`,
                     opacity: isMenuOpen ? 1 : 0,
-                    transform: isMenuOpen ? 'translateY(0)' : 'translateY(-10px)'
+                    transform: isMenuOpen ? "translateY(0)" : "translateY(-10px)",
                   }}
                   onClick={() => setIsMenuOpen(false)}
                 >
