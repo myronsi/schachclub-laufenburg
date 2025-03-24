@@ -17,7 +17,7 @@ const Header = () => {
     { paths: "/kontakt", label: "Kontakt" },
   ];
 
-  // Функция проверки активности, принимающая либо строку, либо массив строк
+  // Keepalive-Funktion, die entweder einen String oder ein Array von Strings akzeptiert
   const isActive = (paths: string | string[]) => {
     if (Array.isArray(paths)) {
       return paths.includes(location.pathname);
@@ -25,7 +25,7 @@ const Header = () => {
     return location.pathname === paths;
   };
 
-  // Функция для переключения состояния мобильного меню
+  // Funktionen zur Sperrung mobiler Menüs
   const handleMenuClick = useCallback(() => {
     setIsMenuOpen((prevState) => !prevState);
   }, []);

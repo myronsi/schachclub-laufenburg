@@ -2,9 +2,13 @@ export const timeline = [
     {
       year: "2025",
       events: [
-        { date: "Januar", text: "Homepage - erneute Pflege" },
-        { date: "Januar", text: "Archiv mit Bildergeschichten aufgearbeitet" },
-        { date: "Januar", text: "Fehlerbeseitigung" }
+       { date: "24.03", text: "Neue Homepage im modernen Design, betreut von Jürgen Keßler und Myron Ilchenko" },
+       { date: "März", text: "Neue Homepage - Live-Aufschaltung, alte Homepage weiterhin verfügbar bei 'Über uns Historie'" },
+       { date: "Februar", text: "Homepage - Neues KI-basiertes Konzept: Dynamisch, Pflegeleicht, Übernahme bestehender Inhalte" },
+       { date: "Februar", text: "--------------------------- REDESIGN mit KI -------------------------------------------------------" },
+       { date: "Januar", text: "Homepage - altes Design, erneute Pflege" },
+       { date: "Januar", text: "Archiv mit Bildergeschichten aufgearbeitet" },
+       { date: "Januar", text: "Fehlerbeseitigung" }
       ]
     },
     {

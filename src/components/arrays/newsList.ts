@@ -14,7 +14,7 @@ export const news = [
     {
       id: 3,
       title: "Wasserschloß Inzlingen",
-      description: "Ergebnisse vom Internationalen Schachturnier Anfang März mit 3 Teilnehmern vom SC-Laufenburg (Benno Moser, Jürgen Keßler, Lukas Wegner",
+      description: "Ergebnisse vom Internationalen Schachturnier Anfang März mit 3 Teilnehmern vom SC-Laufenburg (Benno Moser, Jürgen Keßler, Lukas Wegener)",
       image: "/imgs/Wasserschloss_Inzlingen.jpg",
     },
   ];
