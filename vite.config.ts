@@ -19,4 +19,19 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    // Warnung, wenn die Chunk-Größe mehr als 600 KB beträgt
+    chunkSizeWarningLimit: 600, // Du kannst die Zahl nach Bedarf anpassen
+
+    rollupOptions: {
+      output: {
+        // Manuelles Chunking: Alle node_modules werden in einen separaten "vendor"-Chunk gepackt
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            return 'vendor';  // Diese Zeile sorgt dafür, dass alle node_modules in einen "vendor" Chunk gepackt werden
+          }
+        }
+      }
+    }
+  }
 }));
