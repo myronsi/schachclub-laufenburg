@@ -89,7 +89,7 @@ const ContactSection = () => {
               <p className='text-sm/5 font-medium pb-1'>Name</p>
               <Input 
                 name="name"
-                placeholder="Name" 
+                placeholder="Ihr Name" 
                 value={formData.name}
                 onChange={handleChange}
                 required
@@ -100,7 +100,7 @@ const ContactSection = () => {
               <Input 
                 type="email"
                 name="email"
-                placeholder="E-Mail" 
+                placeholder="Ihre E-Mailadresse bitte" 
                 value={formData.email}
                 onChange={handleChange}
                 required
