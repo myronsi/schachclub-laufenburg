@@ -1,6 +1,6 @@
 import AboutSection from "@/components/AboutSection";
 
-export const LAST_MODIFIED = "27.02.2025";
+export const LAST_MODIFIED = "24.03.2025";
 
 const About = () => {
   return (

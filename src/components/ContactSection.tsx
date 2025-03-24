@@ -3,13 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Mail, Phone, MapPin } from "lucide-react";
+import { Mail, MapPin } from "lucide-react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const ContactSection = () => {
   const infoAnimation = useScrollAnimation();
   const formAnimation = useScrollAnimation();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -34,7 +35,7 @@ const ContactSection = () => {
       });
 
       if (response.ok) {
-        window.location.href = '/kontakt-ok';
+        navigate('/?page=kontakt-ok');
       } else {
         setError('Fehler beim Senden der Nachricht. Bitte versuchen Sie es später erneut.');
       }
@@ -138,7 +139,7 @@ const ContactSection = () => {
           </form>
           <p className="text-sm mt-4 text-center">
             Mit dem Absenden akzeptieren Sie unsere{' '}
-            <Link to="/datenschutz" className="underline hover:text-club-accent">
+            <Link to="/?page=datenschutz" className="underline hover:text-club-accent">
               Datenschutzerklärung
             </Link>
           </p>

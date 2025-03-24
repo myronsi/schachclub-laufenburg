@@ -1,34 +1,35 @@
 import { useState, useCallback } from "react";
 import { Menu, X } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useSearchParams } from "react-router-dom";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const currentPage = searchParams.get("page");
 
-  // Массив с меню-элементами. Для 'Aktuelles' указываем два пути.
   const navItems = [
-    { paths: ["/", "/index.html"], label: "Aktuelles" },
-    { paths: "/ueberuns", label: "Über uns" },
-    { paths: "/mannschaften", label: "Mannschaften" },
-    { paths: "/jugend", label: "Jugend" },
-    { paths: "/turniere", label: "Turniere" },
-    { paths: "/archiv", label: "Archiv" },
-    { paths: "/kontakt", label: "Kontakt" },
+    { param: null, label: "Aktuelles" },
+    { param: "ueberuns", label: "Über uns" },
+    { param: "mannschaften", label: "Mannschaften" },
+    { param: "jugend", label: "Jugend" },
+    { param: "turniere", label: "Turniere" },
+    { param: "archiv", label: "Archiv" },
+    { param: "kontakt", label: "Kontakt" },
   ];
 
-  // Keepalive-Funktion, die entweder einen String oder ein Array von Strings akzeptiert
-  const isActive = (paths: string | string[]) => {
-    if (Array.isArray(paths)) {
-      return paths.includes(location.pathname);
-    }
-    return location.pathname === paths;
+  const isActive = (param: string | null) => {
+    if (param === null) return !currentPage;
+    return currentPage === param;
   };
 
-  // Funktionen zur Sperrung mobiler Menüs
   const handleMenuClick = useCallback(() => {
     setIsMenuOpen((prevState) => !prevState);
   }, []);
+
+  const generateLink = (param: string | null) => {
+    return param ? `/?page=${param}` : "/";
+  };
 
   return (
     <header className="bg-club-primary text-white py-4 fixed w-full top-0 z-50">
@@ -64,9 +65,9 @@ const Header = () => {
             {navItems.map((item) => (
               <Link
                 key={item.label}
-                to={Array.isArray(item.paths) ? item.paths[0] : item.paths}
+                to={generateLink(item.param)}
                 className={`relative group py-2 ${
-                  isActive(item.paths) ? "text-club-accent" : "text-white"
+                  isActive(item.param) ? "text-club-accent" : "text-white"
                 }`}
               >
                 {item.label}
@@ -85,9 +86,9 @@ const Header = () => {
               {navItems.map((item, index) => (
                 <Link
                   key={item.label}
-                  to={Array.isArray(item.paths) ? item.paths[0] : item.paths}
+                  to={generateLink(item.param)}
                   className={`relative group py-2 transition-all duration-300 ${
-                    isActive(item.paths) ? "text-club-accent" : "text-white"
+                    isActive(item.param) ? "text-club-accent" : "text-white"
                   }`}
                   style={{
                     transitionDelay: `${index * 50}ms`,
