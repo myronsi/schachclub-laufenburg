@@ -168,7 +168,7 @@ const AboutSection = () => {
               rel="noopener noreferrer"
               className="bg-club-accent text-white px-4 py-2 rounded hover:bg-club-dark transition-colors whitespace-nowrap inline-flex items-center justify-center w-full md:w-auto mt-2 md:mt-0"
             >
-              Unsere ALTE HomePage von 2016
+              Unsere ALTE HomePage von 2016-2024
               </a>
             <a
               href="/docs/geschichte.pdf"

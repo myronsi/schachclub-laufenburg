@@ -3,7 +3,7 @@ export const news = [
       id: 1,
       title: "Osterdienstag",
       description: "Am Dienstag, 22. April, findet kein Spieleabend statt.",
-      image: "/imgs/Der_16x9_KI_Osterhase_spielt_Schach.jpg",
+      image: "/imgs/Der_16x9_KI_Osterhase_spielt_Schach.webp",
     },
     {
       id: 2,
@@ -13,8 +13,9 @@ export const news = [
     },
     {
       id: 3,
-      title: "Wasserschloß Inzlingen",
+      title: "Wasserschloß Inzlingen Turnier 2025",
       description: "Ergebnisse vom Internationalen Schachturnier Anfang März mit 3 Teilnehmern vom SC-Laufenburg (Benno Moser, Jürgen Keßler, Lukas Wegener)",
       image: "/imgs/Wasserschloss_Inzlingen.jpg",
+      href: "https://schachclub-brombach.de/verein-2/wasserschloss-open-inzlingen/13-wasserschloss-open-inzlingen-vom-07-07-03-2025/",
     },
   ];

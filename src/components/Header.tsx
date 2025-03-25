@@ -37,7 +37,7 @@ const Header = () => {
         <div className="flex justify-between items-center">
           {/* Desktop Link */}
           <Link to="/" className="hidden lg:inline-block text-2xl font-bold">
-            Schachclub Laufenburg e. V.
+            Schachclub Laufenburg 1969 e. V.
           </Link>
           
           {/* Mobile Link */}
