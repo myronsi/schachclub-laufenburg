@@ -59,11 +59,11 @@ const Header = () => {
         <div className="flex justify-between items-center">
           {/* Desktop Link */}
           <Link to="/" className="hidden lg:inline-block text-2xl font-bold">
-            SC Laufenburg 1969 e. V.
+            SC-Laufenburg '69 e.V.
           </Link>
           {visits !== null && (
             <div className="text-sm mt-1 text-gray-200 italic">
-               Besuche insgesamt: {visits}
+               Besucher: {visits}
             </div>
         )}
   
