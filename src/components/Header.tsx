@@ -52,7 +52,11 @@ const Header = () => {
           .catch(() => setVisits(null));
       }
   }, []);
-
+  
+  useEffect(() => {
+    fetch("/api/log-visitor.php", { method: "POST" });
+  }, []);
+  
   return (
     <header className="bg-club-primary text-white py-4 fixed w-full top-0 z-50">
       <div className="container mx-auto px-4">
