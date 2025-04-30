@@ -14,7 +14,7 @@ const AboutSection = () => {
   const feesAnimation = useScrollAnimation();
   const documentsAnimation = useScrollAnimation();
 
-  // Refs для прокрутки
+  // Refs zum Scrollen
   const historySectionRef = useRef<HTMLDivElement>(null);
   const timelineEndRef = useRef<HTMLDivElement>(null);
 

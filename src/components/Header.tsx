@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Menu, X } from "lucide-react";
 import { Link, useLocation, useSearchParams } from "react-router-dom";
 
@@ -31,15 +31,42 @@ const Header = () => {
     return param ? `/?page=${param}` : "/";
   };
 
+  const [visits, setVisits] = useState<number | null>(null);
+
+  useEffect(() => {
+      const alreadyCounted = sessionStorage.getItem("visitorCounted");
+
+      if (!alreadyCounted) {
+        fetch("/api/increment-visitor.php")
+          .then((res) => res.json())
+          .then((data) => {
+            setVisits(data.visits);
+            sessionStorage.setItem("visitorCounted", "true");
+        })
+        .catch(() => setVisits(null));
+      } else {
+        // Optional: Abrufen der aktuellen Anzahl ohne zu erhöhen
+        fetch("/api/visits.txt")
+          .then((res) => res.text())
+          .then((txt) => setVisits(parseInt(txt)))
+          .catch(() => setVisits(null));
+      }
+  }, []);
+
   return (
     <header className="bg-club-primary text-white py-4 fixed w-full top-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center">
           {/* Desktop Link */}
           <Link to="/" className="hidden lg:inline-block text-2xl font-bold">
-            Schachclub Laufenburg 1969 e. V.
+            SC Laufenburg 1969 e. V.
           </Link>
-          
+          {visits !== null && (
+            <div className="text-sm mt-1 text-gray-200 italic hidden lg:block">
+               Besuche insgesamt: {visits}
+            </div>
+        )}
+  
           {/* Mobile Link */}
           <Link to="/" className="lg:hidden text-2xl font-bold">
             Schachclub Laufenburg
