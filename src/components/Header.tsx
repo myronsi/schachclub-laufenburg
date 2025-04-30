@@ -62,7 +62,7 @@ const Header = () => {
             SC Laufenburg 1969 e. V.
           </Link>
           {visits !== null && (
-            <div className="text-sm mt-1 text-gray-200 italic hidden lg:block">
+            <div className="text-sm mt-1 text-gray-200 italic">
                Besuche insgesamt: {visits}
             </div>
         )}
