@@ -9,7 +9,7 @@ export const news = [
       id: 2,
       title: "Weihnachten 2025",
       description: "... ist noch weit hin, so daß noch viele Spieleabende für Freu(n)de sorgen.",
-      image: "/imgs/Weihnachtsmann-zaubert-Figuren.png",
+      image: "/imgs/Weihnachtsmann-zaubert-Figuren-quer.jpg",
     },
     {
       id: 3,
