@@ -1,0 +1,4 @@
+<FilesMatch "\.(ini|bak|log|sh|sql)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>

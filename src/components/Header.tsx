@@ -37,7 +37,8 @@ const Header = () => {
       const alreadyCounted = sessionStorage.getItem("visitorCounted");
 
       if (!alreadyCounted) {
-        fetch("/api/increment-visitor.php")
+        fetch("/server_api/increment-visitor.php")
+
           .then((res) => res.json())
           .then((data) => {
             setVisits(data.visits);
@@ -46,7 +47,7 @@ const Header = () => {
         .catch(() => setVisits(null));
       } else {
         // Optional: Abrufen der aktuellen Anzahl ohne zu erhöhen
-        fetch("/api/visits.txt")
+        fetch("/server_api/visits.txt")
           .then((res) => res.text())
           .then((txt) => setVisits(parseInt(txt)))
           .catch(() => setVisits(null));
@@ -54,7 +55,7 @@ const Header = () => {
   }, []);
   
   useEffect(() => {
-    fetch("/api/log-visitor.php", { method: "POST" });
+    fetch("/server_api/log-visitor.php", { method: "POST" });
   }, []);
   
   return (

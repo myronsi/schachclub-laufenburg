@@ -24,7 +24,7 @@ export default function StatistikToken() {
     if (!zugelassen) return; // ⛔ Noch kein Zugriff → abbrechen
   
     // ✅ CSV laden + Chart anzeigen
-    fetch("/api/visits.csv")
+    fetch("/server_api/visits.csv")
       .then((res) => res.text())
       .then((data) => {
         const lines = data.split("\n").filter(Boolean).slice(1);
