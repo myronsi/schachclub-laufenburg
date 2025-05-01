@@ -17,7 +17,8 @@ import Impressum from "./pages/Impessum";
 import Datenschutz from "./pages/Datenschutz";
 import Footer from "@/components/Footer";
 import NotFound from "./pages/notFound";
-import StatistikToken from "./pages/StatistikToken";
+import StatistikSeite from "./pages/StatistikToken";
+
 
 const queryClient = new QueryClient();
 
@@ -79,7 +80,7 @@ const App = () => (
           <Header />
           <Routes>
             <Route path="/" element={<PageRouter />} />
-            <Route path="/intern/statistik" element={<StatistikToken/>} />
+            <Route path="/intern/statistik" element={<StatistikSeite />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Footer />
