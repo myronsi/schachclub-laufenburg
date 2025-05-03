@@ -7,7 +7,6 @@ export default function StatistikToken() {
   const [zugelassen, setZugelassen] = useState(false);
   const [rows, setRows] = useState<string[][]>([]);
   const [perDay, setPerDay] = useState<Record<string, number>>({});
-
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -26,7 +25,7 @@ export default function StatistikToken() {
     fetch("/server_api/visits.csv")
       .then((res) => res.text())
       .then((data) => {
-        const lines = data.split("\n").filter(Boolean).slice(1); // skip header
+        const lines = data.split("\n").filter(Boolean).slice(1); // Skip header
         const csvRows: string[][] = [];
         const dayCounts: Record<string, number> = {};
 
@@ -34,23 +33,18 @@ export default function StatistikToken() {
           const parts = line.split(";");
           if (parts.length < 3) return;
 
-          const [timestamp, ip, userAgent, referer] = parts;
+          const [timestamp, ip, userAgent = "", referer = ""] = parts;
 
           // Browserdaten aufteilen (besserer Ansatz)
-          const uaParts = userAgent.match(/\((.*?)\)/); // system+architektur in Klammern
-          const systemArch = uaParts?.[1]?.split(";").map((s) => s.trim()) || [];
+          const uaParts = userAgent.match(/\((.*?)\)/);
+          const systemArch = uaParts?.[1]?.split(";").map(s => s.trim()) || [];
           const system = systemArch[0] || "N/A";
           const arch = systemArch[1] || "N/A";
 
-          const engineBrowserParts = userAgent
-            .replace(/\(.*?\)\s*/, "")
-            .split(" ")
-            .filter(Boolean);
-
+          const engineBrowserParts = userAgent.replace(/\(.*?\)\s*/, "").split(" ").filter(Boolean);
           const engine = engineBrowserParts[0] || "N/A";
           const browserInfo = engineBrowserParts[1] || "";
-          const browser = browserInfo.split("/")[0] || "N/A";
-          const version = browserInfo.split("/")[1] || "N/A";
+          const [browser, version] = browserInfo.split("/") || ["N/A", "N/A"];
 
           csvRows.push([
             timestamp,
@@ -60,7 +54,7 @@ export default function StatistikToken() {
             engine,
             browser,
             version,
-            referer || "N/A",
+            referer || "N/A"
           ]);
 
           const date = timestamp.split(" ")[0];
@@ -70,20 +64,22 @@ export default function StatistikToken() {
         setRows(csvRows);
         setPerDay(dayCounts);
 
-        const ctx = document.getElementById("statistikChart") as HTMLCanvasElement;
-        new Chart(ctx, {
-          type: "bar",
-          data: {
-            labels: Object.keys(dayCounts),
-            datasets: [
-              {
-                label: "Besuche pro Tag",
-                data: Object.values(dayCounts),
-                backgroundColor: "rgba(75, 192, 192, 0.6)",
-              },
-            ],
-          },
-        });
+        const ctx = document.getElementById("statistikChart") as HTMLCanvasElement | null;
+        if (ctx) {
+          new Chart(ctx, {
+            type: "bar",
+            data: {
+              labels: Object.keys(dayCounts),
+              datasets: [
+                {
+                  label: "Besuche pro Tag",
+                  data: Object.values(dayCounts),
+                  backgroundColor: "rgba(75, 192, 192, 0.6)"
+                }
+              ]
+            }
+          });
+        }
       });
   }, [zugelassen]);
 
@@ -100,7 +96,7 @@ export default function StatistikToken() {
           onClick={() => {
             const csv = [
               "Zeit;IP;System;Architektur;Engine;Browser;Version;Referer",
-              ...rows.map((r) => r.join(";")),
+              ...rows.map((r) => r.join(";"))
             ].join("\n");
             const blob = new Blob([csv], { type: "text/csv" });
             const url = URL.createObjectURL(blob);
@@ -131,14 +127,9 @@ export default function StatistikToken() {
           <table className="table-auto w-full text-sm border-collapse">
             <thead className="bg-gray-200 sticky top-0 z-30 text-base shadow-md">
               <tr>
-                <th className="px-2 py-2 text-left font-semibold text-gray-800">Zeitstempel</th>
-                <th className="px-2 py-2 text-left font-semibold text-gray-800">IP</th>
-                <th className="px-2 py-2 text-left font-semibold text-gray-800">System</th>
-                <th className="px-2 py-2 text-left font-semibold text-gray-800">Architektur</th>
-                <th className="px-2 py-2 text-left font-semibold text-gray-800">Engine</th>
-                <th className="px-2 py-2 text-left font-semibold text-gray-800">Browser</th>
-                <th className="px-2 py-2 text-left font-semibold text-gray-800">Version</th>
-                <th className="px-2 py-2 text-left font-semibold text-gray-800">Referer</th>
+                {["Zeitstempel", "IP", "System", "Architektur", "Engine", "Browser", "Version", "Referer"].map((head, i) => (
+                  <th key={i} className="px-2 py-2 text-left font-semibold text-gray-800">{head}</th>
+                ))}
               </tr>
             </thead>
             <tbody>
