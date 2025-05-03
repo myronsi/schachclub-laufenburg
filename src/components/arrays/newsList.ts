@@ -1,21 +1,21 @@
 export const news = [
     {
       id: 1,
+      title: "Neue HomePage !!",
+      description: "NACH 9 JAHREN haben wir endlich einen frischen modernen pflegeleichten Java-Code unter der Homepage",
+      image: "/app/imgs/robot_spielt_schach_16x9.webp",
+    },
+    {
+      id: 2,
       title: "Osterdienstag",
       description: "Am Dienstag, 22. April, findet kein Spieleabend statt.",
       image: "/app/imgs/Der_16x9_KI_Osterhase_spielt_Schach.webp",
     },
     {
-      id: 2,
+      id: 3,
       title: "Weihnachten 2025",
       description: "... ist noch weit hin, so daß noch viele Spieleabende für Freu(n)de sorgen.",
       image: "/app/imgs/Weihnachtsmann-zaubert-Figuren-quer.jpg",
-    },
-    {
-      id: 3,
-      title: "Neue HomePage !!",
-      description: "NACH 9 JAHREN haben wir endlich einen frischen modernen pflegeleichten Java-Code unter der Homepage",
-      image: "/app/imgs/robot_spielt_schach_16x9.webp",
     },
     {
       id: 4,

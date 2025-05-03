@@ -1,7 +1,7 @@
 
 import NewsSlider from "@/components/NewsSlider";
 
-export const LAST_MODIFIED = "24.03.2025";
+export const LAST_MODIFIED = "03.05.2025";
 
 const Home = () => {
   return (

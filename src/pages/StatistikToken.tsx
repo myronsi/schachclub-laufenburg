@@ -64,39 +64,69 @@ export default function StatistikToken() {
   let lastDate = "";
 
   return (
-    <div className="p-6 overflow-auto">
-      <h1 className="text-2xl font-bold mb-4">📊 Besucherstatistik</h1>
-      <canvas id="statistikChart" width="800" height="300" className="mb-8"></canvas>
-      
-      <div className="overflow-auto border border-gray-400 max-w-full">
-        <table className="table-auto w-full text-sm">
-          <thead className="sticky top-0 bg-gray-200 z-10">
-            <tr>
-              <th className="border px-2 py-1">Zeit</th>
-              <th className="border px-2 py-1">IP</th>
-              <th className="border px-2 py-1">Browser</th>
-              <th className="border px-2 py-1">Referer</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row, i) => {
-              const currentDate = row[0].split(" ")[0];
-              const showBorder = lastDate && currentDate !== lastDate;
-              lastDate = currentDate;
+    <div>
+      <div className="flex justify-end gap-4 mb-4">
+        <button
+          onClick={() => {
+            const csv = [
+              "Zeit;IP;Browser;Referer",
+              ...rows.map((r) => r.join(";"))
+            ].join("\n");
+            const blob = new Blob([csv], { type: "text/csv" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "besuche.csv";
+            a.click();
+            URL.revokeObjectURL(url);
+          }}
+          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+        >
+          📥 CSV-Export
+        </button>
 
-              return (
-                <tr
-                  key={i}
-                  className={`hover:bg-yellow-100 transition ${showBorder ? "border-t-4 border-black" : ""}`}
-                >
-                  {row.map((cell, j) => (
-                    <td key={j} className="border px-2 py-1 whitespace-nowrap">{cell}</td>
-                  ))}
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+        <button
+          onClick={() => window.print()}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+        >
+          🖨️ Drucken
+        </button>
+      </div>
+
+      <div className="p-6 overflow-auto">
+        <h1 className="text-2xl font-bold mb-4">📊 Besucherstatistik</h1>
+        <canvas id="statistikChart" width="800" height="300" className="mb-8"></canvas>
+        
+        <div className="overflow-auto border border-gray-400 max-w-full">
+          <table className="table-auto w-full text-sm">
+            <thead className="sticky top-0 bg-gray-200 z-10">
+              <tr>
+                <th className="border px-2 py-1">Zeit</th>
+                <th className="border px-2 py-1">IP</th>
+                <th className="border px-2 py-1">Browser</th>
+                <th className="border px-2 py-1">Referer</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row, i) => {
+                const currentDate = row[0].split(" ")[0];
+                const showBorder = lastDate && currentDate !== lastDate;
+                lastDate = currentDate;
+
+                return (
+                  <tr
+                    key={i}
+                    className={`hover:bg-yellow-100 transition ${showBorder ? "border-t-4 border-black" : ""}`}
+                  >
+                    {row.map((cell, j) => (
+                      <td key={j} className="border px-2 py-1 whitespace-nowrap">{cell}</td>
+                    ))}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

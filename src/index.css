@@ -93,3 +93,59 @@ body {
 .animate-fadeInOut {
   animation: fadeInOut 3s ease-in-out forwards;
 }
+
+/* === Sichtbare Scrollbars aktivieren (überschreiben Standardverstecken) === */
+html {
+  scrollbar-width: auto;
+}
+
+body {
+  -ms-overflow-style: auto;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #999;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f3f3f3;
+}
+
+/* === Druckausgabe für Tabellen und Layout === */
+@media print {
+  header,
+  footer,
+  button,
+  canvas {
+    display: none !important;
+  }
+
+  table {
+    font-size: 10pt;
+    border-collapse: collapse;
+    width: 100%;
+    border: 1px solid black;
+  }
+
+  th,
+  td {
+    border: 1px solid #ccc;
+    padding: 4px;
+  }
+
+  tr {
+    page-break-inside: avoid;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+    overflow: visible !important;
+  }
+}
