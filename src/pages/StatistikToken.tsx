@@ -1,15 +1,12 @@
-// src/pages/StatistikToken.tsx
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Chart } from "chart.js/auto";
 import Papa from "papaparse";
 
 export default function StatistikToken() {
   const [params] = useSearchParams();
-  const navigate = useNavigate();
-  const [rows, setRows] = useState<string[][]>([]);
-  const [perDay, setPerDay] = useState<Record<string, number>>({});
   const [zugelassen, setZugelassen] = useState(false);
+  const [rows, setRows] = useState<string[][]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const token = params.get("token");
@@ -27,31 +24,30 @@ export default function StatistikToken() {
     fetch("/server_api/visits.csv")
       .then((res) => res.text())
       .then((text) => {
-        const parsed = Papa.parse<string[]>(text, {
+        const parsed = Papa.parse<string[]>(text.trim(), {
           delimiter: ";",
           skipEmptyLines: true,
         });
 
-        const data = parsed.data;
-        const rowsOnly = data.filter((r) => r.length === 4); // Nur vollständige Zeilen
-        const validRows: string[][] = [];
-        const dayCounts: Record<string, number> = {};
+        const cleaned: string[][] = [];
 
-        rowsOnly.forEach((parts, idx) => {
+        parsed.data.forEach((parts, idx) => {
+          if (parts.length !== 4) return;
+
           const [timestamp, ip, userAgent, referer] = parts.map((s) => s.trim());
 
-          // User-Agent-Zerlegung
-          const uaMatch = userAgent.match(/\(([^)]+)\)/);
-          const systemInfo = uaMatch?.[1]?.split(";").map((s) => s.trim()) || [];
-          const system = systemInfo[0] || "N/A";
-          const arch = systemInfo[1] || "N/A";
+          // User-Agent zerpflücken
+          const sysMatch = userAgent.match(/\(([^)]+)\)/);
+          const sysParts = sysMatch?.[1]?.split(";").map((s) => s.trim()) || [];
+          const system = sysParts[0] || "Unbekannt";
+          const arch = sysParts[1] || "Unbekannt";
 
-          const remaining = userAgent.replace(/\(.*?\)\s*/, "").split(" ").filter(Boolean);
-          const engine = remaining[0] || "N/A";
-          const browserEntry = remaining.find((s) => s.includes("/")) || "N/A/N/A";
-          const [browser, version] = browserEntry.split("/") || ["N/A", "N/A"];
+          const rest = userAgent.replace(/\(.*?\)\s*/, "").split(" ").filter(Boolean);
+          const engine = rest[0] || "Unbekannt";
+          const browserVersion = rest.find((s) => s.includes("/")) || "Unbekannt/Unbekannt";
+          const [browser, version] = browserVersion.split("/") || ["Unbekannt", "Unbekannt"];
 
-          validRows.push([
+          cleaned.push([
             timestamp,
             ip,
             system,
@@ -59,44 +55,23 @@ export default function StatistikToken() {
             engine,
             browser,
             version,
-            referer || "N/A",
+            referer || "Unbekannt",
           ]);
-
-          const date = timestamp.split(" ")[0];
-          dayCounts[date] = (dayCounts[date] || 0) + 1;
         });
 
-        setRows(validRows);
-        setPerDay(dayCounts);
-
-        const ctx = document.getElementById("statistikChart") as HTMLCanvasElement;
-        if (ctx) {
-          new Chart(ctx, {
-            type: "bar",
-            data: {
-              labels: Object.keys(dayCounts),
-              datasets: [
-                {
-                  label: "Besuche pro Tag",
-                  data: Object.values(dayCounts),
-                  backgroundColor: "rgba(59, 130, 246, 0.6)", // Tailwind blue-500
-                },
-              ],
-            },
-          });
-        }
+        setRows(cleaned);
       });
   }, [zugelassen]);
 
   if (!zugelassen) {
-    return <div className="p-4 text-red-500">⛔ Zugriff verweigert</div>;
+    return <div className="p-4 text-red-600">⛔ Zugriff verweigert</div>;
   }
 
   let lastDate = "";
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex justify-end gap-4">
+    <div className="p-4">
+      <div className="flex justify-end gap-4 mb-4">
         <button
           onClick={() => {
             const csv = [
@@ -115,7 +90,6 @@ export default function StatistikToken() {
         >
           📥 CSV-Export
         </button>
-
         <button
           onClick={() => window.print()}
           className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
@@ -124,36 +98,44 @@ export default function StatistikToken() {
         </button>
       </div>
 
-      <h1 className="text-3xl font-bold">📊 Besucherstatistik</h1>
-      <canvas id="statistikChart" width="800" height="300" className="mb-4"></canvas>
-
-      <div className="overflow-auto max-h-[600px] border border-gray-300">
-        <table className="min-w-full text-sm border-collapse">
-          <thead className="sticky top-0 bg-gray-100 shadow z-10 text-base">
+      <div className="overflow-auto border max-h-[600px]">
+        <table className="min-w-[1000px] w-full border-collapse text-sm">
+          <thead className="sticky top-0 z-10 bg-gray-100 text-base shadow">
             <tr>
-              <th className="px-2 py-2 text-left">Zeit</th>
-              <th className="px-2 py-2 text-left">IP</th>
-              <th className="px-2 py-2 text-left">System</th>
-              <th className="px-2 py-2 text-left">Architektur</th>
-              <th className="px-2 py-2 text-left">Engine</th>
-              <th className="px-2 py-2 text-left">Browser</th>
-              <th className="px-2 py-2 text-left">Version</th>
-              <th className="px-2 py-2 text-left">Referer</th>
+              {[
+                "Zeit",
+                "IP",
+                "System",
+                "Architektur",
+                "Engine",
+                "Browser",
+                "Version",
+                "Referer",
+              ].map((col) => (
+                <th
+                  key={col}
+                  className="border px-2 py-2 text-left font-semibold text-gray-800"
+                >
+                  {col}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
             {rows.map((row, i) => {
               const currentDate = row[0].split(" ")[0];
-              const newDay = lastDate !== currentDate;
+              const showBreak = lastDate && currentDate !== lastDate;
               lastDate = currentDate;
 
               return (
                 <tr
                   key={i}
-                  className={`hover:bg-yellow-50 ${newDay ? "border-t-4 border-black" : ""}`}
+                  className={`hover:bg-yellow-100 ${
+                    showBreak ? "border-t-4 border-black" : ""
+                  }`}
                 >
                   {row.map((cell, j) => (
-                    <td key={j} className="px-2 py-1 border whitespace-nowrap">
+                    <td key={j} className="border px-2 py-1 whitespace-nowrap">
                       {cell}
                     </td>
                   ))}
