@@ -22,7 +22,7 @@ export default function StatistikToken() {
   
   useEffect(() => {
     if (!zugelassen) return; // ⛔ Noch kein Zugriff → abbrechen
-  
+    
     // ✅ CSV laden + Chart anzeigen
     fetch("/server_api/visits.csv")
       .then((res) => res.text())
@@ -99,13 +99,17 @@ export default function StatistikToken() {
         
         <div className="overflow-auto border border-gray-400 max-w-full">
           <table className="table-auto w-full text-sm">
-            <thead className="sticky top-0 bg-gray-200 z-10">
-              <tr>
-                <th className="border px-2 py-1">Zeit</th>
-                <th className="border px-2 py-1">IP</th>
-                <th className="border px-2 py-1">Browser</th>
-                <th className="border px-2 py-1">Referer</th>
-              </tr>
+            <thead className="bg-gray-100 sticky top-0 z-10">
+               <tr>
+                 <th className="px-2 py-1 text-left text-xs font-semibold text-gray-700">Zeitstempel</th>
+                 <th className="px-2 py-1 text-left text-xs font-semibold text-gray-700">IP</th>
+                 <th className="px-2 py-1 text-left text-xs font-semibold text-gray-700">System</th>
+                 <th className="px-2 py-1 text-left text-xs font-semibold text-gray-700">Architektur</th>
+                 <th className="px-2 py-1 text-left text-xs font-semibold text-gray-700">Engine</th>
+                 <th className="px-2 py-1 text-left text-xs font-semibold text-gray-700">Browser</th>
+                 <th className="px-2 py-1 text-left text-xs font-semibold text-gray-700">Version</th>
+                 <th className="px-2 py-1 text-left text-xs font-semibold text-gray-700">Referer</th>
+               </tr>
             </thead>
             <tbody>
               {rows.map((row, i) => {
@@ -119,7 +123,9 @@ export default function StatistikToken() {
                     className={`hover:bg-yellow-100 transition ${showBorder ? "border-t-4 border-black" : ""}`}
                   >
                     {row.map((cell, j) => (
-                      <td key={j} className="border px-2 py-1 whitespace-nowrap">{cell}</td>
+                      <td key={j} className="border px-2 py-1 whitespace-nowrap">
+                        {cell || "N/A"} {/* Füge "N/A" für leere Felder hinzu */}
+                      </td>
                     ))}
                   </tr>
                 );
