@@ -1,4 +1,13 @@
-<FilesMatch "\.(ini|bak|log|sh|sql)$">
-    Order Allow,Deny
-    Deny from all
+# Zugriff auf log-visitor.php nur mit gültigem Token erlauben
+<Files "log-visitor.php">
+    <If "%{QUERY_STRING} !~ /token=geheim123/">
+        Require all denied
+    </If>
+</Files>
+
+# Verhindere den direkten Zugriff auf sensible Dateien
+<FilesMatch "\.(ini|bak|log|sh|sql|csv)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
 </FilesMatch>
