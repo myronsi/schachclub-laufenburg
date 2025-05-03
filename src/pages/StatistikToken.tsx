@@ -61,29 +61,43 @@ export default function StatistikToken() {
     return <div className="p-4 text-red-500">⛔ Zugriff verweigert</div>;
   }
 
+  let lastDate = "";
+
   return (
-    <div className="p-6">
+    <div className="p-6 overflow-auto">
       <h1 className="text-2xl font-bold mb-4">📊 Besucherstatistik</h1>
       <canvas id="statistikChart" width="800" height="300" className="mb-8"></canvas>
-      <table className="table-auto w-full border border-gray-400 text-sm">
-        <thead>
-          <tr className="bg-gray-200">
-            <th className="border px-2 py-1">Zeit</th>
-            <th className="border px-2 py-1">IP</th>
-            <th className="border px-2 py-1">Browser</th>
-            <th className="border px-2 py-1">Referer</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row, i) => (
-            <tr key={i}>
-              {row.map((cell, j) => (
-                <td key={j} className="border px-2 py-1">{cell}</td>
-              ))}
+      
+      <div className="overflow-auto border border-gray-400 max-w-full">
+        <table className="table-auto w-full text-sm">
+          <thead className="sticky top-0 bg-gray-200 z-10">
+            <tr>
+              <th className="border px-2 py-1">Zeit</th>
+              <th className="border px-2 py-1">IP</th>
+              <th className="border px-2 py-1">Browser</th>
+              <th className="border px-2 py-1">Referer</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {rows.map((row, i) => {
+              const currentDate = row[0].split(" ")[0];
+              const showBorder = lastDate && currentDate !== lastDate;
+              lastDate = currentDate;
+
+              return (
+                <tr
+                  key={i}
+                  className={`hover:bg-yellow-100 transition ${showBorder ? "border-t-4 border-black" : ""}`}
+                >
+                  {row.map((cell, j) => (
+                    <td key={j} className="border px-2 py-1 whitespace-nowrap">{cell}</td>
+                  ))}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
