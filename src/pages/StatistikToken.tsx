@@ -14,7 +14,9 @@ type Visit = {
   userAgent: string;
   referrer: string;
   browser?: string;
+  browserVersion?: string;
   os?: string;
+  osVersion?: string;
 };
 
 export default function StatistikToken() {
@@ -30,7 +32,6 @@ export default function StatistikToken() {
     }
 
     fetch(`/server_api/get_visits.php?token=${token}`)
-
       .then((res) => res.text())
       .then((csvText) => {
         const parsed = Papa.parse<string[]>(csvText.trim(), {
@@ -44,18 +45,26 @@ export default function StatistikToken() {
           return;
         }
 
-        const data: Visit[] = parsed.data.map((row) => {
-          const [timestamp, ip, userAgent, referrer] = row;
-          const parsedUA = new UAParser(userAgent);
-          return {
-            timestamp,
-            ip,
-            userAgent,
-            referrer,
-            browser: parsedUA.getBrowser().name || "Unbekannt",
-            os: parsedUA.getOS().name || "Unbekannt",
-          };
-        });
+        const rawData = parsed.data as string[][];
+
+        // Header überspringen + ungültige Zeilen filtern
+        const data: Visit[] = rawData
+          .slice(1) // Header-Zeile entfernen
+          .filter((row) => row.length >= 4 && row[0]?.match(/^\d{4}-\d{2}-\d{2}/))
+          .map(([timestamp, ip, userAgent, referrer]) => {
+            const parsedUA = new UAParser(userAgent);
+            const browser = parsedUA.getBrowser();
+            const os = parsedUA.getOS();
+
+            return {
+              timestamp,
+              ip,
+              userAgent,
+              referrer,
+              browser: `${browser.name || "Unbekannt"} ${browser.version || ""}`.trim(),
+              os: `${os.name || "Unbekannt"} ${os.version || ""}`.trim(),
+            };
+          });
 
         setVisits(data);
       })
@@ -92,25 +101,27 @@ export default function StatistikToken() {
         <Bar data={chartData} />
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto max-h-[70vh] overflow-y-auto border rounded-lg">
         <table className="min-w-full border border-gray-300 text-sm">
-          <thead className="bg-gray-100 sticky top-0">
+          <thead className="bg-gray-100 sticky top-0 z-10 text-left">
             <tr>
-              <th className="border px-2 py-1 text-left">Zeit</th>
-              <th className="border px-2 py-1 text-left">IP</th>
-              <th className="border px-2 py-1 text-left">Browser</th>
-              <th className="border px-2 py-1 text-left">System</th>
-              <th className="border px-2 py-1 text-left">Referrer</th>
+              <th className="border px-2 py-1">Zeit</th>
+              <th className="border px-2 py-1">IP</th>
+              <th className="border px-2 py-1">Browser</th>
+              <th className="border px-2 py-1">System</th>
+              <th className="border px-2 py-1">Referrer</th>
             </tr>
           </thead>
           <tbody>
             {visits.map((v, i) => (
               <tr key={i} className="hover:bg-gray-50">
-                <td className="border px-2 py-1">{v.timestamp}</td>
+                <td className="border px-2 py-1 whitespace-nowrap">{v.timestamp}</td>
                 <td className="border px-2 py-1">{v.ip}</td>
                 <td className="border px-2 py-1">{v.browser}</td>
                 <td className="border px-2 py-1">{v.os}</td>
-                <td className="border px-2 py-1 max-w-[300px] overflow-x-auto">{v.referrer}</td>
+                <td className="border px-2 py-1 max-w-[300px] truncate" title={v.referrer}>
+                  {v.referrer}
+                </td>
               </tr>
             ))}
           </tbody>
