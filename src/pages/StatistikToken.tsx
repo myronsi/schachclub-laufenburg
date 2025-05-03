@@ -29,7 +29,8 @@ export default function StatistikToken() {
       return;
     }
 
-    fetch("/server_api/visits.csv")
+    fetch(`/server_api/get_visits.php?token=${token}`)
+
       .then((res) => res.text())
       .then((csvText) => {
         const parsed = Papa.parse<string[]>(csvText.trim(), {

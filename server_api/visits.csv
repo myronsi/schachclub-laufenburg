@@ -1,5 +1,13 @@
 Zeitpunkt;IP;User-Agent;Referer
 2025-04-30 23:26:01;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/
+folgende Zeilen zum Test
+2025-05-03 02:13:22;80.187.64.0;Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Mobile Safari/537.36;https://sc-laufenburg.de/app/
+2025-05-03 02:18:23;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://sc-laufenburg.de/app/intern/statistik/?token=geheim123
+2025-05-03 02:33:52;40.77.202.0;Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm) Chrome/112.0.0.0 Safari/537.36;https://sc-laufenburg.de/app/
+2025-05-03 02:34:12;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/intern/statistik/?token=geheim123
+2025-05-03 03:00:00;123.45.67.89;INVALID-USERAGENT-ONLY-TEXT;
+2025-05-03 03:01:00;;;;  ← ungültige Zeile mit leeren Feldern
+nurtextzeile ohne trennung ← komplett unbrauchbar
 2025-04-30 23:51:20;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/
 2025-05-01 00:28:24;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/?page=datenschutz
 2025-05-01 02:56:00;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/
