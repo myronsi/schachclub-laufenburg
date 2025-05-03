@@ -36,7 +36,7 @@ export default function StatistikToken() {
 
           const [timestamp, ip, userAgent, referer] = parts;
 
-          // Browserdaten aufteilen
+          // Browserdaten aufteilen (besserer Ansatz)
           const uaParts = userAgent.match(/\((.*?)\)/); // system+architektur in Klammern
           const systemArch = uaParts?.[1]?.split(";").map((s) => s.trim()) || [];
           const system = systemArch[0] || "N/A";
@@ -48,8 +48,9 @@ export default function StatistikToken() {
             .filter(Boolean);
 
           const engine = engineBrowserParts[0] || "N/A";
-          const browser = engineBrowserParts[1]?.split("/")[0] || "N/A";
-          const version = engineBrowserParts[1]?.split("/")[1] || "N/A";
+          const browserInfo = engineBrowserParts[1] || "";
+          const browser = browserInfo.split("/")[0] || "N/A";
+          const version = browserInfo.split("/")[1] || "N/A";
 
           csvRows.push([
             timestamp,
@@ -74,11 +75,13 @@ export default function StatistikToken() {
           type: "bar",
           data: {
             labels: Object.keys(dayCounts),
-            datasets: [{
-              label: "Besuche pro Tag",
-              data: Object.values(dayCounts),
-              backgroundColor: "rgba(75, 192, 192, 0.6)",
-            }],
+            datasets: [
+              {
+                label: "Besuche pro Tag",
+                data: Object.values(dayCounts),
+                backgroundColor: "rgba(75, 192, 192, 0.6)",
+              },
+            ],
           },
         });
       });
@@ -97,7 +100,7 @@ export default function StatistikToken() {
           onClick={() => {
             const csv = [
               "Zeit;IP;System;Architektur;Engine;Browser;Version;Referer",
-              ...rows.map((r) => r.join(";"))
+              ...rows.map((r) => r.join(";")),
             ].join("\n");
             const blob = new Blob([csv], { type: "text/csv" });
             const url = URL.createObjectURL(blob);
@@ -123,10 +126,10 @@ export default function StatistikToken() {
       <div className="p-6 overflow-auto">
         <h1 className="text-3xl font-bold mb-4">📊 Besucherstatistik</h1>
         <canvas id="statistikChart" width="800" height="300" className="mb-8"></canvas>
-        
+
         <div className="overflow-auto border border-gray-400 max-w-full max-h-[600px]">
           <table className="table-auto w-full text-sm border-collapse">
-          <thead className="bg-gray-200 sticky top-0 z-30 text-base shadow-md">
+            <thead className="bg-gray-200 sticky top-0 z-30 text-base shadow-md">
               <tr>
                 <th className="px-2 py-2 text-left font-semibold text-gray-800">Zeitstempel</th>
                 <th className="px-2 py-2 text-left font-semibold text-gray-800">IP</th>
