@@ -13,13 +13,9 @@ if (count($ip_parts) === 4) {
     $ip = implode('.', $ip_parts);
 }
 
-$csvLine = "$time;$ip;$agent;$referer\n";
+$logLine = "$time | IP: $ip | Agent: $agent | Referer: $referer\n";
 
-$file = __DIR__ . "/visits.csv";
-if (!file_exists($file)) {
-    file_put_contents($file, "Zeit;IP;User-Agent;Referer\n"); // CSV-Header
-}
-file_put_contents($file, $csvLine, FILE_APPEND);
+file_put_contents(__DIR__ . "/visits.log", $logLine, FILE_APPEND);
 
 echo json_encode(["status" => "logged"]);
 ?>
