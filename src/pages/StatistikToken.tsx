@@ -16,26 +16,53 @@ export default function StatistikToken() {
     if (token === secret) {
       setZugelassen(true);
     } else {
-      navigate("/"); // ← automatische Weiterleitung
+      navigate("/");
     }
   }, [params, navigate]);
-  
+
   useEffect(() => {
-    if (!zugelassen) return; // ⛔ Noch kein Zugriff → abbrechen
-    
-    // ✅ CSV laden + Chart anzeigen
+    if (!zugelassen) return;
+
     fetch("/server_api/visits.csv")
       .then((res) => res.text())
       .then((data) => {
-        const lines = data.split("\n").filter(Boolean).slice(1);
+        const lines = data.split("\n").filter(Boolean).slice(1); // skip header
         const csvRows: string[][] = [];
         const dayCounts: Record<string, number> = {};
 
         lines.forEach((line) => {
           const parts = line.split(";");
-          if (parts.length < 1) return;
-          csvRows.push(parts);
-          const date = parts[0].split(" ")[0];
+          if (parts.length < 3) return;
+
+          const [timestamp, ip, userAgent, referer] = parts;
+
+          // Browserdaten aufteilen
+          const uaParts = userAgent.match(/\((.*?)\)/); // system+architektur in Klammern
+          const systemArch = uaParts?.[1]?.split(";").map((s) => s.trim()) || [];
+          const system = systemArch[0] || "N/A";
+          const arch = systemArch[1] || "N/A";
+
+          const engineBrowserParts = userAgent
+            .replace(/\(.*?\)\s*/, "")
+            .split(" ")
+            .filter(Boolean);
+
+          const engine = engineBrowserParts[0] || "N/A";
+          const browser = engineBrowserParts[1]?.split("/")[0] || "N/A";
+          const version = engineBrowserParts[1]?.split("/")[1] || "N/A";
+
+          csvRows.push([
+            timestamp,
+            ip,
+            system,
+            arch,
+            engine,
+            browser,
+            version,
+            referer || "N/A",
+          ]);
+
+          const date = timestamp.split(" ")[0];
           dayCounts[date] = (dayCounts[date] || 0) + 1;
         });
 
@@ -69,7 +96,7 @@ export default function StatistikToken() {
         <button
           onClick={() => {
             const csv = [
-              "Zeit;IP;Browser;Referer",
+              "Zeit;IP;System;Architektur;Engine;Browser;Version;Referer",
               ...rows.map((r) => r.join(";"))
             ].join("\n");
             const blob = new Blob([csv], { type: "text/csv" });
@@ -94,22 +121,22 @@ export default function StatistikToken() {
       </div>
 
       <div className="p-6 overflow-auto">
-        <h1 className="text-2xl font-bold mb-4">📊 Besucherstatistik</h1>
+        <h1 className="text-3xl font-bold mb-4">📊 Besucherstatistik</h1>
         <canvas id="statistikChart" width="800" height="300" className="mb-8"></canvas>
         
-        <div className="overflow-auto border border-gray-400 max-w-full">
-          <table className="table-auto w-full text-sm">
-            <thead className="bg-gray-100 sticky top-0 z-10">
-               <tr>
-                 <th className="px-2 py-1 text-left text-xs font-semibold text-gray-700">Zeitstempel</th>
-                 <th className="px-2 py-1 text-left text-xs font-semibold text-gray-700">IP</th>
-                 <th className="px-2 py-1 text-left text-xs font-semibold text-gray-700">System</th>
-                 <th className="px-2 py-1 text-left text-xs font-semibold text-gray-700">Architektur</th>
-                 <th className="px-2 py-1 text-left text-xs font-semibold text-gray-700">Engine</th>
-                 <th className="px-2 py-1 text-left text-xs font-semibold text-gray-700">Browser</th>
-                 <th className="px-2 py-1 text-left text-xs font-semibold text-gray-700">Version</th>
-                 <th className="px-2 py-1 text-left text-xs font-semibold text-gray-700">Referer</th>
-               </tr>
+        <div className="overflow-auto border border-gray-400 max-w-full max-h-[600px]">
+          <table className="table-auto w-full text-sm border-collapse">
+          <thead className="bg-gray-200 sticky top-0 z-30 text-base shadow-md">
+              <tr>
+                <th className="px-2 py-2 text-left font-semibold text-gray-800">Zeitstempel</th>
+                <th className="px-2 py-2 text-left font-semibold text-gray-800">IP</th>
+                <th className="px-2 py-2 text-left font-semibold text-gray-800">System</th>
+                <th className="px-2 py-2 text-left font-semibold text-gray-800">Architektur</th>
+                <th className="px-2 py-2 text-left font-semibold text-gray-800">Engine</th>
+                <th className="px-2 py-2 text-left font-semibold text-gray-800">Browser</th>
+                <th className="px-2 py-2 text-left font-semibold text-gray-800">Version</th>
+                <th className="px-2 py-2 text-left font-semibold text-gray-800">Referer</th>
+              </tr>
             </thead>
             <tbody>
               {rows.map((row, i) => {
@@ -123,9 +150,7 @@ export default function StatistikToken() {
                     className={`hover:bg-yellow-100 transition ${showBorder ? "border-t-4 border-black" : ""}`}
                   >
                     {row.map((cell, j) => (
-                      <td key={j} className="border px-2 py-1 whitespace-nowrap">
-                        {cell || "N/A"} {/* Füge "N/A" für leere Felder hinzu */}
-                      </td>
+                      <td key={j} className="border px-2 py-1 whitespace-nowrap">{cell}</td>
                     ))}
                   </tr>
                 );

@@ -36,20 +36,10 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans;
-    background: #F3F4F6;
+    @apply bg-club-light text-foreground font-sans;
     min-height: 100vh;
     overflow-x: hidden;
   }
-}
-
-::-webkit-scrollbar {
-  width: 0;
-  height: 0;
-}
-
-html {
-  scrollbar-width: none;
 }
 
 body {
@@ -78,11 +68,6 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
-
-.hide-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
 @keyframes fadeInOut {
   0% { opacity: 0; }
   10% { opacity: 1; }
