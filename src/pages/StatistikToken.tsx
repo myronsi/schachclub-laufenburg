@@ -1,4 +1,3 @@
-
 // src/pages/StatistikToken.tsx
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useEffect, useState, useMemo } from "react";
@@ -22,6 +21,7 @@ export default function StatistikToken() {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 50;
 
+  // Token‑Check
   useEffect(() => {
     const token = params.get("token");
     const secret = import.meta.env.VITE_SECRET_TOKEN;
@@ -29,6 +29,7 @@ export default function StatistikToken() {
     else navigate("/");
   }, [params, navigate]);
 
+  // CSV laden & parsen
   useEffect(() => {
     if (!zugelassen) return;
     fetch("/server_api/visits.csv")
@@ -46,6 +47,7 @@ export default function StatistikToken() {
         const rowsOnly = parsed.data.slice(1);
         const valid: string[][] = [];
         const counts: Record<string, number> = {};
+
         rowsOnly.forEach((parts) => {
           if (parts.length < 4) return;
           const timestamp = parts[0].trim();
@@ -53,12 +55,9 @@ export default function StatistikToken() {
           const referer = parts[parts.length - 1].trim() || "N/A";
           const ua = parts.slice(2, parts.length - 1).join(";").trim();
 
+          // UA‑Parsing
           const uaMatch = ua.match(/\(([^)]+)\)/);
-          let system = "Unbekannt",
-            arch = "Unbekannt",
-            engine = "Unbekannt",
-            browser = "Unbekannt",
-            version = "Unbekannt";
+          let system = "Unbekannt", arch = "Unbekannt", engine = "Unbekannt", browser = "Unbekannt", version = "Unbekannt";
           if (uaMatch) {
             const sys = uaMatch[1].split(";").map((s) => s.trim());
             system = sys[0] || system;
@@ -73,8 +72,10 @@ export default function StatistikToken() {
           const day = timestamp.split(" ")[0];
           counts[day] = (counts[day] || 0) + 1;
         });
+
         setRows(valid);
         setPerDay(counts);
+
         const ctx = document.getElementById("statistikChart") as HTMLCanvasElement;
         if (ctx) {
           new Chart(ctx, {
@@ -100,6 +101,7 @@ export default function StatistikToken() {
       .catch((e) => console.error("Fehler:", e));
   }, [zugelassen]);
 
+  // Gefilterte, sortierte, paginierte Zeilen
   const processedRows = useMemo(() => {
     let filtered = rows;
     if (filterText) {
@@ -112,10 +114,11 @@ export default function StatistikToken() {
     if (dateFrom) filtered = filtered.filter((r) => new Date(r[0]) >= dateFrom!);
     if (dateTo) filtered = filtered.filter((r) => new Date(r[0]) <= dateTo!);
     if (sortConfig) {
-      filtered = [...filtered].sort((a, b) => {
-        const v1 = a[sortConfig.index], v2 = b[sortConfig.index];
-        return sortConfig.direction === "asc" ? v1.localeCompare(v2) : v2.localeCompare(v1);
-      });
+      filtered = [...filtered].sort((a, b) =>
+        sortConfig.direction === "asc"
+          ? a[sortConfig.index].localeCompare(b[sortConfig.index])
+          : b[sortConfig.index].localeCompare(a[sortConfig.index])
+      );
     }
     return filtered;
   }, [rows, filterText, dateFrom, dateTo, sortConfig]);
@@ -123,13 +126,12 @@ export default function StatistikToken() {
   const pageCount = Math.ceil(processedRows.length / pageSize);
   const pageRows = processedRows.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
-  const onHeaderClick = (idx: number) => {
+  const onHeaderClick = (idx: number) =>
     setSortConfig((prev) =>
       prev && prev.index === idx
         ? { index: idx, direction: prev.direction === "asc" ? "desc" : "asc" }
         : { index: idx, direction: "asc" }
     );
-  };
 
   if (!zugelassen) return <div className="p-4 text-red-600">⛔ Zugriff verweigert</div>;
 
@@ -137,31 +139,6 @@ export default function StatistikToken() {
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">📊 Besucherstatistik</h1>
-
-      <div className="flex gap-4 mb-4">
-        <input
-          type="text"
-          placeholder="Filter Browser/Referrer"
-          value={filterText}
-          onChange={(e) => {
-            setFilterText(e.target.value);
-            setCurrentPage(1);
-          }}
-          className="border px-2 py-1"
-        />
-        <DatePicker
-          selected={dateFrom}
-          onChange={(date: Date | null) => { setDateFrom(date); setCurrentPage(1); }}
-          placeholderText="Von"
-          className="border px-2 py-1"
-        />
-        <DatePicker
-          selected={dateTo}
-          onChange={(date: Date | null) => { setDateTo(date); setCurrentPage(1); }}
-          placeholderText="Bis"
-          className="border px-2 py-1"
-        />
-      </div>
 
       <div className="flex justify-end gap-4 mb-4 no-print">
         <button
@@ -187,20 +164,78 @@ export default function StatistikToken() {
         </button>
       </div>
 
-      <div className="h-[300px] mb-6 no-print">
+      <div className="h-[300px] mb-4 no-print">
         <canvas id="statistikChart"></canvas>
+      </div>
+
+      {/* Filter & Datum direkt über Tabelle */}
+      <div className="flex gap-4 mb-4">
+        <input
+          type="text"
+          placeholder="Filter Browser/Referrer"
+          value={filterText}
+          onChange={(e) => {
+            setFilterText(e.target.value);
+            setCurrentPage(1);
+          }}
+          className="border px-2 py-1"
+        />
+        <DatePicker
+          selected={dateFrom}
+          onChange={(d: Date | null) => {
+            setDateFrom(d);
+            setCurrentPage(1);
+          }}
+          selectsStart
+          startDate={dateFrom}
+          endDate={dateTo}
+          placeholderText="Von"
+          className="border px-2 py-1"
+        />
+        <DatePicker
+          selected={dateTo}
+          onChange={(d: Date | null) => {
+            setDateTo(d);
+            setCurrentPage(1);
+          }}
+          selectsEnd
+          startDate={dateFrom}
+          endDate={dateTo}
+          placeholderText="Bis"
+          className="border px-2 py-1"
+        />
+        <DatePicker
+          selected={dateFrom}
+          onChange={(d: Date | null) => {
+            setDateFrom(d);
+            setCurrentPage(1);
+          }}
+          selectsStart
+          startDate={dateFrom}
+          endDate={dateTo}
+          placeholderText="Von"
+          className="border px-2 py-1"
+        />
+        <DatePicker
+          selected={dateTo}
+          onChange={(d: Date | null) => {
+            setDateTo(d);
+            setCurrentPage(1);
+          }}
+          selectsEnd
+          startDate={dateFrom}
+          endDate={dateTo}
+          placeholderText="Bis"
+          className="border px-2 py-1"
+        />
       </div>
 
       <div className="overflow-auto border border-gray-300 max-h-[600px] max-w-full table-container">
         <table className="min-w-[900px] w-full text-sm border-collapse">
           <thead className="bg-gray-100 sticky top-0 z-10">
             <tr>
-              {['Zeit', 'IP', 'System', 'Architektur', 'Engine', 'Browser', 'Version', 'Referer'].map((col, idx) => (
-                <th
-                  key={col}
-                  onClick={() => onHeaderClick(idx)}
-                  className="border px-2 py-2 text-left font-semibold cursor-pointer"
-                >
+              {['Zeit','IP','System','Architektur','Engine','Browser','Version','Referer'].map((col, idx) => (
+                <th key={col} onClick={() => onHeaderClick(idx)} className="border px-2 py-2 text-left font-semibold cursor-pointer">
                   {col} {sortConfig?.index === idx ? (sortConfig.direction === 'asc' ? '▲' : '▼') : ''}
                 </th>
               ))}
@@ -254,4 +289,3 @@ export default function StatistikToken() {
     </div>
   );
 }
-

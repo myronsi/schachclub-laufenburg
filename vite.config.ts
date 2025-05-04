@@ -16,7 +16,7 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     // Warnung, wenn die Chunk-Größe mehr als 600 KB beträgt
-    chunkSizeWarningLimit: 600, // Du kannst die Zahl nach Bedarf anpassen
+    chunkSizeWarningLimit: 1200, // Du kannst die Zahl nach Bedarf anpassen
     rollupOptions: {
       output: {
         // Manuelles Chunking: Alle node_modules werden in einen separaten "vendor"-Chunk gepackt
