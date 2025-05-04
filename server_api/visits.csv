@@ -1,20 +1,12 @@
 Zeitpunkt;IP;User-Agent;Referer
 2025-04-30 23:26:01;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/
-folgende Zeilen zum Test
-2025-05-03 02:13:22;80.187.64.0;Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Mobile Safari/537.36;https://sc-laufenburg.de/app/
-2025-05-03 02:18:23;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://sc-laufenburg.de/app/intern/statistik/?token=geheim123
-2025-05-03 02:33:52;40.77.202.0;Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm) Chrome/112.0.0.0 Safari/537.36;https://sc-laufenburg.de/app/
-2025-05-03 02:34:12;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/intern/statistik/?token=geheim123
-2025-05-03 03:00:00;123.45.67.89;INVALID-USERAGENT-ONLY-TEXT;
-2025-05-03 03:01:00;;;;  ← ungültige Zeile mit leeren Feldern
-nurtextzeile ohne trennung ← komplett unbrauchbar
 2025-04-30 23:51:20;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/
 2025-05-01 00:28:24;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/?page=datenschutz
 2025-05-01 02:56:00;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/
 2025-05-01 02:56:44;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/?page=datenschutz
 2025-05-01 02:56:51;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/
 2025-05-01 03:41:02;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/
-2025-05-01 03:52:04;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/?page=intern/statistik&token=geheim123
+2025-05-01 03:52:04;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/?page=intern/statistik&token=***
 2025-05-01 04:01:21;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/
 2025-05-01 04:31:36;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/
 2025-05-01 16:15:45;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/app/
@@ -59,33 +51,37 @@ nurtextzeile ohne trennung ← komplett unbrauchbar
 2025-05-03 02:11:24;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/app/
 2025-05-03 02:13:02;80.187.64.0;Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Mobile Safari/537.36;https://sc-laufenburg.de/app/
 2025-05-03 02:13:22;80.187.64.0;Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Mobile Safari/537.36;https://sc-laufenburg.de/app/
-2025-05-03 02:18:23;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/app/intern/statistik/?token=geheim123
+2025-05-03 02:18:23;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/app/intern/statistik/?token=***
 2025-05-03 02:33:52;40.77.202.0;Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm) Chrome/112.0.0.0 Safari/537.36;https://sc-laufenburg.de/app/
-2025-05-03 02:34:12;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/intern/statistik/?token=geheim123
+2025-05-03 02:34:12;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/intern/statistik/?token=***
 2025-05-03 03:18:44;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/app/
-2025-05-03 03:19:37;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/intern/statistik/?token=geheim123
-2025-05-03 03:23:19;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/intern/statistik/?token=geheim123
+2025-05-03 03:19:37;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/intern/statistik/?token=***
+2025-05-03 03:23:19;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/intern/statistik/?token=***
 2025-05-03 04:29:03;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/app/
-2025-05-03 04:29:50;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/intern/statistik/?token=geheim123
+2025-05-03 04:29:50;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/intern/statistik/?token=***
 2025-05-03 05:32:41;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/app/
 2025-05-03 05:33:18;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/app/
-2025-05-03 05:34:18;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/intern/statistik/?token=geheim123
+2025-05-03 05:34:18;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/intern/statistik/?token=***
 2025-05-03 06:24:13;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/app/
-2025-05-03 06:24:27;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/intern/statistik/?token=geheim123
-2025-05-03 06:32:13;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/intern/statistik/?token=geheim123
-2025-05-03 06:32:33;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/intern/statistik/?token=geheim123
-2025-05-03 06:32:41;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/intern/statistik/?token=geheim123
+2025-05-03 06:24:27;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/intern/statistik/?token=***
+2025-05-03 06:32:13;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/intern/statistik/?token=***
+2025-05-03 06:32:33;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/intern/statistik/?token=***
+2025-05-03 06:32:41;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/intern/statistik/?token=***
 2025-05-03 06:32:58;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/app/
-2025-05-03 06:33:02;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/intern/statistik/?token=geheim123
+2025-05-03 06:33:02;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/intern/statistik/?token=***
 2025-05-03 16:04:07;2003:f8:af30:d9dc:a1e9:d209:b65a:31d4;Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.4 Safari/605.1.15;https://www.sc-laufenburg.de/app/
 2025-05-03 17:04:13;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/app/
 2025-05-03 17:04:23;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/app/
 2025-05-03 17:05:07;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/app/
-2025-05-03 17:05:13;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/intern/statistik/?token=geheim123
-2025-05-03 17:07:06;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/intern/statistik/?token=geheim123
-2025-05-03 17:09:49;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:138.0) Gecko/20100101 Firefox/138.0;https://www.sc-laufenburg.de/intern/statistik/?token=geheim123
-2025-05-03 17:10:21;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/intern/statistik/?token=geheim123
+2025-05-03 17:05:13;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/intern/statistik/?token=***
+2025-05-03 17:07:06;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/intern/statistik/?token=***
+2025-05-03 17:09:49;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:138.0) Gecko/20100101 Firefox/138.0;https://www.sc-laufenburg.de/intern/statistik/?token=***
+2025-05-03 17:10:21;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/intern/statistik/?token=***
 2025-05-03 17:47:54;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/app/
-2025-05-03 17:48:07;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/intern/statistik/?token=geheim123
-2025-05-03 17:48:41;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/intern/statistik/?token=geheim123
-2025-05-03 17:50:00;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/intern/statistik/?token=geheim123
+2025-05-03 17:48:07;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/intern/statistik/?token=***
+2025-05-03 17:48:41;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/intern/statistik/?token=***
+2025-05-03 17:50:00;80.187.64.0;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36;https://www.sc-laufenburg.de/intern/statistik/?token=***
+2025-05-04 20:38:24;80.187.64.0;"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36";"https://www.sc-laufenburg.de/intern/statistik/?token=***"
+2025-05-04 20:38:53;80.187.64.0;"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36";"https://www.sc-laufenburg.de/intern/statistik/?token=***"
+2025-05-04 21:07:03;80.187.64.0;"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36";"https://www.sc-laufenburg.de/intern/statistik/?token=***"
+2025-05-04 21:16:49;80.187.64.0;"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36";"https://www.sc-laufenburg.de/intern/statistik/?token=***"

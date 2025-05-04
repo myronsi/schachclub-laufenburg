@@ -55,8 +55,11 @@ const Header = () => {
   }, []);
   
   useEffect(() => {
-    fetch("/server_api/log-visitor.php", { method: "POST" });
-  }, []);
+    const token = searchParams.get("token");
+    if (token) {
+      fetch(`/server_api/log-visitor.php?token=${token}`, { method: "POST" });
+    }
+  }, [searchParams]);
   
   return (
     <header className="bg-club-primary text-white py-4 fixed w-full top-0 z-50">

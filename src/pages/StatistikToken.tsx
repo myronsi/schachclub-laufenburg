@@ -1,7 +1,8 @@
+// src/pages/StatistikToken.tsx
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Chart } from "chart.js/auto";
 import Papa from "papaparse";
+import { Chart } from "chart.js/auto";
 
 export default function StatistikToken() {
   const [params] = useSearchParams();
@@ -10,91 +11,71 @@ export default function StatistikToken() {
   const [perDay, setPerDay] = useState<Record<string, number>>({});
   const navigate = useNavigate();
 
+  // Token‑Check
   useEffect(() => {
     const token = params.get("token");
     const secret = import.meta.env.VITE_SECRET_TOKEN;
-    if (token === secret) {
-      setZugelassen(true);
-    } else {
-      navigate("/");
-    }
+    if (token === secret) setZugelassen(true);
+    else navigate("/");
   }, [params, navigate]);
 
+  // CSV laden & parsen
   useEffect(() => {
     if (!zugelassen) return;
 
     fetch("/server_api/visits.csv")
       .then((res) => {
-        if (!res.ok) throw new Error("CSV konnte nicht geladen werden");
+        if (!res.ok) throw new Error("CSV nicht gefunden");
         return res.text();
       })
       .then((text) => {
-        const parsed = Papa.parse<string[]>(text, {
+        const parsed = Papa.parse<string>(text, {
           delimiter: ";",
           skipEmptyLines: true,
+          quoteChar: '"',
+          header: false,
         });
 
-        const data = parsed.data;
-        const header = data[0];
-        const rowsOnly = data.slice(1);
-
+        const rowsOnly = parsed.data.slice(1);
         const validRows: string[][] = [];
         const dayCounts: Record<string, number> = {};
 
         rowsOnly.forEach((parts, idx) => {
-          if (parts.length !== 4) {
-            console.warn(`⚠️ Ungültige CSV-Zeile [${idx + 2}]:`, parts);
+          if (parts.length < 4) {
+            console.warn(`Ungültige Zeile [${idx + 2}]:`, parts);
             return;
           }
 
-          const [timestamp, ip, userAgent, referer] = parts.map((s) => s.trim());
+          const timestamp = parts[0].trim();
+          const ip        = parts[1].trim() || "Unbekannt";
+          const referer   = parts[parts.length - 1].trim() || "N/A";
+          const userAgent = parts.slice(2, parts.length - 1).join(";").trim();
 
-          // --- robuster UA-Parser ---
-          const uaParts = userAgent.match(/\(([^)]+)\)/);
-          let system = "Unbekannt";
-          let arch = "Unbekannt";
-          let engine = "Unbekannt";
-          let browser = "Unbekannt";
-          let version = "Unbekannt";
+          // UA‑Parsing
+          const uaMatch = userAgent.match(/\(([^)]+)\)/);
+          let system="Unbekannt", arch="Unbekannt", engine="Unbekannt";
+          let browser="Unbekannt", version="Unbekannt";
 
-          if (uaParts) {
-            const systemInfo = uaParts[1].split(";").map((s) => s.trim());
-            system = systemInfo[0] || "Unbekannt";
-            arch = systemInfo[1] || "Unbekannt";
+          if (uaMatch) {
+            const [s,a] = uaMatch[1].split(";").map(s=>s.trim());
+            system = s || system;
+            arch   = a || arch;
           }
 
-          const agentRest = userAgent.replace(/\(.*?\)\s*/, "").trim();
-          if (agentRest) {
-            const parts = agentRest.split(" ").filter(Boolean);
-            engine = parts[0] || "Unbekannt";
+          const tail = userAgent.replace(/\(.*?\)\s*/, "").split(" ").filter(Boolean);
+          if (tail.length) engine = tail[0];
+          const bp = tail.find(t=>t.includes("/"));
+          if (bp) [browser, version] = bp.split("/");
 
-            const browserPart = parts.find((s) => s.includes("/"));
-            if (browserPart) {
-              const [b, v] = browserPart.split("/");
-              browser = b || "Unbekannt";
-              version = v || "Unbekannt";
-            }
-          }
-
-          validRows.push([
-            timestamp,
-            ip,
-            system,
-            arch,
-            engine,
-            browser,
-            version,
-            referer || "N/A",
-          ]);
-
-          const date = timestamp.split(" ")[0];
-          dayCounts[date] = (dayCounts[date] || 0) + 1;
+          validRows.push([timestamp, ip, system, arch, engine, browser, version, referer]);
+          const day = timestamp.split(" ")[0];
+          dayCounts[day] = (dayCounts[day]||0) + 1;
         });
 
         setRows(validRows);
         setPerDay(dayCounts);
 
-        // Diagramm initialisieren
+        // Chart
         const ctx = document.getElementById("statistikChart") as HTMLCanvasElement;
         if (ctx) {
           new Chart(ctx, {
@@ -112,73 +93,99 @@ export default function StatistikToken() {
             options: {
               responsive: true,
               maintainAspectRatio: false,
-              scales: {
-                y: { beginAtZero: true },
-              },
+              scales: { y: { beginAtZero: true } },
             },
           });
         }
       })
-      .catch((err) => {
-        console.error("🚫 Fehler beim Laden der Statistik:", err.message);
-      });
+      .catch((e) => console.error("Fehler:", e));
   }, [zugelassen]);
 
-  if (!zugelassen) {
-    return <div className="p-4 text-red-500">⛔ Zugriff verweigert</div>;
-  }
+  if (!zugelassen)
+    return <div className="p-4 text-red-600">⛔ Zugriff verweigert</div>;
 
   let lastDate = "";
 
   return (
-    <div>
-      <div className="flex justify-end gap-4 mb-4">
-        <button
-          onClick={() => {
-            const csv = [
-              "Zeit;IP;System;Architektur;Engine;Browser;Version;Referer",
-              ...rows.map((r) => r.join(";")),
-            ].join("\n");
-            const blob = new Blob([csv], { type: "text/csv" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = "besuche.csv";
-            a.click();
-            URL.revokeObjectURL(url);
-          }}
-          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
-        >
-          📥 CSV-Export
-        </button>
+    <>
+        {/* Print‑Styles */}
+        <style>
+            {`@media print {
+            /* Buttons und Chart nicht drucken */
+            .no-print { display: none !important; }
 
-        <button
-          onClick={() => window.print()}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
-        >
-          🖨️ Drucken
-        </button>
-      </div>
+            /* Container im Druck nicht beschneiden */
+            .table-container {
+                overflow: visible !important;
+                max-height: none !important;
+            }
 
-      <div className="p-6 overflow-auto">
-        <h1 className="text-3xl font-bold mb-4">📊 Besucherstatistik</h1>
+            /* Tabellen‑Elemente für Druck vorbereiten */
+            table {
+                page-break-inside: auto !important;
+                border-collapse: collapse !important;
+            }
+            tr {
+                page-break-inside: avoid !important;
+                page-break-after: auto !important;
+            }
 
-        <div className="h-[300px] mb-8">
+            /* THEAD als Header‑Gruppe, wird auf jeder Seite wiederholt */
+            thead {
+                display: table-header-group !important;
+            }
+            tfoot {
+                display: table-footer-group !important;
+            }
+        }`}
+        </style>
+
+      <div className="p-4">
+        <h1 className="text-2xl font-bold mb-4">📊 Besucherstatistik</h1>
+
+        {/* Buttons */}
+        <div className="flex justify-end gap-4 mb-4 no-print">
+          <button
+            onClick={() => {
+              const csv = [
+                "Zeit;IP;System;Architektur;Engine;Browser;Version;Referer",
+                ...rows.map((r) => r.join(";")),
+              ].join("\n");
+              const blob = new Blob([csv], { type: "text/csv" });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = "besuche.csv";
+              a.click();
+              URL.revokeObjectURL(url);
+            }}
+            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+          >
+            📥 CSV‑Export
+          </button>
+          <button
+            onClick={() => window.print()}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+          >
+            🖨️ Drucken
+          </button>
+        </div>
+
+        {/* Chart */}
+        <div className="h-[300px] mb-6 no-print">
           <canvas id="statistikChart"></canvas>
         </div>
 
-        <div className="overflow-auto border border-gray-400 max-w-full max-h-[600px]">
-          <table className="table-auto w-full text-sm border-collapse">
-            <thead className="bg-gray-200 sticky top-0 z-30 text-base shadow-md">
+        {/* Tabelle */}
+        <div className="overflow-auto border border-gray-300 max-h-[600px] max-w-full table-container">
+          <table className="min-w-[900px] w-full text-sm border-collapse">
+            <thead className="bg-gray-100 sticky top-0 z-10">
               <tr>
-                <th className="px-2 py-2 text-left font-semibold text-gray-800">Zeit</th>
-                <th className="px-2 py-2 text-left font-semibold text-gray-800">IP</th>
-                <th className="px-2 py-2 text-left font-semibold text-gray-800">System</th>
-                <th className="px-2 py-2 text-left font-semibold text-gray-800">Architektur</th>
-                <th className="px-2 py-2 text-left font-semibold text-gray-800">Engine</th>
-                <th className="px-2 py-2 text-left font-semibold text-gray-800">Browser</th>
-                <th className="px-2 py-2 text-left font-semibold text-gray-800">Version</th>
-                <th className="px-2 py-2 text-left font-semibold text-gray-800">Referer</th>
+                {["Zeit","IP","System","Architektur","Engine","Browser","Version","Referer"].map((col) => (
+                  <th key={col} className="border px-2 py-2 text-left font-semibold">
+                    {col}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>
@@ -190,19 +197,24 @@ export default function StatistikToken() {
                 </tr>
               ) : (
                 rows.map((row, i) => {
-                  const currentDate = row[0].split(" ")[0];
-                  const showBorder = lastDate && currentDate !== lastDate;
-                  lastDate = currentDate;
+                  const date = row[0].split(" ")[0];
+                  const showBorder = lastDate && date !== lastDate;
+                  lastDate = date;
 
                   return (
                     <tr
                       key={i}
-                      className={`hover:bg-yellow-100 transition ${
-                        showBorder ? "border-t-4 border-black" : ""
-                      }`}
+                      className={`hover:bg-yellow-100 ${showBorder ? "border-t-4 border-black" : ""}`}
                     >
                       {row.map((cell, j) => (
-                        <td key={j} className="border px-2 py-1 whitespace-nowrap">
+                        <td
+                          key={j}
+                          className={
+                            j === 7
+                              ? "border px-2 py-1 whitespace-normal break-words"
+                              : "border px-2 py-1 break-all max-w-[150px]"
+                          }
+                        >
                           {cell}
                         </td>
                       ))}
@@ -214,6 +226,6 @@ export default function StatistikToken() {
           </table>
         </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -6,6 +6,7 @@ $expectedToken = "geheim123";
 $providedToken = $_GET['token'] ?? '';
 if ($providedToken !== $expectedToken) {
     http_response_code(403);
+    echo json_encode(["error" => "Zugriff verweigert"]);
     exit;
 }
 
@@ -25,7 +26,7 @@ if (count($ip_parts) === 4) {
 // Token im Referer ausblenden
 $referer = preg_replace('/([?&]token=)[^&]+/', '$1***', $referer);
 
-// CSV-sicher formatieren (Anführungszeichen escapen und einrahmen)
+// CSV-sicher formatieren (escaping von Anführungszeichen)
 $agent = '"' . str_replace('"', '""', $agent) . '"';
 $referer = '"' . str_replace('"', '""', $referer) . '"';
 

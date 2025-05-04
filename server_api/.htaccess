@@ -1,19 +1,17 @@
-# Verhindert die Weiterleitung an /app/index.html durch die Hauptregel
+# Kein Rewrite hier – diese Datei bleibt isoliert von /app/
 RewriteEngine Off
-# Zugriff auf log-visitor.php nur mit gültigem Token erlauben
-<Files "log-visitor.php">
-    <If "%{QUERY_STRING} !~ /token=geheim123/">
-        Require all denied
-    </If>
-</Files>
 
-# Erlaube gezielt den Zugriff auf visits.csv (aber keine anderen .csv-Dateien)
+# Zugriffsschutz für log-visitor.php
+<Files "log-visitor.php">
+    Require all granted
+</Files>
+# visits.csv gezielt freigeben
 <Files "visits.csv">
     Require all granted
 </Files>
 
-# Verhindere den Zugriff auf andere sensible Dateien
-<FilesMatch "\.(ini|bak|log|sh|sql|csv)$">
+# Alle anderen sensiblen Dateien weiterhin sperren – aber ohne visits.csv
+<FilesMatch "\.(ini|bak|log|sh|sql)$">
     <IfModule mod_authz_core.c>
         Require all denied
     </IfModule>
