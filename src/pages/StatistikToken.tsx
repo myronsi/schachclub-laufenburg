@@ -1,8 +1,7 @@
-// src/pages/StatistikToken.tsx
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import Papa from "papaparse";
 import { Chart } from "chart.js/auto";
+import Papa from "papaparse";
 
 export default function StatistikToken() {
   const [params] = useSearchParams();
@@ -13,7 +12,8 @@ export default function StatistikToken() {
 
   useEffect(() => {
     const token = params.get("token");
-    if (token === import.meta.env.VITE_SECRET_TOKEN) {
+    const secret = import.meta.env.VITE_SECRET_TOKEN;
+    if (token === secret) {
       setZugelassen(true);
     } else {
       navigate("/");
@@ -22,39 +22,60 @@ export default function StatistikToken() {
 
   useEffect(() => {
     if (!zugelassen) return;
-  
+
     fetch("/server_api/visits.csv")
-      .then((res) => res.text())
+      .then((res) => {
+        if (!res.ok) throw new Error("CSV konnte nicht geladen werden");
+        return res.text();
+      })
       .then((text) => {
         const parsed = Papa.parse<string[]>(text, {
           delimiter: ";",
           skipEmptyLines: true,
         });
-  
+
         const data = parsed.data;
-        const rowsOnly = data.slice(1); // Überspringe Header
-  
+        const header = data[0];
+        const rowsOnly = data.slice(1);
+
         const validRows: string[][] = [];
         const dayCounts: Record<string, number> = {};
-  
-        for (const parts of rowsOnly) {
-          if (parts.length !== 4) continue;
-  
-          const [timestamp, ip, userAgent, referer] = parts.map(s => s.trim());
-  
-          const uaMatch = userAgent.match(/\(([^)]+)\)/);
-          const sysParts = uaMatch?.[1]?.split(";").map(s => s.trim()) || [];
-          const system = sysParts[0] || "N/A";
-          const arch = sysParts[1] || "N/A";
-  
-          const afterParen = userAgent.replace(/\(.*?\)\s*/, "").trim();
-          const tokens = afterParen.split(" ").filter(Boolean);
-  
-          let engine = "N/A", browser = "N/A", version = "N/A";
-          if (tokens.length > 0) engine = tokens[0];
-          const bv = tokens.find(t => t.includes("/"));
-          if (bv) [browser, version] = bv.split("/");
-  
+
+        rowsOnly.forEach((parts, idx) => {
+          if (parts.length !== 4) {
+            console.warn(`⚠️ Ungültige CSV-Zeile [${idx + 2}]:`, parts);
+            return;
+          }
+
+          const [timestamp, ip, userAgent, referer] = parts.map((s) => s.trim());
+
+          // --- robuster UA-Parser ---
+          const uaParts = userAgent.match(/\(([^)]+)\)/);
+          let system = "Unbekannt";
+          let arch = "Unbekannt";
+          let engine = "Unbekannt";
+          let browser = "Unbekannt";
+          let version = "Unbekannt";
+
+          if (uaParts) {
+            const systemInfo = uaParts[1].split(";").map((s) => s.trim());
+            system = systemInfo[0] || "Unbekannt";
+            arch = systemInfo[1] || "Unbekannt";
+          }
+
+          const agentRest = userAgent.replace(/\(.*?\)\s*/, "").trim();
+          if (agentRest) {
+            const parts = agentRest.split(" ").filter(Boolean);
+            engine = parts[0] || "Unbekannt";
+
+            const browserPart = parts.find((s) => s.includes("/"));
+            if (browserPart) {
+              const [b, v] = browserPart.split("/");
+              browser = b || "Unbekannt";
+              version = v || "Unbekannt";
+            }
+          }
+
           validRows.push([
             timestamp,
             ip,
@@ -65,40 +86,53 @@ export default function StatistikToken() {
             version,
             referer || "N/A",
           ]);
-  
-          const day = timestamp.split(" ")[0];
-          dayCounts[day] = (dayCounts[day] || 0) + 1;
-        }
-  
+
+          const date = timestamp.split(" ")[0];
+          dayCounts[date] = (dayCounts[date] || 0) + 1;
+        });
+
         setRows(validRows);
         setPerDay(dayCounts);
-  
+
+        // Diagramm initialisieren
         const ctx = document.getElementById("statistikChart") as HTMLCanvasElement;
         if (ctx) {
           new Chart(ctx, {
             type: "bar",
             data: {
               labels: Object.keys(dayCounts),
-              datasets: [{
-                label: "Besuche pro Tag",
-                data: Object.values(dayCounts),
-                backgroundColor: "rgba(75, 192, 192, 0.6)",
-              }],
+              datasets: [
+                {
+                  label: "Besuche pro Tag",
+                  data: Object.values(dayCounts),
+                  backgroundColor: "rgba(75, 192, 192, 0.6)",
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                y: { beginAtZero: true },
+              },
             },
           });
         }
+      })
+      .catch((err) => {
+        console.error("🚫 Fehler beim Laden der Statistik:", err.message);
       });
   }, [zugelassen]);
-  
-  if (!zugelassen) return <div className="p-4 text-red-600">⛔ Zugriff verweigert</div>;
+
+  if (!zugelassen) {
+    return <div className="p-4 text-red-500">⛔ Zugriff verweigert</div>;
+  }
 
   let lastDate = "";
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">📊 Besucherstatistik</h1>
-
-      <div className="flex gap-4 mb-6">
+    <div>
+      <div className="flex justify-end gap-4 mb-4">
         <button
           onClick={() => {
             const csv = [
@@ -126,41 +160,59 @@ export default function StatistikToken() {
         </button>
       </div>
 
-      <canvas id="statistikChart" className="mb-8" height="300"></canvas>
+      <div className="p-6 overflow-auto">
+        <h1 className="text-3xl font-bold mb-4">📊 Besucherstatistik</h1>
 
-      <div className="overflow-auto border border-gray-400 max-h-[600px] max-w-full">
-        <table className="min-w-full border-collapse text-sm">
-          <thead className="bg-gray-100 sticky top-0 z-10 shadow text-base">
-            <tr>
-              <th className="border px-2 py-2">Zeit</th>
-              <th className="border px-2 py-2">IP</th>
-              <th className="border px-2 py-2">System</th>
-              <th className="border px-2 py-2">Architektur</th>
-              <th className="border px-2 py-2">Engine</th>
-              <th className="border px-2 py-2">Browser</th>
-              <th className="border px-2 py-2">Version</th>
-              <th className="border px-2 py-2">Referer</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.length === 0 ? (
-                <tr><td colSpan={8} className="text-center py-4 text-gray-500">Keine Besucherdaten</td></tr>
-            ) : (
+        <div className="h-[300px] mb-8">
+          <canvas id="statistikChart"></canvas>
+        </div>
+
+        <div className="overflow-auto border border-gray-400 max-w-full max-h-[600px]">
+          <table className="table-auto w-full text-sm border-collapse">
+            <thead className="bg-gray-200 sticky top-0 z-30 text-base shadow-md">
+              <tr>
+                <th className="px-2 py-2 text-left font-semibold text-gray-800">Zeit</th>
+                <th className="px-2 py-2 text-left font-semibold text-gray-800">IP</th>
+                <th className="px-2 py-2 text-left font-semibold text-gray-800">System</th>
+                <th className="px-2 py-2 text-left font-semibold text-gray-800">Architektur</th>
+                <th className="px-2 py-2 text-left font-semibold text-gray-800">Engine</th>
+                <th className="px-2 py-2 text-left font-semibold text-gray-800">Browser</th>
+                <th className="px-2 py-2 text-left font-semibold text-gray-800">Version</th>
+                <th className="px-2 py-2 text-left font-semibold text-gray-800">Referer</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.length === 0 ? (
+                <tr>
+                  <td colSpan={8} className="px-4 py-4 text-center text-gray-500">
+                    Keine Besucherdaten
+                  </td>
+                </tr>
+              ) : (
                 rows.map((row, i) => {
-                const currentDate = row[0].split(" ")[0];
-                const showBorder = i > 0 && row[0].split(" ")[0] !== rows[i - 1][0].split(" ")[0];
+                  const currentDate = row[0].split(" ")[0];
+                  const showBorder = lastDate && currentDate !== lastDate;
+                  lastDate = currentDate;
 
-                return (
-                    <tr key={i} className={`hover:bg-yellow-100 ${showBorder ? "border-t-4 border-black" : ""}`}>
-                    {row.map((cell, j) => (
-                        <td key={j} className="border px-2 py-1 whitespace-nowrap">{cell}</td>
-                    ))}
+                  return (
+                    <tr
+                      key={i}
+                      className={`hover:bg-yellow-100 transition ${
+                        showBorder ? "border-t-4 border-black" : ""
+                      }`}
+                    >
+                      {row.map((cell, j) => (
+                        <td key={j} className="border px-2 py-1 whitespace-nowrap">
+                          {cell}
+                        </td>
+                      ))}
                     </tr>
-                );
+                  );
                 })
-            )}
-          </tbody>
-        </table>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
