@@ -1,114 +1,44 @@
-
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221 83% 53%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221 83% 53%;
-    --radius: 0.5rem;
-  }
+/* ---------------------
+   Globale Layouts
+---------------------- */
+body {
+  @apply bg-white text-black text-sm font-sans leading-relaxed;
+}
 
-  * {
-   /* outline: 2px solid rgba(255, 0, 0, 0.5) !important;
-    box-shadow: 0 0 0 2px rgba(0, 255, 0, 0.5) !important; */
-    @apply border-border;
+/* Druckanpassungen */
+@media print {
+  @page {
+    margin: 1cm;
   }
 
   body {
-    @apply bg-club-light text-foreground font-sans;
-    min-height: 100vh;
-    overflow-x: hidden;
+    @apply text-black bg-white;
+    overflow: visible !important;
   }
-}
 
-body {
-  -ms-overflow-style: none;
-}
-
-.hover-scale {
-  @apply transition-transform duration-300 hover:scale-105;
-}
-
-.card-shadow {
-  @apply shadow-lg hover:shadow-xl transition-shadow duration-300;
-}
-
-.scrollable-tabs-list {
-  display: flex;
-  overflow-x: auto;
-  white-space: nowrap;
-  -webkit-overflow-scrolling: touch;
-}
-
-.scrollable-tabs-list .tabs-trigger {
-  flex: 0 0 auto;
-}
-.hide-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-@keyframes fadeInOut {
-  0% { opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { opacity: 0; }
-}
-
-.animate-fadeInOut {
-  animation: fadeInOut 3s ease-in-out forwards;
-}
-
-/* === Sichtbare Scrollbars aktivieren (überschreiben Standardverstecken) === */
-html {
-  scrollbar-width: auto;
-}
-
-body {
-  -ms-overflow-style: auto;
-}
-
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #999;
-  border-radius: 5px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f3f3f3;
-}
-
-/* === Druckausgabe für Tabellen und Layout === */
-@media print {
   header,
-  footer,
-  button,
-  canvas {
+  .no-print {
     display: none !important;
+  }
+
+  .print-header-space {
+    height: 60px;
+  }
+
+  .chart-container {
+    break-after: auto;
+    margin-bottom: 1rem;
+    display: block !important;
+    visibility: visible !important;
+  }
+
+  .table-container {
+    overflow: visible !important;
+    max-height: none !important;
   }
 
   table {
@@ -127,10 +57,76 @@ body {
   tr {
     page-break-inside: avoid;
   }
+}
 
-  body {
-    background: white !important;
-    color: black !important;
-    overflow: visible !important;
-  }
+/* ---------------------
+   Diagramm & Tabelle
+---------------------- */
+.chart-container {
+  @apply w-full h-64 mb-4 relative z-10;
+}
+
+.table-container {
+  @apply overflow-x-auto border border-gray-300 rounded;
+  max-height: 70vh;
+}
+
+table thead th {
+  @apply bg-white sticky top-0 z-20 border-b border-gray-300;
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+table tbody tr:nth-child(even) {
+  @apply bg-gray-50;
+}
+
+/* ---------------------
+   Filter & UI-Komponenten
+---------------------- */
+.filters {
+  @apply flex flex-wrap gap-2 my-4;
+}
+
+.filters input,
+.filters select {
+  @apply border border-gray-300 rounded px-2 py-1 text-sm;
+}
+
+.pagination {
+  @apply flex justify-end gap-1 my-4;
+}
+
+.pagination button {
+  @apply border px-3 py-1 rounded text-sm bg-white hover:bg-gray-100;
+}
+
+/* ---------------------
+   Druck-Kopfbereich-Platzhalter
+---------------------- */
+.print-header-space {
+  height: 70px;
+}
+
+/* ---------------------
+   Referrer-Text kürzen
+---------------------- */
+td.referrer {
+  word-break: break-all;
+  max-width: 300px;
+}
+
+/* ---------------------
+   Eigene Farben
+---------------------- */
+:root {
+  --primary: #1E3A8A;
+  --accent: #F59E0B;
+  --light: #F3F4F6;
+  --dark: #1F2937;
+}
+/* Damit der react‑datepicker über allen Elementen liegt */
+.react-datepicker-popper,
+.react-datepicker {
+  z-index: 9999 !important;
 }

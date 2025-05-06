@@ -1,14 +1,13 @@
 import type { Config } from "tailwindcss";
 
-export default {
-  darkMode: ["class"],
+const config: Config = {
+  darkMode: "class",
   content: [
-    "./pages/**/*.{ts,tsx}",
-    "./components/**/*.{ts,tsx}",
+    "./src/**/*.{js,jsx,ts,tsx,html}",
     "./app/**/*.{ts,tsx}",
-    "./src/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./pages/**/*.{ts,tsx}"
   ],
-  prefix: "",
   theme: {
     container: {
       center: true,
@@ -25,10 +24,10 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         club: {
-          primary: "#1E3A8A", // Hauptblau
-          accent: "#F59E0B", // Gold
-          light: "#F3F4F6", // Hellgrau
-          dark: "#1F2937", // Dunkelgrau
+          primary: "#1E3A8A",
+          accent: "#F59E0B",
+          light: "#F3F4F6",
+          dark: "#1F2937",
         },
         primary: {
           DEFAULT: "hsl(var(--primary))",
@@ -60,7 +59,7 @@ export default {
         },
       },
       fontSize: {
-        xxs: "0.625rem", // optional für Mini-Zahlen etc.
+        xxs: "0.625rem",
         xs: "0.75rem",
         sm: "0.875rem",
         base: "1rem",
@@ -109,4 +108,6 @@ export default {
     },
   },
   plugins: [require("tailwindcss-animate")],
-} satisfies Config;
+};
+
+export default config;

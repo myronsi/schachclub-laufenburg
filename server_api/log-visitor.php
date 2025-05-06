@@ -18,7 +18,7 @@ $time = date("Y-m-d H:i:s");
 // IP anonymisieren (letztes Oktett auf 0 setzen)
 $ip_parts = explode('.', $ip);
 if (count($ip_parts) === 4) {
-    $ip_parts[3] = '0';
+    $ip_parts[3] = '9999';
     $ip = implode('.', $ip_parts);
 }
 
@@ -37,8 +37,7 @@ if (!file_exists($file)) {
 }
 
 // CSV-Zeile schreiben
-$csvLine = "$time;$ip;$agent;$referer\n";
-file_put_contents($file, $csvLine, FILE_APPEND | LOCK_EX);
+file_put_contents($file, "$time;$ip;$agent;$referer\n", FILE_APPEND | LOCK_EX);
 
 echo json_encode(["status" => "logged"]);
 ?>

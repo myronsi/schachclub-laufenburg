@@ -1,0 +1,36 @@
+/* Druck‑Optimierungen */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  .table-container {
+    overflow: visible !important;
+    max-height: none !important;
+  }
+
+  thead {
+    display: table-header-group !important;
+  }
+  tfoot {
+    display: table-footer-group !important;
+  }
+
+  canvas {
+    page-break-inside: avoid;
+    margin-top: 4rem !important;
+    margin-bottom: 1rem !important;
+    display: block !important;
+    visibility: visible !important;
+    max-height: none !important;
+  }
+
+  .p-4 {
+    padding-top: 5rem !important;
+  }
+
+  tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+}
