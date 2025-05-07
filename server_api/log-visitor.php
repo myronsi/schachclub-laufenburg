@@ -15,7 +15,7 @@ $agent = $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
 $referer = $_SERVER['HTTP_REFERER'] ?? 'unknown';
 $time = date("Y-m-d H:i:s");
 
-// IP anonymisieren (letztes Oktett auf 0 setzen)
+// IP anonymisieren (letztes Oktett auf 9999 setzen)
 $ip_parts = explode('.', $ip);
 if (count($ip_parts) === 4) {
     $ip_parts[3] = '9999';

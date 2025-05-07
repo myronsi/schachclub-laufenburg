@@ -11,23 +11,17 @@ body {
 
 /* Druckanpassungen */
 @media print {
-  @page {
-    margin: 1cm;
-  }
+  @page { margin: 1cm; }
 
   body {
     @apply text-black bg-white;
     overflow: visible !important;
   }
 
-  header,
-  .no-print {
-    display: none !important;
-  }
+  /* Only hide those explicitly marked */
+  .no-print { display: none !important; }
 
-  .print-header-space {
-    height: 60px;
-  }
+  .print-header-space { height: 60px; }
 
   .chart-container {
     break-after: auto;
@@ -48,15 +42,12 @@ body {
     border: 1px solid black;
   }
 
-  th,
-  td {
+  th, td {
     border: 1px solid #ccc;
     padding: 4px;
   }
 
-  tr {
-    page-break-inside: avoid;
-  }
+  tr { page-break-inside: avoid; }
 }
 
 /* ---------------------
@@ -74,7 +65,7 @@ body {
 table thead th {
   @apply bg-white sticky top-0 z-20 border-b border-gray-300;
   background-color: white;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 table tbody tr:nth-child(even) {
@@ -85,27 +76,28 @@ table tbody tr:nth-child(even) {
    Filter & UI-Komponenten
 ---------------------- */
 .filters {
-  @apply flex flex-wrap gap-2 my-4;
+  @apply flex flex-col gap-2 my-4;
 }
-
+.filter-row {
+  @apply flex flex-wrap gap-2;
+}
+.date-range-row {
+  @apply flex gap-2;
+}
+.filters select,
 .filters input,
-.filters select {
+.date-range-row .react-datepicker-wrapper {
   @apply border border-gray-300 rounded px-2 py-1 text-sm;
 }
 
+/* ---------------------
+   Pagination
+---------------------- */
 .pagination {
   @apply flex justify-end gap-1 my-4;
 }
-
 .pagination button {
   @apply border px-3 py-1 rounded text-sm bg-white hover:bg-gray-100;
-}
-
-/* ---------------------
-   Druck-Kopfbereich-Platzhalter
----------------------- */
-.print-header-space {
-  height: 70px;
 }
 
 /* ---------------------
@@ -117,15 +109,8 @@ td.referrer {
 }
 
 /* ---------------------
-   Eigene Farben
+   React‑Datepicker oben halten
 ---------------------- */
-:root {
-  --primary: #1E3A8A;
-  --accent: #F59E0B;
-  --light: #F3F4F6;
-  --dark: #1F2937;
-}
-/* Damit der react‑datepicker über allen Elementen liegt */
 .react-datepicker-popper,
 .react-datepicker {
   z-index: 9999 !important;

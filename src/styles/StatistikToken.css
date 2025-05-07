@@ -1,9 +1,123 @@
-/* Druck‑Optimierungen */
+/* src/styles/StatistikToken.css */
+
+/* === Bildschirm‑Styles === */
+.header-bar {
+  background-color: #1E3A8A;
+  color: white;
+  padding: 0.5rem;
+  font-weight: 600;
+  font-size: 1.125rem;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+
+.print-header-space {
+  display: none;
+}
+
+.chart-container {
+  width: 100%;
+  height: 16rem;
+  margin-bottom: 1rem;
+  position: relative;
+  z-index: 10;
+}
+
+.table-container {
+  overflow-x: auto;
+  border: 1px solid #d1d5db;
+  border-radius: 0.25rem;
+  max-height: 70vh;
+}
+
+.table-container table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.table-container th,
+.table-container td {
+  border: 1px solid #ccc;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+/* second row for date‑pickers */
+.filters .date-row {
+  flex-basis: 100%;
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.filters select,
+.filters input {
+  border: 1px solid #d1d5db;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
+
+.pagination {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.25rem;
+  margin: 1rem 0;
+}
+
+.pagination button {
+  border: 1px solid #d1d5db;
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.25rem;
+  background: white;
+  cursor: pointer;
+}
+
+.react-datepicker-popper,
+.react-datepicker {
+  z-index: 9999 !important;
+}
+
+/* allow breaking IPv6 anywhere */
+.table-container td {
+  word-break: break-all;
+  overflow-wrap: anywhere;
+}
+
+/* hide print‑only by default */
+.print-only {
+  display: none;
+}
+
+/* === Druck‑Optimierungen === */
 @media print {
+  /* hide interactive elements */
   .no-print {
     display: none !important;
   }
 
+  /* header only on first page, absolute positioning */
+  .header-bar {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0;
+    right: 0;
+  }
+
+  /* reserve space under header */
+  .print-header-space {
+    display: block !important;
+    height: 3rem;
+  }
+
+  /* chart & table full bleed */
   .table-container {
     overflow: visible !important;
     max-height: none !important;
@@ -18,17 +132,29 @@
 
   canvas {
     page-break-inside: avoid;
-    margin-top: 4rem !important;
+    margin-top: 2rem !important;
     margin-bottom: 1rem !important;
     display: block !important;
     visibility: visible !important;
     max-height: none !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
-  .p-4 {
-    padding-top: 5rem !important;
+  /* hide the second date row in print */
+  .filters .date-row {
+    display: none !important;
   }
 
+  /* show full table for print */
+  .print-only {
+    display: block !important;
+  }
+  .no-print-table {
+    display: none !important;
+  }
+
+  /* avoid row breaks */
   tr {
     page-break-inside: avoid;
     page-break-after: auto;

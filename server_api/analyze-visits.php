@@ -7,7 +7,6 @@ if (!file_exists($logfile)) {
 
 $lines = file($logfile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 $visitsPerDay = [];
-$csv = "Zeitpunkt;IP;Browser/OS;Referer\n";
 
 echo "<h1>Besucher-Analyse</h1>";
 echo "<table border='1' cellpadding='6' cellspacing='0'>";
@@ -25,15 +24,11 @@ foreach ($lines as $line) {
         echo "<td style='max-width:400px'>{$matches[3]}</td>";
         echo "<td>{$matches[4]}</td>";
         echo "</tr>";
-
-        $csv .= "{$matches[1]};{$matches[2]};{$matches[3]};{$matches[4]}\n";
     }
 }
 echo "</table>";
 
-// CSV-Datei speichern
-file_put_contents(__DIR__ . "/visits.csv", $csv);
-
+// Link zur CSV, aber nicht neu schreiben!
 echo "<p><a href='visits.csv' download>📥 Besuchsdaten als CSV herunterladen</a></p>";
 
 // Tagesstatistik anzeigen
