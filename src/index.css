@@ -1,3 +1,4 @@
+/* index.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -11,107 +12,97 @@ body {
 
 /* Druckanpassungen */
 @media print {
-  @page { margin: 1cm; }
+  @page { 
+    margin: 1cm;
+    size: A4 landscape; 
+  }
 
   body {
     @apply text-black bg-white;
     overflow: visible !important;
+    font-size: 9pt; 
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
-  /* Only hide those explicitly marked */
   .no-print { display: none !important; }
-
-  .print-header-space { height: 60px; }
-
-  .chart-container {
-    break-after: auto;
-    margin-bottom: 1rem;
-    display: block !important;
-    visibility: visible !important;
+  
+  /* Blauen Club-Header im Druck sicher entfernen (falls er im TSX nicht auskommentiert wäre) */
+  .header-bar { 
+    display: none !important; 
   }
-
-  .table-container {
-    overflow: visible !important;
-    max-height: none !important;
+  .statistik-page-main-content { /* Haupt-Container ohne oberen Abstand im Druck */
+    padding-top: 0 !important;
+    margin-top: 0 !important;
   }
 
   table {
-    font-size: 10pt;
+    font-size: 8pt; 
     border-collapse: collapse;
     width: 100%;
-    border: 1px solid black;
+    border: 1px solid #6c757d; 
   }
 
   th, td {
-    border: 1px solid #ccc;
-    padding: 4px;
+    border: 1px solid #ced4da; 
+    padding: 3px 4px;      
+    word-break: break-word;
+    vertical-align: top;
+    text-align: left; /* Standard Textausrichtung für td im Druck */
   }
 
-  tr { page-break-inside: avoid; }
+  tr { page-break-inside: avoid !important; }
+
+  thead {
+    display: table-header-group !important; 
+    background-color: #f8f9fa !important; 
+  }
+  thead th {
+    background-color: #f8f9fa !important; 
+    text-align: center !important; /* Header im Druck zentrieren */
+    font-weight: bold;
+  }
+
+  tfoot { display: table-footer-group !important; }
+
+  .chart-container {
+    display: block !important;
+    visibility: visible !important;
+    width: 100% !important;
+    height: auto !important;
+    max-height: 15cm; 
+    margin: 0.5cm 0 1cm 0 !important;
+    page-break-inside: avoid !important;
+  }
+
+  canvas#statistikChart {
+    max-width: 100%;
+    display: block !important;
+    visibility: visible !important;
+  }
 }
 
 /* ---------------------
-   Diagramm & Tabelle
+   Globale Tabellen-Komponenten (Bildschirm)
 ---------------------- */
-.chart-container {
-  @apply w-full h-64 mb-4 relative z-10;
-}
-
-.table-container {
-  @apply overflow-x-auto border border-gray-300 rounded;
-  max-height: 70vh;
-}
-
+/* Tabellenkopf ist jetzt NICHT MEHR STICKY */
 table thead th {
-  @apply bg-white sticky top-0 z-20 border-b border-gray-300;
-  background-color: white;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  @apply bg-gray-100 border-b-2 border-gray-300; /* Tailwind für Hintergrund/Linie */
+  padding: 0.6rem 0.75rem; 
+  text-align: center;    /* Header-Text standardmäßig zentrieren */
+  font-weight: 600;      /* Tailwind: font-semibold */
+  cursor: pointer; 
+  vertical-align: middle; /* Vertikale Ausrichtung für Header */
 }
 
 table tbody tr:nth-child(even) {
-  @apply bg-gray-50;
+  @apply bg-gray-50; 
 }
 
-/* ---------------------
-   Filter & UI-Komponenten
----------------------- */
-.filters {
-  @apply flex flex-col gap-2 my-4;
+/* Filter-Layouts */
+.filter-row { 
+  @apply flex flex-wrap gap-3 items-center; 
 }
-.filter-row {
-  @apply flex flex-wrap gap-2;
-}
-.date-range-row {
-  @apply flex gap-2;
-}
-.filters select,
-.filters input,
-.date-range-row .react-datepicker-wrapper {
-  @apply border border-gray-300 rounded px-2 py-1 text-sm;
-}
-
-/* ---------------------
-   Pagination
----------------------- */
-.pagination {
-  @apply flex justify-end gap-1 my-4;
-}
-.pagination button {
-  @apply border px-3 py-1 rounded text-sm bg-white hover:bg-gray-100;
-}
-
-/* ---------------------
-   Referrer-Text kürzen
----------------------- */
-td.referrer {
-  word-break: break-all;
-  max-width: 300px;
-}
-
-/* ---------------------
-   React‑Datepicker oben halten
----------------------- */
-.react-datepicker-popper,
-.react-datepicker {
-  z-index: 9999 !important;
+.date-range-row { 
+  @apply flex flex-wrap gap-3 items-center; 
 }

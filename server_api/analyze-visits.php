@@ -1,5 +1,6 @@
 <?php
-$logfile = __DIR__ . "/visits.log";
+$config = require __DIR__ . '/config.php';
+$logfile = $config['LOG_FILE'];
 
 if (!file_exists($logfile)) {
     die("Logdatei nicht gefunden.");
@@ -20,7 +21,12 @@ foreach ($lines as $line) {
 
         echo "<tr>";
         echo "<td>{$matches[1]}</td>";
-        echo "<td>{$matches[2]}</td>";
+        $ip = $matches[2];
+        // IPv6 umbrechen: max. 14 Zeichen pro Zeile
+        if (strpos($ip, ':') !== false && strlen($ip) > 14) {
+            $ip = wordwrap($ip, 14, "<wbr>", true);
+        }
+        echo "<td>{$ip}</td>";
         echo "<td style='max-width:400px'>{$matches[3]}</td>";
         echo "<td>{$matches[4]}</td>";
         echo "</tr>";
@@ -28,10 +34,8 @@ foreach ($lines as $line) {
 }
 echo "</table>";
 
-// Link zur CSV, aber nicht neu schreiben!
 echo "<p><a href='visits.csv' download>📥 Besuchsdaten als CSV herunterladen</a></p>";
 
-// Tagesstatistik anzeigen
 echo "<h2>📊 Besuche pro Tag</h2>";
 echo "<ul>";
 foreach ($visitsPerDay as $day => $count) {

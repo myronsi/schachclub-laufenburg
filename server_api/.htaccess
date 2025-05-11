@@ -9,6 +9,9 @@ RewriteEngine Off
 <Files "visits.csv">
     Require all granted
 </Files>
+<Files "config.php">
+  Require all denied
+</Files>
 
 # Alle anderen sensiblen Dateien weiterhin sperren – aber ohne visits.csv
 <FilesMatch "\.(ini|bak|log|sh|sql)$">
@@ -16,3 +19,4 @@ RewriteEngine Off
         Require all denied
     </IfModule>
 </FilesMatch>
+
