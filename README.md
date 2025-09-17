@@ -4,7 +4,7 @@
 
 **URL**: https://www.sc-laufenburg.de/
 
-**Contributors**: Jürgen Keßler, Myron Ilchenko
+**Contributors**: Myron Ilchenko
 
 ## Follow these steps
 
@@ -20,6 +20,9 @@ npm i
 
 # Step 4: Start the development server with auto-reloading and an instant preview.
 npm run dev
+
+# Step 5: Use build to make exacutable version of your website
+npm run build
 ```
 
 ## What technologies are used for this project?
