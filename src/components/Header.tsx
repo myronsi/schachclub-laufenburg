@@ -1,35 +1,28 @@
 import { useState, useCallback } from "react";
 import { Menu, X } from "lucide-react";
-import { Link, useLocation, useSearchParams } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
-  const [searchParams] = useSearchParams();
-  const currentPage = searchParams.get("page");
 
   const navItems = [
-    { param: null, label: "Aktuelles" },
-    { param: "ueberuns", label: "Über uns" },
-    { param: "mannschaften", label: "Mannschaften" },
-    { param: "jugend", label: "Jugend" },
-    { param: "turniere", label: "Turniere" },
-    { param: "archiv", label: "Archiv" },
-    { param: "kontakt", label: "Kontakt" },
+    { path: "/", label: "Aktuelles" },
+    { path: "/ueberuns", label: "Über uns" },
+    { path: "/mannschaften", label: "Mannschaften" },
+    { path: "/jugend", label: "Jugend" },
+    { path: "/turniere", label: "Turniere" },
+    { path: "/archiv", label: "Archiv" },
+    { path: "/kontakt", label: "Kontakt" },
   ];
 
-  const isActive = (param: string | null) => {
-    if (param === null) return !currentPage;
-    return currentPage === param;
+  const isActive = (path: string) => {
+    return location.pathname === path;
   };
 
   const handleMenuClick = useCallback(() => {
     setIsMenuOpen((prevState) => !prevState);
   }, []);
-
-  const generateLink = (param: string | null) => {
-    return param ? `/?page=${param}` : "/";
-  };
 
   return (
     <header className="bg-club-primary text-white py-4 fixed w-full top-0 z-50">
@@ -65,9 +58,9 @@ const Header = () => {
             {navItems.map((item) => (
               <Link
                 key={item.label}
-                to={generateLink(item.param)}
+                to={item.path}
                 className={`relative group py-2 ${
-                  isActive(item.param) ? "text-club-accent" : "text-white"
+                  isActive(item.path) ? "text-club-accent" : "text-white"
                 }`}
               >
                 {item.label}
@@ -86,9 +79,9 @@ const Header = () => {
               {navItems.map((item, index) => (
                 <Link
                   key={item.label}
-                  to={generateLink(item.param)}
+                  to={item.path}
                   className={`relative group py-2 transition-all duration-300 ${
-                    isActive(item.param) ? "text-club-accent" : "text-white"
+                    isActive(item.path) ? "text-club-accent" : "text-white"
                   }`}
                   style={{
                     transitionDelay: `${index * 50}ms`,

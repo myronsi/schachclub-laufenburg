@@ -139,7 +139,7 @@ const ContactSection = () => {
           </form>
           <p className="text-sm mt-4 text-center">
             Mit dem Absenden akzeptieren Sie unsere{' '}
-            <Link to="/?page=datenschutz" className="underline hover:text-club-accent">
+            <Link to="/datenschutz" className="underline hover:text-club-accent">
               Datenschutzerklärung
             </Link>
           </p>

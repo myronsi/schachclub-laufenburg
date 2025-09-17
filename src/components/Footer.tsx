@@ -28,13 +28,13 @@ const Footer = () => {
       <div className="container mx-auto px-4 flex justify-between items-center text-sm">
         <div className="flex flex-col mr-6">
           <Link 
-            to="/?page=impressum" 
+            to="/impressum" 
             className="hover:text-club-accent underline"
           >
             Impressum
           </Link>
           <Link 
-            to="/?page=datenschutz" 
+            to="/datenschutz" 
             className="hover:text-club-accent underline mt-1"
           >
             Datenschutz
