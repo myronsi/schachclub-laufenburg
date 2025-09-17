@@ -30,7 +30,7 @@ const MannschaftSection = () => {
           </a>
         </p>
         <p className="mb-4">
-          In diesem Jahr spielen wir (noch) nicht ganz um den<br />
+          In diesem Jahr spielen wir nicht ganz um den<br />
           Aufstieg in die{"  "}
           <a 
             href="https://bsv-ergebnisdienst.de/index.php?p1=0:pa:BLS3-24-7" 

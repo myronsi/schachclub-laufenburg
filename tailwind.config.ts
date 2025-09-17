@@ -1,13 +1,14 @@
 import type { Config } from "tailwindcss";
 
-const config: Config = {
-  darkMode: "class",
+export default {
+  darkMode: ["class"],
   content: [
-    "./src/**/*.{js,jsx,ts,tsx,html}",
-    "./app/**/*.{ts,tsx}",
+    "./pages/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",
-    "./pages/**/*.{ts,tsx}"
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
   ],
+  prefix: "",
   theme: {
     container: {
       center: true,
@@ -24,10 +25,10 @@ const config: Config = {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         club: {
-          primary: "#1E3A8A",
-          accent: "#F59E0B",
-          light: "#F3F4F6",
-          dark: "#1F2937",
+          primary: "#1E3A8A", // Hauptblau
+          accent: "#F59E0B", // Gold
+          light: "#F3F4F6", // Hellgrau
+          dark: "#1F2937", // Dunkelgrau
         },
         primary: {
           DEFAULT: "hsl(var(--primary))",
@@ -57,16 +58,6 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-      },
-      fontSize: {
-        xxs: "0.625rem",
-        xs: "0.75rem",
-        sm: "0.875rem",
-        base: "1rem",
-        lg: "1.125rem",
-        xl: "1.25rem",
-        "2xl": "1.5rem",
-        "3xl": "1.875rem",
       },
       fontFamily: {
         sans: ["Poppins", "sans-serif"],
@@ -108,6 +99,4 @@ const config: Config = {
     },
   },
   plugins: [require("tailwindcss-animate")],
-};
-
-export default config;
+} satisfies Config;

@@ -7,32 +7,16 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# Node modules
-node_modules/
-
-# Build output
+node_modules
 dist
 dist-ssr
-build/
-
-# Vite cache
-.vite/
-.vitepress/dist/
-
-# dotenv files (schützt geheime Tokens)
-.env
-.env.*.local
 *.local
 
 # Editor directories and files
-# VSCode settings (optional)
-.vscode/
 .vscode/*
 !.vscode/extensions.json
 .idea
-# Betriebssystem-Dateien
 .DS_Store
-Thumbs.db
 *.suo
 *.ntvs*
 *.njsproj

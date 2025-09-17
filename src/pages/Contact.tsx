@@ -1,6 +1,6 @@
 import ContactSection from "@/components/ContactSection";
 
-export const LAST_MODIFIED = "03.05.2025";
+export const LAST_MODIFIED = "24.03.2025";
 
 const Contact = () => {
   return (

@@ -1,15 +1,15 @@
 import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { news } from "./arrays/newsList";  // Importiere news aus der Datei newsList.ts
+import { news} from "./arrays/newsList"
 
 const NewsSlider = () => {
-  const [currentSlide, setCurrentSlide] = useState(0);  // Definiere den State für den aktuellen Slider
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setCurrentSlide((prev) => (prev + 1) % news.length);
     }, 15000);
-
+  
     return () => clearTimeout(timer);
   }, [currentSlide]);
 
@@ -21,12 +21,12 @@ const NewsSlider = () => {
         prevSlide();
       }
     };
-
+  
     window.addEventListener("keydown", handleKeyDown);
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, []);  
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % news.length);
@@ -35,7 +35,7 @@ const NewsSlider = () => {
   const prevSlide = () => {
     setCurrentSlide((prev) => (prev - 1 + news.length) % news.length);
   };
-
+  
   return (
     <div className="relative h-screen w-full overflow-hidden pt-16 md:pt-20">
       {news.map((item, index) => (
@@ -47,10 +47,10 @@ const NewsSlider = () => {
         >
           <div
             className="absolute inset-0 bg-cover bg-center"
-            style={{
+            style={{ 
               backgroundImage: `url(${item.image})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center center",
+              backgroundSize: 'cover',
+              backgroundPosition: 'center center'
             }}
           >
             <div className="absolute inset-0 bg-black/50" />
@@ -63,16 +63,6 @@ const NewsSlider = () => {
               <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl mb-6 md:mb-8">
                 {item.description}
               </p>
-              {item.href && (  // Wenn ein href vorhanden ist, dann den Link anzeigen
-                <a
-                  href={item.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-lg font-bold"
-                >
-                  Mehr Infos
-                </a>
-              )}
             </div>
           </div>
         </div>

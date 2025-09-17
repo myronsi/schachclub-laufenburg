@@ -12,10 +12,7 @@ import { LAST_MODIFIED as DatenschutzLastModified } from "@/pages/Datenschutz";
 
 const Footer = () => {
   const [searchParams] = useSearchParams();
-// Footer manuell gesetzt, weil nicht ersichtlich, woher 
-  const currentPage = "03.05.2025";
-// vorher
-// const currentPage = searchParams.get("page");
+  const currentPage = searchParams.get("page");
 
   const pageLastModified: Record<string, string> = {
     'ueberuns': AboutLastModified,

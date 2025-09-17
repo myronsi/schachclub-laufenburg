@@ -1,108 +1,95 @@
-/* index.css */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* ---------------------
-   Globale Layouts
----------------------- */
-body {
-  @apply bg-white text-black text-sm font-sans leading-relaxed;
-}
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221 83% 53%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221 83% 53%;
+    --radius: 0.5rem;
+  }
 
-/* Druckanpassungen */
-@media print {
-  @page { 
-    margin: 1cm;
-    size: A4 landscape; 
+  * {
+   /* outline: 2px solid rgba(255, 0, 0, 0.5) !important;
+    box-shadow: 0 0 0 2px rgba(0, 255, 0, 0.5) !important; */
+    @apply border-border;
   }
 
   body {
-    @apply text-black bg-white;
-    overflow: visible !important;
-    font-size: 9pt; 
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
-  .no-print { display: none !important; }
-  
-  /* Blauen Club-Header im Druck sicher entfernen (falls er im TSX nicht auskommentiert wäre) */
-  .header-bar { 
-    display: none !important; 
-  }
-  .statistik-page-main-content { /* Haupt-Container ohne oberen Abstand im Druck */
-    padding-top: 0 !important;
-    margin-top: 0 !important;
-  }
-
-  table {
-    font-size: 8pt; 
-    border-collapse: collapse;
-    width: 100%;
-    border: 1px solid #6c757d; 
-  }
-
-  th, td {
-    border: 1px solid #ced4da; 
-    padding: 3px 4px;      
-    word-break: break-word;
-    vertical-align: top;
-    text-align: left; /* Standard Textausrichtung für td im Druck */
-  }
-
-  tr { page-break-inside: avoid !important; }
-
-  thead {
-    display: table-header-group !important; 
-    background-color: #f8f9fa !important; 
-  }
-  thead th {
-    background-color: #f8f9fa !important; 
-    text-align: center !important; /* Header im Druck zentrieren */
-    font-weight: bold;
-  }
-
-  tfoot { display: table-footer-group !important; }
-
-  .chart-container {
-    display: block !important;
-    visibility: visible !important;
-    width: 100% !important;
-    height: auto !important;
-    max-height: 15cm; 
-    margin: 0.5cm 0 1cm 0 !important;
-    page-break-inside: avoid !important;
-  }
-
-  canvas#statistikChart {
-    max-width: 100%;
-    display: block !important;
-    visibility: visible !important;
+    @apply bg-background text-foreground font-sans;
+    background: #F3F4F6;
+    min-height: 100vh;
+    overflow-x: hidden;
   }
 }
 
-/* ---------------------
-   Globale Tabellen-Komponenten (Bildschirm)
----------------------- */
-/* Tabellenkopf ist jetzt NICHT MEHR STICKY */
-table thead th {
-  @apply bg-gray-100 border-b-2 border-gray-300; /* Tailwind für Hintergrund/Linie */
-  padding: 0.6rem 0.75rem; 
-  text-align: center;    /* Header-Text standardmäßig zentrieren */
-  font-weight: 600;      /* Tailwind: font-semibold */
-  cursor: pointer; 
-  vertical-align: middle; /* Vertikale Ausrichtung für Header */
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
 }
 
-table tbody tr:nth-child(even) {
-  @apply bg-gray-50; 
+html {
+  scrollbar-width: none;
 }
 
-/* Filter-Layouts */
-.filter-row { 
-  @apply flex flex-wrap gap-3 items-center; 
+body {
+  -ms-overflow-style: none;
 }
-.date-range-row { 
-  @apply flex flex-wrap gap-3 items-center; 
+
+.hover-scale {
+  @apply transition-transform duration-300 hover:scale-105;
+}
+
+.card-shadow {
+  @apply shadow-lg hover:shadow-xl transition-shadow duration-300;
+}
+
+.scrollable-tabs-list {
+  display: flex;
+  overflow-x: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+}
+
+.scrollable-tabs-list .tabs-trigger {
+  flex: 0 0 auto;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.animate-fadeInOut {
+  animation: fadeInOut 3s ease-in-out forwards;
 }
