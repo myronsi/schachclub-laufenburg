@@ -101,7 +101,7 @@ const ContactSection = () => {
               <Input 
                 type="email"
                 name="email"
-                placeholder="Ihre E-Mailadresse bitte" 
+                placeholder="Ihre E-Mailadresse" 
                 value={formData.email}
                 onChange={handleChange}
                 required

@@ -1,12 +1,5 @@
 import { Link } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
-import { LAST_MODIFIED as ContactLastModified } from "@/pages/Contact";
-import { LAST_MODIFIED as AboutLastModified } from "@/pages/About";
-import { LAST_MODIFIED as TournamentsLastModified } from "@/pages/Tournaments";
-import { LAST_MODIFIED as MannschaftenLastModified } from "@/pages/Mannschaften";
-import { LAST_MODIFIED as MediaLastModified } from "@/pages/Media";
-import { LAST_MODIFIED as YouthLastModified } from "@/pages/Youth";
-import { LAST_MODIFIED as HomeLastModified } from "@/pages/Home";
 import { LAST_MODIFIED as ImpressumLastModified } from "@/pages/Impessum";
 import { LAST_MODIFIED as DatenschutzLastModified } from "@/pages/Datenschutz";
 
@@ -15,20 +8,15 @@ const Footer = () => {
   const currentPage = searchParams.get("page");
 
   const pageLastModified: Record<string, string> = {
-    'ueberuns': AboutLastModified,
-    'mannschaften': MannschaftenLastModified,
-    'jugend': YouthLastModified,
-    'turniere': TournamentsLastModified,
-    'archiv': MediaLastModified,
-    'kontakt': ContactLastModified,
     'impressum': ImpressumLastModified,
     'datenschutz': DatenschutzLastModified,
-    'home': HomeLastModified,
   };
 
   const lastModifiedDate = currentPage 
     ? pageLastModified[currentPage]
-    : HomeLastModified;
+    : undefined;
+
+  if (!lastModifiedDate) return null;
 
   const formatDate = (dateString: string) => {
     const [day, month, year] = dateString.split('.');
@@ -53,11 +41,11 @@ const Footer = () => {
           </Link>
         </div>
         <span className="mr-4">Copyright © 2025 SC Laufenburg e.V.</span>
-        {lastModifiedDate && (
+        {lastModifiedDate ? (
           <span className="text-gray-600">
             Letzte Änderung: {formatDate(lastModifiedDate)}
           </span>
-        )}
+        ) : null}
       </div>
     </footer>
   );
