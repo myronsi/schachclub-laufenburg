@@ -35,7 +35,7 @@ const ContactSection = () => {
       });
 
       if (response.ok) {
-        navigate('/?page=kontakt-ok');
+        navigate('/kontakt-ok');
       } else {
         setError('Fehler beim Senden der Nachricht. Bitte versuchen Sie es später erneut.');
       }
