@@ -28,6 +28,14 @@ const App = () => (
       <BrowserRouter>
         <ScrollToTop />
         <div className="min-h-screen flex flex-col">
+            <div className="w-full flex justify-center items-center z-50" style={{ backgroundColor: "#b0b0b0" }}>
+            <img
+              src="/photos/logo.jpg"
+              alt="Schachclub Laufenburg Logo"
+              className="w-full max-w-[985px] h-auto object-cover select-none pointer-events-none"
+              draggable="false"
+            />
+            </div>
           <Header />
           <Routes>
             <Route path="/" element={<Home />} />

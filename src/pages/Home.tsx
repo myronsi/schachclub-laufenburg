@@ -2,10 +2,8 @@ import NewsSlider from "@/components/NewsSlider";
 
 const Home = () => {
   return (
-    <div className="min-h-screen">
-      <main>
-        <NewsSlider />
-      </main>
+    <div className="flex flex-col flex-1 overflow-hidden">
+      <NewsSlider />
     </div>
   );
 };

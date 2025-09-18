@@ -37,7 +37,7 @@ const NewsSlider = () => {
   };
   
   return (
-    <div className="relative h-screen w-full overflow-hidden pt-16 md:pt-20">
+    <div className="absolute inset-0 w-full h-full overflow-hidden">
       {news.map((item, index) => (
         <div
           key={item.id}
@@ -46,14 +46,15 @@ const NewsSlider = () => {
           }`}
         >
           <div
-            className="absolute inset-0 bg-cover bg-center"
+            className="absolute inset-0 w-full h-full"
             style={{ 
               backgroundImage: `url(${item.image})`,
               backgroundSize: 'cover',
-              backgroundPosition: 'center center'
+              backgroundPosition: 'center center',
+              minHeight: '100%'
             }}
           >
-            <div className="absolute inset-0 bg-black/50" />
+            <div className="absolute inset-0 bg-black/50 w-full h-full" />
           </div>
           <div className="relative h-full flex items-center justify-center text-center text-white px-4">
             <div className="max-w-2xl animate-fadeIn mx-4">

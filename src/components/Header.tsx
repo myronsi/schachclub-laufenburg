@@ -25,7 +25,7 @@ const Header = () => {
   }, []);
 
   return (
-    <header className="bg-club-primary text-white py-4 fixed w-full top-0 z-50">
+    <header className="sticky top-0 bg-club-primary text-white py-4 w-full shadow-md z-50">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center">
           {/* Desktop Link */}
@@ -71,8 +71,8 @@ const Header = () => {
 
           {/* Mobile Navigation */}
           <div
-            className={`fixed left-0 right-0 top-[64px] bg-club-primary lg:hidden transition-all duration-300 ease-in-out ${
-              isMenuOpen ? "translate-y-0 opacity-100 visible" : "-translate-y-full opacity-0 invisible"
+            className={`absolute left-0 right-0 top-full w-full bg-club-primary lg:hidden overflow-hidden transition-[max-height] duration-300 ease-in-out shadow-lg z-[100] ${
+              isMenuOpen ? "max-h-[500px]" : "max-h-0"
             }`}
           >
             <nav className="flex flex-col items-center py-4 gap-4">

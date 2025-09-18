@@ -23,15 +23,15 @@ export type ImageItem = {
 
 export const images: ImageItem[] = [
       {
-        src: "/imgs/Wasserschloss_Inzlingen.jpg",
+        src: "/photos/Wasserschloss_Inzlingen.jpg",
         title: "Inzlingen Schach-Open 2025",
         children: [
-          { src: "/imgs/Wasserschloss_Inzlingen.jpg",
+          { src: "/photos/Wasserschloss_Inzlingen.jpg",
             title: "Inzlingen Schach-Open 2025",
             description: "Schach-Open Inzlingen im Wasserschloss vom 07. - 09.03.2025. Veranstalter Schachverein Brombach. Ergebnisse vom Internationalen Schachturnier Anfang März mit 3 Teilnehmern vom SC-Laufenburg"
           },
           {
-            src: "/imgs/Wasserschlossturnier2025_Ergebnisse.jpg",
+            src: "/photos/Wasserschlossturnier2025_Ergebnisse.jpg",
             title: "Ergebnisse Inzlingen Schach-Open 2025",
             description: "Ergebnisse vom Schachturnier Anfang März mit 3 Teilnehmern vom SC-Laufenburg (Benno Moser, Jürgen Keßler, Lukas Wegener)"
           }
