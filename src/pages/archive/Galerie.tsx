@@ -1,4 +1,4 @@
-import GalerieComponent from "@/components/GalerieComponent";
+import GalerieComponent from "@/components/archive/GalerieComponent";
 
 const Galerie = () => {
   return (

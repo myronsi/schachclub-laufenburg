@@ -1,4 +1,4 @@
-import TournamentSection from "@/components/TournamentSection";
+import TournamentSection from "@/components/tournaments/TournamentSection";
 
 const Tournaments = () => {
   return (

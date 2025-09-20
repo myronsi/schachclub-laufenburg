@@ -1,4 +1,4 @@
-import ArchiveSection from "@/components/ArchiveSection";
+import ArchiveSection from "@/components/archive/ArchiveSection";
 
 const Media = () => {
   return (

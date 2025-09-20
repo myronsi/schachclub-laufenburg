@@ -100,8 +100,8 @@ const Header = () => {
 
           {/* Mobile Navigation */}
           <div
-            className={`absolute left-0 right-0 top-full w-full bg-club-primary lg:hidden overflow-hidden transition-all duration-300 ease-in-out transform shadow-lg z-[100] ${
-              isMenuOpen ? "max-h-[600px]" : "max-h-0"
+            className={`absolute left-0 right-0 top-full w-full bg-club-primary lg:hidden overflow-auto transition-all duration-300 ease-in-out transform shadow-lg z-[100] ${
+              isMenuOpen ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-2 pointer-events-none"
             }`}
           >
             <nav className="flex flex-col items-center py-4 gap-2 px-4">
@@ -131,7 +131,7 @@ const Header = () => {
                       <ChevronDown className={`w-4 h-4 transition-transform ${openSubmenu === item.path ? "rotate-180" : ""}`} />
                     </button>
 
-                    <div className={`overflow-hidden transition-all duration-300 ease-in-out transform origin-top ${openSubmenu === item.path ? "max-h-40 opacity-100 translate-y-0" : "max-h-0 opacity-0 -translate-y-2"}`}>
+                    <div className={`overflow-hidden transition-[max-height,opacity,transform] duration-300 ease-in-out transform origin-top ${openSubmenu === item.path ? "max-h-[480px] opacity-100 translate-y-0 pointer-events-auto" : "max-h-0 opacity-0 -translate-y-2 pointer-events-none"}`}>
                       <div className="flex flex-col items-center gap-1 py-2">
                         {item.children?.map((sub, si) => {
                           const fullPath = resolvePath(item.path, sub.path);

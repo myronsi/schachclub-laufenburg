@@ -9,11 +9,15 @@ import Home from "./pages/Home";
 import About from "./pages/About";
 import Mannschaften from "./pages/Mannschaften";
 import Youth from "./pages/Youth";
-import Tournaments from "./pages/Tournaments";
-import Media from "./pages/Media";
-import Chronik from "./pages/Chronik";
-import Galerie from "./pages/Galerie";
-import Documents from "./pages/Documents";
+import Tournaments from "./pages/tournaments/Tournaments";
+import Vereinsmeister from "./pages/tournaments/Vereinsmeister";
+import Pokalsieger from "./pages/tournaments/Pokalsieger";
+import Nikolausblitz from "./pages/tournaments/Nikolausblitz";
+import Blitzsieger from "./pages/tournaments/Blitzsieger";
+import Media from "./pages/archive/Media";
+import Chronik from "./pages/archive/Chronik";
+import Galerie from "./pages/archive/Galerie";
+import Documents from "./pages/archive/Documents";
 import Contact from "./pages/Contact";
 import ContactOk from "./pages/ContactOk";
 import Impressum from "./pages/Impessum";
@@ -47,6 +51,10 @@ const App = () => (
             <Route path="/mannschaften" element={<Mannschaften />} />
             <Route path="/jugend" element={<Youth />} />
             <Route path="/turniere" element={<Tournaments />} />
+            <Route path="/turniere/vereinsmeister" element={<Vereinsmeister />} />
+            <Route path="/turniere/pokalsieger" element={<Pokalsieger />} />
+            <Route path="/turniere/nikolausblitz" element={<Nikolausblitz />} />
+            <Route path="/turniere/blitzsieger" element={<Blitzsieger />} />
             <Route path="/archiv" element={<Media />} />
             <Route path="/archiv/chronik" element={<Chronik />} />
             <Route path="/archiv/galerie" element={<Galerie />} />

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Folder, Image as ImgIcon, FileText } from "lucide-react";
 import { Link } from "react-router-dom";
-import DocumentsSection from "@/components/DocumentsSection";
 
 const ArchiveSection = () => {
 	const [query, setQuery] = useState("");

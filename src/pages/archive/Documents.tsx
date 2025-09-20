@@ -1,4 +1,4 @@
-import DocumentsSection from "@/components/DocumentsSection";
+import DocumentsSection from "@/components/archive/DocumentsSection";
 
 const Documents = () => {
   return (

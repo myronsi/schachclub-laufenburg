@@ -1,4 +1,4 @@
-import ChronikComponent from "@/components/ChronikComponent";
+import ChronikComponent from "@/components/archive/ChronikComponent";
 
 const Chronik = () => {
   return (

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Image, SortDesc } from "lucide-react";
-import { ImageItem, images } from "./arrays/mediaImages";
+import { ImageItem, images } from "@/components/arrays/mediaImages";
 import { Button } from "@/components/ui/button";
 import { ButtonToTop } from "@/components/ui/arrowToTop";
 import {

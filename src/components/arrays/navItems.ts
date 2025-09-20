@@ -3,7 +3,16 @@ export const navItems = [
     { path: "/ueberuns", label: "Über uns" },
     { path: "/mannschaften", label: "Mannschaften" },
     { path: "/jugend", label: "Jugend" },
-    { path: "/turniere", label: "Turniere" },
+    { 
+      path: "/turniere", 
+      label: "Turniere" 
+    , children: [
+        { path: "/nikolausblitz", label: "Nikolausblitz" },
+        { path: "/vereinsmeister", label: "Vereinsmeister" },
+        { path: "/pokalsieger", label: "Pokalsieger" },
+        { path: "/blitzsieger", label: "Blitzsieger" },
+      ]
+    },
     {
       path: "/archiv",
       label: "Archiv",
