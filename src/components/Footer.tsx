@@ -2,25 +2,27 @@ import { Link, useLocation } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
 import { LAST_MODIFIED as ImpressumLastModified } from "@/pages/Impessum";
 import { LAST_MODIFIED as DatenschutzLastModified } from "@/pages/Datenschutz";
+import { LAST_MODIFIED as ContactLastModified } from "@/pages/Contact";
 
 const Footer = () => {
   const [searchParams] = useSearchParams();
   const location = useLocation();
   const queryPage = searchParams.get("page");
 
-  // Prefer explicit query param, otherwise derive from the pathname so the footer
-  // shows on /impressum and /datenschutz without needing ?page=...
   const currentPage = queryPage
     ? queryPage
     : location.pathname.includes("/impressum")
     ? 'impressum'
     : location.pathname.includes("/datenschutz")
     ? 'datenschutz'
+    : location.pathname.includes("/kontakt")
+    ? 'kontakt'
     : null;
 
   const pageLastModified: Record<string, string> = {
     'impressum': ImpressumLastModified,
     'datenschutz': DatenschutzLastModified,
+    'kontakt': ContactLastModified,
   };
 
   const lastModifiedDate = currentPage
