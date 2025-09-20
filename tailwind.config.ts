@@ -83,6 +83,10 @@ export default {
           "0%": { transform: "translateX(100%)", opacity: "0" },
           "100%": { transform: "translateX(0)", opacity: "1" },
         },
+        slideInUp: {
+          "0%": { transform: "translateY(100%)", opacity: "0" },
+          "100%": { transform: "translateY(0)", opacity: "1" },
+        },
         scaleIn: {
           "0%": { transform: "scale(0.8)", opacity: "0" },
           "100%": { transform: "scale(1)", opacity: "1" },
@@ -94,6 +98,7 @@ export default {
         fadeIn: "fadeIn 0.5s ease-out forwards",
         slideInLeft: "slideInLeft 0.5s ease-out forwards",
         slideInRight: "slideInRight 0.5s ease-out forwards",
+        slideInUp: "slideInUp 0.5s ease-out forwards",
         scaleIn: "scaleIn 0.5s ease-out forwards",
       },
     },

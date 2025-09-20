@@ -35,11 +35,11 @@ const App = () => (
       <BrowserRouter>
         <ScrollToTop />
         <div className="min-h-screen flex flex-col">
-            <Link to="/" className="w-full flex justify-center items-center z-50 py-0 md:py-5" style={{ backgroundColor: "#b0b0b0" }}>
+            <Link to="/" className="w-full flex justify-center items-center z-50" style={{ backgroundColor: "#b0b0b0" }}>
               <img
                 src="/photos/logo.jpg"
                 alt="Schachclub Laufenburg Logo"
-                className="w-full max-w-[700px] h-auto object-cover select-none pointer-events-none"
+                className="w-full max-w-[600px] h-auto object-cover select-none pointer-events-none"
                 draggable="false"
                 style={{ paddingTop: 0, paddingBottom: 0 }}
               />

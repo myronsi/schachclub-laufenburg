@@ -3,6 +3,7 @@ export const timeline = [
       year: "2025",
       events: [
        { date: "24.03", text: "Neue Homepage im modernen Design, betreut von Jürgen Keßler und Myron Ilchenko" },
+       { date: "07-09.03", text: "Schach - Open Inzlingen im Wasserschloss mit 3 Teilnehmern von SC Laufenburg" },
        { date: "Januar", text: "Homepage - altes Design, erneute Pflege" },
       ]
     },
