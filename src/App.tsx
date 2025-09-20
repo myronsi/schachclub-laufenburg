@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import Header from "@/components/Header";
 import ScrollToTop from "@/components/ScrollToTop";
 import Home from "./pages/Home";
@@ -11,6 +11,9 @@ import Mannschaften from "./pages/Mannschaften";
 import Youth from "./pages/Youth";
 import Tournaments from "./pages/Tournaments";
 import Media from "./pages/Media";
+import Chronik from "./pages/Chronik";
+import Galerie from "./pages/Galerie";
+import Documents from "./pages/Documents";
 import Contact from "./pages/Contact";
 import ContactOk from "./pages/ContactOk";
 import Impressum from "./pages/Impessum";
@@ -28,14 +31,15 @@ const App = () => (
       <BrowserRouter>
         <ScrollToTop />
         <div className="min-h-screen flex flex-col">
-            <div className="w-full flex justify-center items-center z-50" style={{ backgroundColor: "#b0b0b0" }}>
-            <img
-              src="/photos/logo.jpg"
-              alt="Schachclub Laufenburg Logo"
-              className="w-full max-w-[985px] h-auto object-cover select-none pointer-events-none"
-              draggable="false"
-            />
-            </div>
+            <Link to="/" className="w-full flex justify-center items-center z-50 py-0 md:py-5" style={{ backgroundColor: "#b0b0b0" }}>
+              <img
+                src="/photos/logo.jpg"
+                alt="Schachclub Laufenburg Logo"
+                className="w-full max-w-[700px] h-auto object-cover select-none pointer-events-none"
+                draggable="false"
+                style={{ paddingTop: 0, paddingBottom: 0 }}
+              />
+            </Link>
           <Header />
           <Routes>
             <Route path="/" element={<Home />} />
@@ -44,6 +48,9 @@ const App = () => (
             <Route path="/jugend" element={<Youth />} />
             <Route path="/turniere" element={<Tournaments />} />
             <Route path="/archiv" element={<Media />} />
+            <Route path="/archiv/chronik" element={<Chronik />} />
+            <Route path="/archiv/galerie" element={<Galerie />} />
+            <Route path="/archiv/dokumente" element={<Documents />} />
             <Route path="/kontakt" element={<Contact />} />
             <Route path="/kontakt-ok" element={<ContactOk />} />
             <Route path="/impressum" element={<Impressum />} />

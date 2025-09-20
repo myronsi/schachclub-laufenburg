@@ -12,7 +12,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 
-const MediaSection = () => {
+const GalerieComponent = () => {
   const [selectedImage, setSelectedImage] = useState<ImageItem | null>(null);
   const [isReversed, setIsReversed] = useState(false);
   const [openDialogsCount, setOpenDialogsCount] = useState(0);
@@ -57,23 +57,21 @@ const MediaSection = () => {
       <section id="media" className="py-16 animate-fadeIn relative">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-club-primary mb-12 text-center">
-            Archiv
+            Fotogalerie
           </h2>
 
           <div className="mb-13">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-2xl font-semibold text-club-primary flex items-center gap-2">
-                <Image className="text-club-accent" />
-                Fotogalerie
-              </h3>
-              <Button
-                variant="outline"
-                onClick={() => setIsReversed(!isReversed)}
-                className="flex items-center gap-2"
-              >
-                <SortDesc className="h-4 w-4" />
-                {isReversed ? "Älteste ist zuerst" : "Neuste ist zuerst"}
-              </Button>
+            <div className="flex justify-end items-center mb-6">
+              <div>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsReversed(!isReversed)}
+                  className="flex items-center gap-2"
+                >
+                  <SortDesc className="h-4 w-4" />
+                  {isReversed ? "Älteste ist zuerst" : "Neuste ist zuerst"}
+                </Button>
+              </div>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-6 lg:grid-cols-6 gap-4">
               {sortedImages.map((image, index) => (
@@ -116,4 +114,4 @@ const MediaSection = () => {
   );
 };
 
-export default MediaSection;
+export default GalerieComponent;
