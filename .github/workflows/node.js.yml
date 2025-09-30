@@ -2,7 +2,8 @@ name: Deploy React Vite to Strato via SFTP (password)
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   build-and-deploy:
@@ -28,14 +29,12 @@ jobs:
         run: ls -la dist
 
       - name: SFTP Deploy (password auth)
-        uses: milanmk/actions-file-deployer@v1.16
+        uses: appleboy/sftp-action@v0.1.0
         with:
-          remote-protocol: sftp
-          remote-host: ${{ secrets.SFTP_SERVER }}     # e.g. ssh.strato.de
-          remote-user: ${{ secrets.SFTP_USERNAME }}
-          remote-password: ${{ secrets.SFTP_PASSWORD }}
-          remote-port: 22
-          local-path: ./dist/
-          remote-path: /                             # or /htdocs
-          sync: delta                                # 'delta' or 'full' (delta = only changed files)
-          delete-remote: false                        # set true if you want server files removed when absent locally
+          host: ${{ secrets.SFTP_SERVER }}  # e.g., ssh.strato.de
+          username: ${{ secrets.SFTP_USERNAME }}
+          password: ${{ secrets.SFTP_PASSWORD }}
+          port: 22
+          source: ./dist/
+          target: /htdocs/
+          delete: false  # Set to true if you want to remove files not present locally
