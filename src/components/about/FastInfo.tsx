@@ -117,7 +117,6 @@ const FastInfo = () => {
       ref={historySectionRef}
       className="bg-white rounded-lg shadow-sm p-8 transition-all duration-1000"
     >
-      <h3 className="text-2xl font-semibold mb-8 text-center text-gray-800">Schnellinfo</h3>
       <div className="flex flex-wrap justify-center gap-10">
         {infoItems.map((item, index) => (
           <div 

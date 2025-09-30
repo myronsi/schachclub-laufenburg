@@ -38,11 +38,11 @@ const Header = () => {
         <img src="/photos/part.png" alt="Part" className="h-full max-h-16 object-contain" />
       </div>
 
-      <div className="container mx-auto px-4 py-4 pl-10 pr-12 lg:pl-16 lg:pr-20">
+      <div className="container mx-auto px-4 py-4 pl-16 pr-16 lg:pl-24 lg:pr-24">
         <div className="flex items-center justify-between">
 
 
-          <Link to="/" className="hidden lg:inline-block text-2xl font-bold">
+          <Link to="/" className="hidden lg:inline-block text-2xl font-bold ml-2">
             Schachclub Laufenburg e. V.
           </Link>
 

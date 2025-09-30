@@ -3,7 +3,7 @@ export const news = [
       id: 1,
       title: "DWZ Grand Prix Hochrein",
       description: "Am 22. November 2025 findet in Waldshut der DWZ Grand Prix Hochrein statt.",
-      image: "/photos/schach_schwarz.jpeg",
+      image: "/photos/schach_schwarz.png",
     },  
     {
       id: 2,

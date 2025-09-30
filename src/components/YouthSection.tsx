@@ -1,6 +1,13 @@
 
 import { Calendar, Image, MapPin, CircleHelp, ImageOff } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { useState } from "react";
 import { imageUrls} from "./arrays/youthList"
 
@@ -21,7 +28,7 @@ const YouthSection = () => {
               Jugendarbeit ist essenziell für Vereine. Schach fördert die geistige Entwicklung 
               von Kindern und Jugendlichen: Es trainiert Konzentration, logisches Denken und 
               verbindet Lernen spielerisch mit Wettkampf. Aktuell können wir alle Interessierten 
-              jeden Alters aufnehmen – egal, ob sie Schach neu lernen oder verbessern möchten. 
+              jeden Alters aufnehmen - egal, ob sie Schach neu lernen oder verbessern möchten. 
               Einfach unverbindlich vorbeischauen! Bei Fragen gerne eine Mail an Jugendleiter Jochen:{" "}
                 <a href="mailto:jugend@sc-laufenburg.de" className="text-blue-600 hover:text-blue-800 hover:underline">
                   jugend@sc-laufenburg.de
@@ -40,7 +47,7 @@ const YouthSection = () => {
             <p>
               Aktuell trainieren alle interessierten Jugendlichen gemeinsam; Neueinsteiger 
               mit Grundkenntnissen können jederzeit zum Schnuppertraining vorbeikommen. 
-              Bei genügend Interesse wäre ein zusätzlicher Anfängerkurs möglich – hier können 
+              Bei genügend Interesse wäre ein zusätzlicher Anfängerkurs möglich - hier können 
               sich Interessierte aller Altersgruppen unverbindlich melden. Neben dem regulären 
               Training bieten wir jährlich den Laufenburger Kindersommer an, ein Angebot für 
               absolute Schach-Anfänger:innen, um uns kennenzulernen.
@@ -83,24 +90,43 @@ const YouthSection = () => {
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {imageUrls.map((image, index) => (
-              <div
-                key={index}
-                className="aspect-square rounded-lg overflow-hidden hover-scale transition-transform duration-300 flex items-center justify-center bg-gray-100"
-              >
+              <div key={index} className="">
                 {imageErrors[index] ? (
-                  <div className="flex flex-col items-center gap-2 text-gray-400">
-                    <ImageOff className="w-10 h-10 opacity-50" />
-                    <span className="text-xs text-center">Image not available</span>
+                  <div className="aspect-square rounded-lg overflow-hidden flex items-center justify-center bg-gray-100">
+                    <div className="flex flex-col items-center gap-2 text-gray-400">
+                      <ImageOff className="w-10 h-10 opacity-50" />
+                      <span className="text-xs text-center">Image not available</span>
+                    </div>
                   </div>
                 ) : (
-                  <img
-                    src={image.src}
-                    alt={image.alt || `Youth event ${index + 1}`}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                    onError={() => setImageErrors(prev => ({...prev, [index]: true}))}
-                  />
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <div className="aspect-square rounded-lg overflow-hidden hover:scale-105 transition-transform duration-300 cursor-pointer">
+                        <img
+                          src={image.src}
+                          alt={image.alt || `Youth event ${index + 1}`}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                          onError={() => setImageErrors(prev => ({...prev, [index]: true}))}
+                        />
+                      </div>
+                    </DialogTrigger>
+
+                    <DialogContent className="max-w-4xl h-[90vh] overflow-y-auto">
+                      <DialogHeader className="space-y-2">
+                        <DialogTitle>{image.alt || `Bild ${index + 1}`}</DialogTitle>
+                      </DialogHeader>
+
+                      <div className="flex flex-col items-center gap-4">
+                        <div className="w-full flex justify-center">
+                          <img src={image.src} alt={image.alt || `Youth event ${index + 1}`} className="object-contain w-full max-h-[75vh]" />
+                        </div>
+                        {/* no description available for these images */}
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 )}
+                <p className="text-sm text-center text-gray-600 mt-2">{image.alt}</p>
               </div>
             ))}
           </div>

@@ -152,6 +152,9 @@ const AboutSection = () => {
           </Card>
         </div>
 
+        <h3 className="text-3xl font-semibold py-20 text-center text-club-secondary">Schnellinfo</h3>
+
+
         <FastInfo />
       </div>
     </section>
