@@ -33,6 +33,6 @@ jobs:
           password: ${{ secrets.SFTP_PASSWORD }}
           port: 22
           local_path: ./dist/*
-          remote_path: /htdocs
+          remote_path: /
           sftp_only: true
           ssh_private_key: ""
