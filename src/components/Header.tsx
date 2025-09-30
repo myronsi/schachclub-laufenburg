@@ -25,32 +25,51 @@ const Header = () => {
   }, []);
 
   return (
-    <header className="sticky top-0 bg-club-primary text-white py-4 w-full z-50" style={{ boxShadow: '0 -12px 24px rgba(0,0,0,0.24), 0 6px 12px rgba(0,0,0,0.06)' }}>
-      <div className="container mx-auto px-4">
-        <div className="flex justify-center items-center">
-          
-          {/* Mobile Link */}
-          <Link to="/" className="lg:hidden text-2xl font-bold">
-            Schachclub Laufenburg
+    <header className="sticky top-0 bg-club-primary text-white w-full z-50" style={{ boxShadow: '0 -12px 24px rgba(0,0,0,0.24), 0 6px 12px rgba(0,0,0,0.06)' }}>
+      {/* Left logo (span full header height so it visually ignores container padding) */}
+      <div className="absolute left-0 inset-y-0 pl-4 flex items-center pointer-events-auto">
+        <Link to="/" aria-label="Startseite">
+          <img src="/photos/logo.png" alt="Schachclub Laufenburg" className="h-full max-h-16 object-contain" />
+        </Link>
+      </div>
+
+      {/* Right part image (span full header height so it visually ignores container padding) */}
+      <div className="absolute right-0 inset-y-0 pr-4 hidden lg:flex items-center pointer-events-none">
+        <img src="/photos/part.png" alt="Part" className="h-full max-h-16 object-contain" />
+      </div>
+
+      <div className="container mx-auto px-4 py-4 pl-10 pr-12 lg:pl-16 lg:pr-20">
+        <div className="flex items-center justify-between">
+
+
+          <Link to="/" className="hidden lg:inline-block text-2xl font-bold">
+            Schachclub Laufenburg e. V.
           </Link>
 
-          {/* Mobile Menu Button */}
-          <div className="lg:hidden">
-            <button
-              onClick={handleMenuClick}
-              className="p-3 hover:text-club-accent transition-colors"
-              aria-label="Menü öffnen"
-            >
-              {isMenuOpen ? (
-                <X size={24} className="w-6 h-6" />
-              ) : (
-                <Menu size={24} className="w-6 h-6" />
-              )}
-            </button>
-          </div>
+          {/* Center: navigation and mobile controls */}
+          <div className="flex-1 flex items-center justify-center">
+            {/* Mobile Link (keeps the centered title on phones) */}
+            <Link to="/" className="lg:hidden text-2xl font-bold">
+              Schachclub Laufenburg
+            </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex gap-8">
+            {/* Mobile Menu Button */}
+            <div className="lg:hidden absolute right-4">
+              <button
+                onClick={handleMenuClick}
+                className="p-3 hover:text-club-accent transition-colors"
+                aria-label="Menü öffnen"
+              >
+                {isMenuOpen ? (
+                  <X size={24} className="w-6 h-6" />
+                ) : (
+                  <Menu size={24} className="w-6 h-6" />
+                )}
+              </button>
+            </div>
+
+            {/* Desktop Navigation */}
+            <nav className="hidden lg:flex gap-8">
             {navItems.map((item) => {
               const parentActive = isActive(item.path) || (item.children?.some((c) => isActive(resolvePath(item.path, c.path))));
 
@@ -97,6 +116,10 @@ const Header = () => {
               );
             })}
           </nav>
+
+          </div>
+
+          {/* Right image moved outside container (absolute) */}
 
           {/* Mobile Navigation */}
           <div
@@ -152,9 +175,9 @@ const Header = () => {
                           );
                         })}
                       </div>
-                     </div>
-                   </div>
-                 ) : (
+                    </div>
+                  </div>
+                ) : (
                   <Link
                     key={item.label}
                     to={item.path}

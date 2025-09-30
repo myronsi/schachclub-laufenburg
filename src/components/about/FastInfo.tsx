@@ -36,7 +36,7 @@ const FastInfo = () => {
       }, 30);
       
       const membersInterval = setInterval(() => {
-        setMembers(prev => prev < 60 ? prev + 1 : 60);
+        setMembers(prev => prev < 30 ? prev + 1 : 30);
       }, 30);
       
       const teamsInterval = setInterval(() => {
@@ -75,7 +75,7 @@ const FastInfo = () => {
     if (item.label === "Gegründet") {
       return (2025 - year) / (2025 - 1969);
     } else if (item.label === "Mitglieder") {
-      return members / 60;
+      return members / 30;
     } else if (item.label === "Teams") {
       return teams / 1;
     }

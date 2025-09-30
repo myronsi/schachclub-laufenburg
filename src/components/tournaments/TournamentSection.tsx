@@ -13,16 +13,16 @@ const TournamentSection = () => {
       description:
         "Traditionelles Meisterschaftsturnier der Mitglieder — lange Partien, spannende Spitzenpaarungen und der Kampf um die Krone des Vereins.",
     },
-    {
-      key: "pokalsieger",
-      title: "Pokalsieger",
-      subtitle: "K.-o.-Modus • Action",
-      icon: Award,
-      to: "/turniere/pokalsieger",
-      when: "Saison • einmalig",
-      description:
-        "Schnelle Entscheidungen im KO-Modus: Überraschungssieger, spannende Duelle und packende Endspiele.",
-    },
+    // {
+    //   key: "pokalsieger",
+    //   title: "Pokalsieger",
+    //   subtitle: "K.-o.-Modus • Action",
+    //   icon: Award,
+    //   to: "/turniere/pokalsieger",
+    //   when: "Saison • einmalig",
+    //   description:
+    //     "Schnelle Entscheidungen im KO-Modus: Überraschungssieger, spannende Duelle und packende Endspiele.",
+    // },
     {
       key: "nikolausblitz",
       title: "Nikolausblitz",
@@ -57,13 +57,13 @@ const TournamentSection = () => {
           </p>
         </header>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="flex flex-wrap justify-center gap-6">
           {tournaments.map((t) => {
             const Icon = t.icon;
             return (
               <article
                 key={t.key}
-                className="bg-white rounded-lg shadow-sm p-5 flex flex-col hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200"
+                className="w-full sm:w-80 flex-none bg-white rounded-lg shadow-sm p-5 flex flex-col hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200"
                 aria-labelledby={`t-${t.key}-title`}
               >
                 <div className="flex items-start gap-4">

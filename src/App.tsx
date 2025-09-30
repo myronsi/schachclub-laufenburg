@@ -22,6 +22,7 @@ import Contact from "./pages/Contact";
 import ContactOk from "./pages/ContactOk";
 import Impressum from "./pages/Impessum";
 import Datenschutz from "./pages/Datenschutz";
+import Mitgliedwerden from "./pages/Mitgliedweden";
 import Footer from "@/components/Footer";
 import NotFound from "./pages/notFound";
 
@@ -30,20 +31,9 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
       <BrowserRouter>
         <ScrollToTop />
         <div className="min-h-screen flex flex-col">
-            <Link to="/" className="w-full flex justify-center items-center z-50" style={{ backgroundColor: "#b0b0b0" }}>
-              <img
-                src="/photos/logo.jpg"
-                alt="Schachclub Laufenburg Logo"
-                className="w-full max-w-[600px] h-auto object-cover select-none pointer-events-none"
-                draggable="false"
-                style={{ paddingTop: 0, paddingBottom: 0 }}
-              />
-            </Link>
           <Header />
           <Routes>
             <Route path="/" element={<Home />} />
@@ -61,6 +51,7 @@ const App = () => (
             <Route path="/archiv/dokumente" element={<Documents />} />
             <Route path="/kontakt" element={<Contact />} />
             <Route path="/kontakt-ok" element={<ContactOk />} />
+            <Route path="/mitgliedwerden" element={<Mitgliedwerden />} />
             <Route path="/impressum" element={<Impressum />} />
             <Route path="/datenschutz" element={<Datenschutz />} />
             <Route path="*" element={<NotFound />} />

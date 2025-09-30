@@ -105,8 +105,7 @@ const AboutSection = () => {
             </CardHeader>
             <CardContent>
               <ul className="text-sm text-gray-700 space-y-2">
-                <li><strong>Nä. Vereinsabend:</strong> 07.10.2025 — Blitz & Analyse</li>
-                <li><strong>Vereinsmeisterschaft Start:</strong> 15.11.2025</li>
+                <li><strong>DWZ Grand-Prix:</strong> 22.11.2025 — DWZ bekommen oder verbessern</li>
                 <li><strong>Nikolausblitz:</strong> Dezember — genauer Termin folgt</li>
               </ul>
               <div className="mt-4">
@@ -128,7 +127,7 @@ const AboutSection = () => {
                 </p>
                 <p className="text-xs text-gray-500">Für die vollständige Chronik besuche unsere Chronik-Seite.</p>
                 <div className="mt-3">
-                  <Link to="/archiv/chronik" className="inline-flex items-center gap-2 text-sm px-3 py-1 rounded bg-club-accent hover:bg-club-dark text-white w-max">
+                  <Link to="/archiv/chronik" className="text-sm underline text-club-primary hover:text-club-accent">
                    Zur Chronik
                   </Link>
                 </div>
@@ -143,13 +142,11 @@ const AboutSection = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ol className="text-sm text-gray-700 list-decimal list-inside space-y-2">
-                <li>Kontakt per E-Mail oder beim Spielabend aufnehmen.</li>
-                <li>Ein Probetraining absolvieren (kostenlos).</li>
-                <li>Aufnahmeantrag ausfüllen — Vorstand entscheidet kurzfristig.</li>
-              </ol>
+              <p className="text-sm text-gray-700 space-y-2">
+                Als Mitglied unterstützt du den Verein und profitierst von regelmäßigen Spielabenden, Trainings und Vereinsaktivitäten.
+              </p>
               <div className="mt-4">
-                <Link to="/kontakt" className="inline-block text-sm underline text-club-primary hover:text-club-accent">Kontakt & Aufnahme</Link>
+                <Link to="/mitgliedwerden" className="inline-flex items-center gap-2 text-sm px-3 py-1 rounded bg-club-accent hover:bg-club-dark text-white w-max">Jetzt Mitglied werden</Link>
               </div>
             </CardContent>
           </Card>

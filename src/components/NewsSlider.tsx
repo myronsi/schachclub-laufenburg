@@ -1,18 +1,20 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { news} from "./arrays/newsList"
+import { news } from "./arrays/newsList"
 
 const NewsSlider = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  
+  const sortedNews = [...news].sort((a, b) => a.id - b.id);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setCurrentSlide((prev) => (prev + 1) % news.length);
+      setCurrentSlide((prev) => (prev + 1) % sortedNews.length);
     }, 15000);
   
     return () => clearTimeout(timer);
-  }, [currentSlide]);
+  }, [currentSlide, sortedNews.length]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -30,11 +32,11 @@ const NewsSlider = () => {
   }, []);  
 
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % news.length);
+    setCurrentSlide((prev) => (prev + 1) % sortedNews.length);
   };
 
   const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + news.length) % news.length);
+    setCurrentSlide((prev) => (prev - 1 + sortedNews.length) % sortedNews.length);
   };
 
   const renderSlideContent = (item: any) => {
@@ -66,7 +68,7 @@ const NewsSlider = () => {
 
   return (
     <div className="absolute inset-0 w-full h-full overflow-hidden">
-      {news.map((item, index) => (
+      {sortedNews.map((item, index) => (
         <div
           key={item.id}
           className={`absolute inset-0 w-full h-full transition-opacity duration-500 ${
@@ -111,7 +113,7 @@ const NewsSlider = () => {
         </div>
       ))}
 
-      {news.length > 1 && (
+      {sortedNews.length > 1 && (
         <>
           <button
             onClick={prevSlide}
@@ -131,7 +133,7 @@ const NewsSlider = () => {
       )}
 
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3">
-        {news.map((_, index) => (
+        {sortedNews.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentSlide(index)}
