@@ -46,7 +46,7 @@ const TournamentSection = () => {
   ];
 
   return (
-    <section id="tournaments" className="py-16 bg-club-light animate-fadeIn">
+    <section id="tournaments" className="py-16 animate-fadeIn">
       <div className="container mx-auto px-4">
         <header className="text-center mb-8">
           <h2 className="text-3xl font-bold text-club-primary mb-6 text-center">

@@ -4,7 +4,7 @@ import { vereinsmeisterData } from "@/components/arrays/turniereListe";
 const VereinsmeisterComponent = () => {
   return (
     <main>
-      <section className="py-16 bg-club-light animate-fadeIn">
+      <section className="py-16 animate-fadeIn">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-8 text-club-primary">Vereinsmeister</h2>
           <div className="bg-white rounded-lg shadow-md p-6">

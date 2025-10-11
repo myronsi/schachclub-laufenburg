@@ -15,7 +15,7 @@ const YouthSection = () => {
   const [imageErrors, setImageErrors] = useState<{[key: number]: boolean}>({});
 
   return (
-    <section id="youth" className="py-16 bg-club-light animate-fadeIn">
+    <section id="youth" className="py-16 animate-fadeIn">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold text-club-primary mb-12 text-center">
           Jugendarbeit
