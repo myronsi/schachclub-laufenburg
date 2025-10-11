@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { navItems } from "./arrays/navItems";
@@ -7,6 +7,7 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
   const location = useLocation();
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
   
   const isActive = (path: string) => {
     return location.pathname === path;
@@ -24,36 +25,47 @@ const Header = () => {
     setIsMenuOpen((prevState) => !prevState);
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+        setOpenSubmenu(null);
+      }
+    };
+
+    if (isMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isMenuOpen]);
+
   return (
     <header className="sticky top-0 bg-club-primary text-white w-full z-50" style={{ boxShadow: '0 -12px 24px rgba(0,0,0,0.24), 0 6px 12px rgba(0,0,0,0.06)' }}>
-      {/* Left logo (span full header height so it visually ignores container padding) */}
       <div className="absolute left-0 inset-y-0 pl-4 flex items-center pointer-events-auto">
         <Link to="/" aria-label="Startseite">
           <img src="/photos/logo.png" alt="Schachclub Laufenburg" className="h-full max-h-16 object-contain" />
         </Link>
       </div>
 
-      {/* Right part image (span full header height so it visually ignores container padding) */}
+      <div className="hidden xl:flex absolute left-20 inset-y-0 items-center pointer-events-auto">
+        <Link to="/" className="text-2xl font-bold whitespace-nowrap">
+          Schachclub Laufenburg e. V.
+        </Link>
+      </div>
+
       <div className="absolute right-0 inset-y-0 pr-4 hidden lg:flex items-center pointer-events-none">
         <img src="/photos/part.png" alt="Part" className="h-full max-h-16 object-contain" />
       </div>
 
       <div className="container mx-auto px-4 py-4 pl-16 pr-16 lg:pl-24 lg:pr-24">
         <div className="flex items-center justify-between">
-
-
-          <Link to="/" className="hidden lg:inline-block text-2xl font-bold ml-2">
-            Schachclub Laufenburg e. V.
-          </Link>
-
-          {/* Center: navigation and mobile controls */}
           <div className="flex-1 flex items-center justify-center">
-            {/* Mobile Link (keeps the centered title on phones) */}
             <Link to="/" className="lg:hidden text-2xl font-bold">
               Schachclub Laufenburg
             </Link>
-
-            {/* Mobile Menu Button */}
             <div className="lg:hidden absolute right-4">
               <button
                 onClick={handleMenuClick}
@@ -68,8 +80,7 @@ const Header = () => {
               </button>
             </div>
 
-            {/* Desktop Navigation */}
-            <nav className="hidden lg:flex gap-8">
+            <nav className="hidden lg:flex gap-8 relative xl:ml-96">
             {navItems.map((item) => {
               const parentActive = isActive(item.path) || (item.children?.some((c) => isActive(resolvePath(item.path, c.path))));
 
@@ -84,7 +95,6 @@ const Header = () => {
                     >
                       {item.label}
                     </Link>
-
                     <div className="absolute left-0 top-full w-44 bg-club-primary text-white rounded shadow-lg opacity-0 -translate-y-2 group-hover:translate-y-0 group-hover:opacity-100 transform transition-all duration-300 ease-out pointer-events-none group-hover:pointer-events-auto origin-top">
                       {item.children.map((sub) => {
                         const fullPath = resolvePath(item.path, sub.path);
@@ -116,13 +126,11 @@ const Header = () => {
               );
             })}
           </nav>
-
           </div>
-
-          {/* Right image moved outside container (absolute) */}
 
           {/* Mobile Navigation */}
           <div
+            ref={mobileMenuRef}
             className={`absolute left-0 right-0 top-full w-full bg-club-primary lg:hidden overflow-auto transition-all duration-300 ease-in-out transform shadow-lg z-[100] ${
               isMenuOpen ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-2 pointer-events-none"
             }`}
@@ -150,7 +158,7 @@ const Header = () => {
                         transform: isMenuOpen ? "translateY(0)" : "translateY(-10px)",
                       }}
                     >
-                      <span className={isActive(item.path) ? "text-club-accent" : "text-white"}>{item.label}</span>
+                      <span className={isActive(item.path) || (item.children?.some((c) => isActive(resolvePath(item.path, c.path)))) ? "text-club-accent" : "text-white"}>{item.label}</span>
                       <ChevronDown className={`w-4 h-4 transition-transform ${openSubmenu === item.path ? "rotate-180" : ""}`} />
                     </button>
 

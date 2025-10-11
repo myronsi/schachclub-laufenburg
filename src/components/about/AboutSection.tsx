@@ -1,4 +1,4 @@
-import { Info, Euro, Users, MapPin, Clock, Phone, Mail, Calendar, BookOpen, Heart, Flag, Trophy } from "lucide-react";
+import { Euro, Users, MapPin, Clock, Phone, Mail, Calendar, BookOpen, Heart } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useRef } from "react";
@@ -117,18 +117,18 @@ const AboutSection = () => {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <BookOpen className="text-club-accent" /> Kurze Chronik
+                <BookOpen className="text-club-accent" /> Jugend & Training
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-sm text-gray-700 space-y-2">
                 <p>
-                  Gegründet 1969, gewachsen durch ehrenamtliches Engagement. Highlights: Aufbau der Jugendabteilung, zahlreiche lokale Turniere und freundschaftliche Begegnungen mit Vereinen der Region.
+                  Unsere Jugendabteilung bietet regelmäßiges Training, Turnierbeteiligung und Spaß für Kinder und Jugendliche. Anfänger sind jederzeit willkommen.
                 </p>
-                <p className="text-xs text-gray-500">Für die vollständige Chronik besuche unsere Chronik-Seite.</p>
+                <p className="text-xs text-gray-500">Weitere Informationen zu Terminen, Trainern und Programmen findest du auf der Jugendseite.</p>
                 <div className="mt-3">
-                  <Link to="/archiv/chronik" className="text-sm underline text-club-primary hover:text-club-accent">
-                   Zur Chronik
+                  <Link to="/jugend" className="text-sm underline text-club-primary hover:text-club-accent">
+                   Zur Jugendseite
                   </Link>
                 </div>
               </div>

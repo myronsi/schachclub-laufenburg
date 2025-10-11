@@ -5,6 +5,8 @@ import { news } from "./arrays/newsList"
 
 const NewsSlider = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
   
   const sortedNews = [...news].sort((a, b) => a.id - b.id);
 
@@ -39,8 +41,31 @@ const NewsSlider = () => {
     setCurrentSlide((prev) => (prev - 1 + sortedNews.length) % sortedNews.length);
   };
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+
+    if (isLeftSwipe) {
+      nextSlide();
+    } else if (isRightSwipe) {
+      prevSlide();
+    }
+  };
+
   const renderSlideContent = (item: any) => {
-    const content = (
+    return (
       <>
         <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6">
           {item.title}
@@ -50,24 +75,15 @@ const NewsSlider = () => {
         </p>
       </>
     );
-
-    if (!item.link) return content;
-    if (typeof item.link === 'string' && item.link.startsWith('http')) {
-      return (
-        <a href={item.link} target="_blank" rel="noopener noreferrer" className="block">
-          {content}
-        </a>
-      );
-    }
-    return (
-      <Link to={item.link} className="block">
-        {content}
-      </Link>
-    );
   };
 
   return (
-    <div className="absolute inset-0 w-full h-full overflow-hidden">
+    <div 
+      className="absolute inset-0 w-full h-full overflow-hidden"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
       {sortedNews.map((item, index) => (
         <div
           key={item.id}

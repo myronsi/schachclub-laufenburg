@@ -1,8 +1,8 @@
 export const navItems = [
     { path: "/", label: "Aktuelles" },
     { path: "/ueberuns", label: "Über uns" },
+    { path: "/mitgliedwerden", label: "Mitglied werden" },
     { path: "/mannschaften", label: "Mannschaften" },
-    { path: "/jugend", label: "Jugend" },
     { 
       path: "/turniere", 
       label: "Turniere" 
