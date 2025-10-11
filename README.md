@@ -1,26 +1,16 @@
 # SC Laufenburg Website
 
-Official website for the Schachclub (Chess Club) Laufenburg e.V., a vibrant chess community in Laufenburg, Baden, Germany.
+Official website for the Schachclub (Chess Club) Laufenburg e.V., a chess community in Laufenburg, Baden, Germany.
 
 ## 🌐 Project Info
 
-**Live URL**: https://www.sc-laufenburg.de/
+**Live URL**: https://sc-laufenburg.de/
 
 **Repository**: https://github.com/myronsi/schachclub-laufenburg
 
 **Maintainer**: Myron Ilchenko
 
 **Contact**: myron.ilchenko@gmail.com
-
-## 📋 About the Club
-
-SC Laufenburg is a chess club located in Laufenburg (Baden), Germany. The club offers:
-
-- **Address**: Feuerwehrhaus Hochsal, Bertastraße 6, 79725 Laufenburg-Hochsal
-- **Club Address**: Schillerstraße 6, 79725 Laufenburg
-- **Playing Times**: Tuesdays, 6:30 PM
-- **Youth Training**: Tuesdays, 5:00 PM
-- **Email**: 1.Vorsitzender@sc-laufenburg.de
 
 ## ✨ Features
 
@@ -49,7 +39,7 @@ git clone https://github.com/myronsi/schachclub-laufenburg.git
 cd schachclub-laufenburg
 
 # Step 3: Install the necessary dependencies
-npm install
+npm install --legacy-peer-deps
 
 # Step 4: Start the development server with auto-reloading and instant preview
 npm run dev
@@ -109,7 +99,7 @@ schachclub-laufenburg/
 
 ## 🌍 Deployment
 
-The website is deployed and accessible at https://www.sc-laufenburg.de/
+The website is deployed and accessible at https://sc-laufenburg.de/
 
 To build for production:
 
@@ -124,9 +114,9 @@ The production-ready files will be in the `dist/` directory.
 Contributions are welcome! If you'd like to contribute to the SC Laufenburg website:
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
+2. Create a feature branch (`git checkout -b feature/your-feature`)
+3. Commit your changes (`git commit -m 'Add some your features'`)
+4. Push to the branch (`git push origin feature/your-feature`)
 5. Open a Pull Request
 
 Please ensure your code follows the existing style and passes linting.
@@ -141,7 +131,7 @@ Copyright © 2025 SC Laufenburg e.V. All rights reserved.
 
 For questions about the website or the chess club:
 
-- **Website**: https://www.sc-laufenburg.de/
+- **Website**: https://sc-laufenburg.de/
 - **Email**: 1.Vorsitzender@sc-laufenburg.de
 - **Developer**: myron.ilchenko@gmail.com
 
