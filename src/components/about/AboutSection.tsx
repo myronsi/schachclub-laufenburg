@@ -47,7 +47,7 @@ const AboutSection = () => {
                   </div>
                 </div>
                 <div className="mt-4 flex gap-2">
-                  <a href="https://maps.app.goo.gl/puPFehZ1gS2ny2Kn8" target="_blank" rel="noopener noreferrer" className="text-sm underline text-club-primary hover:text-club-accent">Anfahrt</a>
+                  <a href="https://maps.app.goo.gl/MuWvmbJBxckqRG489" target="_blank" rel="noopener noreferrer" className="text-sm underline text-club-primary hover:text-club-accent">Anfahrt</a>
                 </div>
               </div>
             </CardContent>
