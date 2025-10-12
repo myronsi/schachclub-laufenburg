@@ -22,7 +22,9 @@ lerna-debug.log*
 package-lock.json
 /node_modules
 *.local
+*.env
 
 # Outputs
 /dist
 /dist-ssr
+calendarList.json
