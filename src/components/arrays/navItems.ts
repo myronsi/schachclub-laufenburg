@@ -3,6 +3,7 @@ export const navItems = [
     { path: "/ueberuns", label: "Über uns" },
     { path: "/mitgliedwerden", label: "Mitglied werden" },
     { path: "/mannschaften", label: "Mannschaften" },
+    // { path: "/kalender", label: "Kalender" },
     { 
       path: "/turniere", 
       label: "Turniere" 

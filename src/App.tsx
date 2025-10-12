@@ -20,6 +20,7 @@ import Galerie from "./pages/archive/Galerie";
 import Documents from "./pages/archive/Documents";
 import Contact from "./pages/Contact";
 import ContactOk from "./pages/ContactOk";
+import Calendar from "./pages/Calendar";
 import Impressum from "./pages/Impessum";
 import Datenschutz from "./pages/Datenschutz";
 import Mitgliedwerden from "./pages/Mitgliedweden";
@@ -51,6 +52,7 @@ const App = () => (
             <Route path="/archiv/dokumente" element={<Documents />} />
             <Route path="/kontakt" element={<Contact />} />
             <Route path="/kontakt-ok" element={<ContactOk />} />
+            <Route path="/kalender" element={<Calendar />} />
             <Route path="/mitgliedwerden" element={<Mitgliedwerden />} />
             <Route path="/impressum" element={<Impressum />} />
             <Route path="/datenschutz" element={<Datenschutz />} />
