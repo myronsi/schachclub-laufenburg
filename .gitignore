@@ -23,6 +23,7 @@ package-lock.json
 /node_modules
 *.local
 *.env
+*.php
 
 # Outputs
 /dist

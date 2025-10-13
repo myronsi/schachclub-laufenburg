@@ -7,7 +7,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import type { CalendarEvent } from "@/types/calendarTypes";
-const REMOTE_CALENDAR_URL = "/calendarList.json";
+const REMOTE_CALENDAR_URL = "/calendar-proxy.php";
 
 function isCalendarEvent(obj: any): obj is CalendarEvent {
   return obj && typeof obj.title === 'string' && typeof obj.date === 'string' && ['tournament','meeting','training','special'].includes(obj.type);
@@ -142,6 +142,22 @@ const CalendarSection = () => {
     }
   };
 
+  // Use stronger, solid colors for badges when the cell is the current day
+  const getEventTypeColorForToday = (type: string) => {
+    switch (type) {
+      case 'tournament':
+        return 'bg-red-600 text-white';
+      case 'meeting':
+        return 'bg-blue-600 text-white';
+      case 'training':
+        return 'bg-green-600 text-white';
+      case 'special':
+        return 'bg-purple-600 text-white';
+      default:
+        return 'bg-gray-600 text-white';
+    }
+  };
+
   const getEventTypeLabel = (type: string) => {
     switch (type) {
       case 'tournament':
@@ -160,13 +176,6 @@ const CalendarSection = () => {
   return (
     <section id="calendar" className="py-16 animate-fadeIn">
       <div className="container mx-auto px-4">
-        <header className="text-center mb-10" ref={introAnim.elementRef}>
-          <h2 className="text-3xl font-bold text-club-primary">Veranstaltungskalender</h2>
-          <p className="mt-3 text-gray-600 max-w-2xl mx-auto">
-            Hier finden Sie alle wichtigen Termine und Veranstaltungen des Schachclubs Laufenburg.
-          </p>
-        </header>
-
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div className="flex flex-wrap gap-2">
             <button
@@ -212,7 +221,7 @@ const CalendarSection = () => {
                 key={idx}
                 onClick={() => { setSelectedDate(key); setDialogOpen(true); }}
                 aria-pressed={isSelected}
-                  className={`group p-3 h-28 text-left flex flex-col justify-between rounded-sm border focus:outline-none transition-colors duration-150 ${isSelected ? 'bg-sky-100 ring-2 ring-sky-200' : (toKey(d) === todayKey) ? 'bg-sky-100 text-white' : isSameMonth(d) ? 'bg-white hover:bg-sky-50' : 'bg-gray-50 text-gray-400 hover:bg-sky-50'}`}
+                  className={`group p-3 h-28 text-left flex flex-col justify-between rounded-sm border focus:outline-none transition-colors duration-150 ${isSelected ? 'bg-sky-100 ring-2 ring-sky-200' : (toKey(d) === todayKey) ? 'bg-sky-100' : isSameMonth(d) ? 'bg-white hover:bg-sky-50' : 'bg-gray-50 text-gray-400 hover:bg-sky-50'}`}
               >
                 <div className="flex items-start justify-between">
                     <div className={`flex items-center gap-2`}> 
@@ -221,10 +230,10 @@ const CalendarSection = () => {
                 </div>
 
                 <div className="flex flex-col gap-1">
-                  {evs.slice(0,3).map((ev, i) => (
-                    <span key={`${key}-${i}`} className={`text-xs truncate px-2 py-0.5 rounded ${ (toKey(d) === todayKey && !isSelected) ? 'bg-white/10 text-white' : getEventTypeColor(ev.type)}`}>{ev.title}</span>
+                  {evs.slice(0,2).map((ev, i) => (
+                    <span key={`${key}-${i}`} className={`text-xs truncate px-2 py-0.5 rounded ${ (toKey(d) === todayKey && !isSelected) ? getEventTypeColorForToday(ev.type) : getEventTypeColor(ev.type)}`}>{ev.title}</span>
                   ))}
-                  {evs.length > 3 && <span className="text-xs text-gray-500">+{evs.length - 3} weitere</span>}
+                  {evs.length > 2 && <span className="text-xs text-gray-500">+{evs.length - 2} weitere</span>}
                 </div>
               </button>
             );
@@ -260,16 +269,6 @@ const CalendarSection = () => {
             </DialogContent>
           )}
         </Dialog>
-
-        <div className="text-center mt-8 p-6 bg-amber-50 rounded-lg border border-amber-200">
-          <Users className="w-12 h-12 text-amber-600 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-gray-800 mb-2">Interesse geweckt?</h3>
-          <p className="text-gray-600 mb-4">Besuchen Sie uns bei einem unserer Termine oder werden Sie Mitglied!</p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <a href="/mitgliedwerden" className="inline-flex items-center justify-center px-6 py-3 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors duration-200 font-medium">Mitglied werden</a>
-            <a href="/kontakt" className="inline-flex items-center justify-center px-6 py-3 bg-white text-amber-600 border border-amber-600 rounded-lg hover:bg-amber-50 transition-colors duration-200 font-medium">Kontakt aufnehmen</a>
-          </div>
-        </div>
       </div>
     </section>
   );

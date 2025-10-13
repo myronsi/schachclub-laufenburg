@@ -5,7 +5,7 @@ import { useRef, useState, useEffect } from "react";
 import type { CalendarEvent } from "@/types/calendarTypes";
 import { Link } from "react-router-dom";
 import FastInfo from "@/components/about/FastInfo";
-const REMOTE_CALENDAR_URL = "/calendarList.json";
+const REMOTE_CALENDAR_URL = "/calendar-proxy.php";
 
 function isCalendarEvent(obj: any): obj is CalendarEvent {
   return obj && typeof obj.title === 'string' && typeof obj.date === 'string' && ['tournament','meeting','training','special'].includes(obj.type);

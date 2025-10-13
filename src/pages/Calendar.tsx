@@ -2,7 +2,7 @@ import CalendarSection from "@/components/CalendarSection";
 
 const Calendar = () => {
   return (
-    <div className="min-h-screen pt-16">
+    <div className="max-h-screen">
       <main>
         <CalendarSection />
       </main>
