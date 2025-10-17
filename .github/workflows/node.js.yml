@@ -31,6 +31,7 @@ jobs:
           username: ${{ secrets.SFTP_USERNAME }}
           server: ${{ secrets.SFTP_SERVER }}
           password: ${{ secrets.SFTP_PASSWORD }}
+          sftp_only: true
           local_path: './dist/*'
           remote_path: '/'
           sftpArgs: '-o ConnectTimeout=5'
