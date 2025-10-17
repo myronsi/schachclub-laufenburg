@@ -55,7 +55,7 @@ const UpcomingEvents = () => {
         <p className="text-sm text-gray-700">{fallbackMessage}</p>
       )}
       <div className="mt-4">
-        <Link to="/kalender" className="text-sm underline text-club-primary hover:text-club-accent">Alle Termine & Turniere</Link>
+        <Link to="/kalender" className="inline-flex items-center gap-2 text-sm px-3 py-1 rounded bg-club-accent hover:bg-club-dark text-white w-max">Alle Termine & Turniere</Link>
       </div>
     </>
   );
@@ -103,7 +103,9 @@ const AboutSection = () => {
                   </div>
                 </div>
                 <div className="mt-4 flex gap-2">
-                  <a href="https://maps.app.goo.gl/MuWvmbJBxckqRG489" target="_blank" rel="noopener noreferrer" className="text-sm underline text-club-primary hover:text-club-accent">Anfahrt</a>
+                  <Link to="/spiellokal" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm px-3 py-1 rounded bg-club-accent hover:bg-club-dark text-white w-max">
+                    Anfahrt
+                  </Link>
                 </div>
               </div>
             </CardContent>
@@ -126,9 +128,9 @@ const AboutSection = () => {
               </ul>
 
               <div className="mt-4 flex flex-col gap-2">
-                <a href="mailto:1.Vorsitzender@sc-laufenburg.de" className="inline-flex items-center gap-2 text-sm px-3 py-1 rounded bg-club-accent hover:bg-club-dark text-white w-max">
+                <Link to="/kontakt" className="inline-flex items-center gap-2 text-sm px-3 py-1 rounded bg-club-accent hover:bg-club-dark text-white w-max">
                   <Mail className="w-4 h-4" /> E-Mail schreiben
-                </a>
+                </Link>
               </div>
             </CardContent>
           </Card>

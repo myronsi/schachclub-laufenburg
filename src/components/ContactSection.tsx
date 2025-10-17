@@ -15,7 +15,7 @@ const ContactSection = () => {
     name: '',
     email: '',
     message: '',
-    subject: 'Kontaktanfrage von Website'
+    subject: ''
   });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -111,7 +111,7 @@ const ContactSection = () => {
               <p className='text-sm/5 font-medium pb-1'>Betreff</p>
               <Input 
                 name="subject"
-                placeholder="Betreff" 
+                placeholder="Ihr Betreff" 
                 value={formData.subject}
                 onChange={handleChange}
                 required

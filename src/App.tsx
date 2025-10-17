@@ -9,6 +9,7 @@ import Home from "./pages/Home";
 import About from "./pages/About";
 import Mannschaften from "./pages/Mannschaften";
 import Youth from "./pages/Youth";
+import Spiellokal from "./pages/Spiellokal"
 import Tournaments from "./pages/tournaments/Tournaments";
 import Vereinsmeister from "./pages/tournaments/Vereinsmeister";
 import Pokalsieger from "./pages/tournaments/Pokalsieger";
@@ -41,6 +42,7 @@ const App = () => (
             <Route path="/ueberuns" element={<About />} />
             <Route path="/mannschaften" element={<Mannschaften />} />
             <Route path="/jugend" element={<Youth />} />
+            <Route path="/spiellokal" element={<Spiellokal />}/>
             <Route path="/turniere" element={<Tournaments />} />
             <Route path="/turniere/vereinsmeister" element={<Vereinsmeister />} />
             <Route path="/turniere/pokalsieger" element={<Pokalsieger />} />
