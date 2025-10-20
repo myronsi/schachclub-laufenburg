@@ -54,96 +54,85 @@ const ContactSection = () => {
   };
 
   return (
-    <section id="contact" className="py-16 container mx-auto px-4 animate-fadeIn">
-      <h2 className="text-3xl font-bold text-center mb-12 text-club-primary">
-        Kontakt
-      </h2>
-      <div className="flex flex-col items-center">
-        <Card 
-          ref={infoAnimation.elementRef}
-          className={`p-6 opacity-0 w-full max-w-2xl mb-8 ${infoAnimation.isVisible ? 'animate-slideInLeft' : ''}`}
-        >
-          <h3 className="text-xl font-semibold mb-6">Kontaktinformationen</h3>
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <Mail className="text-club-accent" size={20} />
-              <Link
-                to="mailto:info@sc-laufenburg.de"
-                className="hover:text-club-accent underline"
+    <section id="contact" className="py-16 animate-fadeIn">
+      <div className="container mx-auto px-4">
+        <header className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-club-primary">Kontakt</h2>
+            <p className="mt-3 text-gray-600 max-w-2xl mx-auto">
+              Wir freuen uns auf Ihre Nachricht — ob Frage, Anregung oder Hinweis. Nutzen Sie dafür einfach das Formular. Wir melden uns in der Regel innerhalb von zwei Werktagen.
+            </p>
+        </header>
+
+        <div className="grid grid-cols-1 gap-8 items-start">
+
+          <Card
+            ref={formAnimation.elementRef}
+            className={`p-6 opacity-0 max-w-2xl mx-auto w-full ${formAnimation.isVisible ? 'animate-fadeIn' : ''}`}
+          >
+            <h3 className="text-xl font-semibold mb-4">Schreiben Sie uns</h3>
+            <p className="text-sm text-gray-600 mb-4">Bitte füllen Sie das Formular aus. Pflichtfelder sind mit einem Stern gekennzeichnet.</p>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <p className='text-sm/5 font-medium pb-1'>Name <span className="text-red-500">*</span></p>
+                <Input
+                  name="name"
+                  placeholder="Ihr Name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div>
+                <p className='text-sm/5 font-medium pb-1'>E-Mail <span className="text-red-500">*</span></p>
+                <Input
+                  type="email"
+                  name="email"
+                  placeholder="Ihre E-Mailadresse"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div>
+                <p className='text-sm/5 font-medium pb-1'>Betreff <span className="text-red-500">*</span></p>
+                <Input
+                  name="subject"
+                  placeholder="Ihr Betreff"
+                  value={formData.subject}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div>
+               <p className='text-sm/5 font-medium pb-1'>Ihre Nachricht <span className="text-red-500">*</span></p>
+                <Textarea
+                  name="message"
+                  placeholder="Ihre Nachricht"
+                  className="min-h-[120px]"
+                  value={formData.message}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              {error && <div className="text-red-500 text-sm">{error}</div>}
+              <Button
+                type="submit"
+                className="w-full bg-club-accent hover:bg-club-accent/90"
+                disabled={submitting}
               >
-                info@sc-laufenburg.de
+                {submitting ? 'Wird gesendet...' : 'Nachricht senden'}
+              </Button>
+            </form>
+
+            <p className="text-sm mt-4 text-center">
+              Mit dem Absenden akzeptieren Sie unsere{' '}
+              <Link to="/datenschutz" className="underline hover:text-club-accent">
+                Datenschutzerklärung
               </Link>
-            </div>
-            <div className="flex items-center gap-3">
-              <MapPin className="text-club-accent" size={20} />
-              <span>Bertastraße 6, 79725 Laufenburg</span>
-            </div>
-          </div>
-        </Card>
-        <Card 
-          ref={formAnimation.elementRef}
-          className={`p-6 opacity-0 w-full max-w-2xl ${formAnimation.isVisible ? 'animate-slideInRight' : ''}`}
-        >
-          <h3 className="text-xl font-semibold mb-6">Schreiben Sie uns</h3>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <p className='text-sm/5 font-medium pb-1'>Name</p>
-              <Input 
-                name="name"
-                placeholder="Ihr Name" 
-                value={formData.name}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div>
-              <p className='text-sm/5 font-medium pb-1'>E-Mail</p>
-              <Input 
-                type="email"
-                name="email"
-                placeholder="Ihre E-Mailadresse" 
-                value={formData.email}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div>
-              <p className='text-sm/5 font-medium pb-1'>Betreff</p>
-              <Input 
-                name="subject"
-                placeholder="Ihr Betreff" 
-                value={formData.subject}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div>
-             <p className='text-sm/5 font-medium pb-1'>Ihre Nachricht</p> 
-              <Textarea 
-                name="message"
-                placeholder="Ihre Nachricht" 
-                className="min-h-[120px]"
-                value={formData.message}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            {error && <div className="text-red-500 text-sm">{error}</div>}
-            <Button 
-              type="submit"
-              className="w-full bg-club-accent hover:bg-club-accent/90"
-              disabled={submitting}
-            >
-              {submitting ? 'Wird gesendet...' : 'Nachricht senden'}
-            </Button>
-          </form>
-          <p className="text-sm mt-4 text-center">
-            Mit dem Absenden akzeptieren Sie unsere{' '}
-            <Link to="/datenschutz" className="underline hover:text-club-accent">
-              Datenschutzerklärung
-            </Link>
-          </p>
-        </Card>
+            </p>
+          </Card>
+        </div>
       </div>
     </section>
   );

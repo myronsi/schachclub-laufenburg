@@ -28,10 +28,11 @@ const SpiellokalSection = () => {
         <div className="mb-12 bg-white rounded-lg shadow-md p-6">
           <div className="space-y-4">
             <p>
-              Unser Spiellokal befindet sich im Feuerwehrhaus Hochsal. Hier treffen wir uns wöchentlich zum Schachspielen und Training. Das Lokal ist im Obergeschoss und bietet eine gemütliche Atmosphäre für Spieler aller Altersgruppen. Bei Fragen gerne eine Mail an:{" "}
-              <a href="mailto:info@sc-laufenburg.de" className="text-blue-600 hover:text-blue-800 hover:underline">
-                info@sc-laufenburg.de
+              Unser Spiellokal befindet sich im Feuerwehrhaus Hochsal. Hier treffen wir uns wöchentlich zum Schachspielen und Training. Das Lokal ist im Obergeschoss und bietet eine gemütliche Atmosphäre für Spieler aller Altersgruppen. Bei Fragen füllen Sie bitte das Kontaktformular auf{" "}
+              <a href="/kontakt" className="text-blue-600 hover:text-blue-800 hover:underline">
+                Kontaktseite
               </a>
+              .
             </p>
           </div>
         </div>
