@@ -25,6 +25,7 @@ import Calendar from "./pages/Calendar";
 import Impressum from "./pages/Impessum";
 import Datenschutz from "./pages/Datenschutz";
 import Mitgliedwerden from "./pages/Mitgliedweden";
+import Login from "./pages/Login";
 import Footer from "@/components/Footer";
 import NotFound from "./pages/notFound";
 
@@ -56,6 +57,7 @@ const App = () => (
             <Route path="/kontakt-ok" element={<ContactOk />} />
             <Route path="/kalender" element={<Calendar />} />
             <Route path="/mitgliedwerden" element={<Mitgliedwerden />} />
+            <Route path="/login" element={<Login />} />
             <Route path="/impressum" element={<Impressum />} />
             <Route path="/datenschutz" element={<Datenschutz />} />
             <Route path="*" element={<NotFound />} />

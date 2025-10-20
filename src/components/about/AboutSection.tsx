@@ -190,15 +190,15 @@ const AboutSection = () => {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Heart className="text-club-accent" /> Mitglied werden
+                <Users className="text-club-accent" /> Mitgliederbereich
               </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-gray-700 space-y-2">
-                Als Mitglied unterstützt du den Verein und profitierst von regelmäßigen Spielabenden, Trainings und Vereinsaktivitäten.
+                Geschützter Bereich für Mitglieder: Termine, Protokolle und exklusive Informationen. Bitte melde dich an, um Zugriff zu erhalten.
               </p>
               <div className="mt-4">
-                <Link to="/mitgliedwerden" className="inline-flex items-center gap-2 text-sm px-3 py-1 rounded bg-club-accent hover:bg-club-dark text-white w-max">Jetzt Mitglied werden</Link>
+                <Link to="/login" className="inline-flex items-center gap-2 text-sm px-3 py-1 rounded bg-club-accent hover:bg-club-dark text-white w-max">Zum Mitgliederbereich</Link>
               </div>
             </CardContent>
           </Card>
