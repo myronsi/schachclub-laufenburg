@@ -20,22 +20,12 @@ const SpiellokalSection = () => {
   return (
     <section id="spiellokal" className="py-16 animate-fadeIn">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-club-primary mb-12 text-center">
-          Unser Spiellokal
-        </h2>
-
-        {/* Introduction */}
-        <div className="mb-12 bg-white rounded-lg shadow-md p-6">
-          <div className="space-y-4">
-            <p>
-              Unser Spiellokal befindet sich im Feuerwehrhaus Hochsal. Hier treffen wir uns wöchentlich zum Schachspielen und Training. Das Lokal ist im Obergeschoss und bietet eine gemütliche Atmosphäre für Spieler aller Altersgruppen. Bei Fragen füllen Sie bitte das Kontaktformular auf{" "}
-              <a href="/kontakt" className="text-blue-600 hover:text-blue-800 hover:underline">
-                Kontaktseite
-              </a>
-              .
-            </p>
-          </div>
-        </div>
+        <header className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-club-primary">Unser Spiellokal</h2>
+          <p className="mt-3 text-gray-600 max-w-2xl mx-auto">
+            Im Herzen von Hochsal treffen sich Mitglieder und Gäste in unserem freundlichen Spiellokal: gemütliche Atmosphäre, regelmäßiges Training, und Raum für Turniere und freies Spiel. Ob Anfänger oder erfahrener Spieler — bei uns ist jeder willkommen.
+          </p>
+        </header>
 
         {/* What Section */}
         <div className="mb-12 bg-white rounded-lg shadow-md p-6">

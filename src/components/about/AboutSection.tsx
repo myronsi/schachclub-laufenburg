@@ -103,8 +103,8 @@ const AboutSection = () => {
                   </div>
                 </div>
                 <div className="mt-4 flex gap-2">
-                  <Link to="/spiellokal" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm px-3 py-1 rounded bg-club-accent hover:bg-club-dark text-white w-max">
-                    Anfahrt
+                  <Link to="/spiellokal" rel="noopener noreferrer" className="text-sm underline text-club-primary hover:text-club-accent">
+                    Mehr erfahren
                   </Link>
                 </div>
               </div>
@@ -129,7 +129,7 @@ const AboutSection = () => {
 
               <div className="mt-4 flex flex-col gap-2">
                 <Link to="/kontakt" className="inline-flex items-center gap-2 text-sm px-3 py-1 rounded bg-club-accent hover:bg-club-dark text-white w-max">
-                  <Mail className="w-4 h-4" /> E-Mail schreiben
+                  <Mail className="w-4 h-4" /> Kontaktieren
                 </Link>
               </div>
             </CardContent>
