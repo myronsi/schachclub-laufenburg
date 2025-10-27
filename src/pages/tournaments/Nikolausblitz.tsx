@@ -2,7 +2,7 @@ import NikolausblitzComponent from "@/components/tournaments/NikolausblitzCompon
 
 const Nikolausblitz = () => {
   return (
-    <div className="min-h-screen pt-16">
+    <div className="pt-16">
       <main>
         <NikolausblitzComponent />
       </main>

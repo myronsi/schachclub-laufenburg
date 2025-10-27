@@ -2,7 +2,7 @@ import TournamentSection from "@/components/tournaments/TournamentSection";
 
 const Tournaments = () => {
   return (
-    <div className="min-h-screen pt-16">
+    <div className="pt-16">
       <main>
         <TournamentSection />
       </main>
