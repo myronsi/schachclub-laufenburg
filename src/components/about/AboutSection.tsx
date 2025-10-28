@@ -8,7 +8,7 @@ import FastInfo from "@/components/about/FastInfo";
 const REMOTE_CALENDAR_URL = "/calendar-proxy.php";
 
 function isCalendarEvent(obj: any): obj is CalendarEvent {
-  return obj && typeof obj.title === 'string' && typeof obj.date === 'string' && ['tournament','meeting','training','special'].includes(obj.type);
+  return obj && typeof obj.title === 'string' && typeof obj.date === 'string' && ['tournament','meeting','training','special', 'holiday'].includes(obj.type);
 }
 
 const UpcomingEvents = () => {
@@ -198,7 +198,7 @@ const AboutSection = () => {
                 Geschützter Bereich für Mitglieder: Termine, Protokolle und exklusive Informationen. Bitte melde dich an, um Zugriff zu erhalten.
               </p>
               <div className="mt-4">
-                <Link to="/login" className="inline-flex items-center gap-2 text-sm px-3 py-1 rounded bg-club-accent hover:bg-club-dark text-white w-max">Zum Mitgliederbereich</Link>
+                <Link to="/mitgliederbereich" className="inline-flex items-center gap-2 text-sm px-3 py-1 rounded bg-club-accent hover:bg-club-dark text-white w-max">Zum Mitgliederbereich</Link>
               </div>
             </CardContent>
           </Card>

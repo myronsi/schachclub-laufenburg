@@ -19,20 +19,23 @@ const MitgliederbereichSection = () => {
             <div className="max-w-3xl mx-auto bg-white border rounded-lg shadow p-6">
                 <h2 className="text-xl font-semibold mb-3">Vorteile eines Accounts</h2>
                 <ul className="list-inside list-disc space-y-2 text-gray-700">
-                <li>Zugriff auf geschützte Galerien und Vereinsfotos</li>
-                <li>Download von Protokollen und internen Dokumenten</li>
-                <li>Anmeldung zu internen Turnieren und Veranstaltungen</li>
-                <li>Persönliche Benachrichtigungen zu Terminen</li>
-                <li>Möglichkeit, Räume oder Materialien zu reservieren</li>
-                <li>Exklusive Informationen und Rabatte für Mitglieder</li>
+                    <li>Zugriff auf geschützte Galerien und Vereinsfotos</li>
+                    {/* <li>Persönliche Benachrichtigungen zu Terminen</li> */}
                 </ul>
 
                 <div className="mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <p className="text-sm text-gray-500">Bereits Mitglied? Melde dich an, um auf den Mitgliederbereich zuzugreifen.</p>
-                <div className="flex items-center gap-3">
-                    <Link to="/login" className="inline-flex px-4 py-2 bg-club-accent text-white rounded hover:bg-club-dark">Zum Login</Link>
-                    <Link to="/kontakt" className="inline-flex px-4 py-2 border border-gray-200 rounded hover:bg-gray-50">Kontakt</Link>
+                    <p className="text-sm text-gray-500">Bereits Mitglied? Melde dich an, um auf den Mitgliederbereich zuzugreifen.</p>
+                    <div className="flex items-center gap-3">
+                        <Link to="/login" className="inline-flex px-4 py-2 bg-club-accent text-white rounded hover:bg-club-dark whitespace-nowrap">Zum Login</Link>
+                    </div>
                 </div>
+                <h2 className="text-xl font-semibold mb-3 mt-6">Für Mitglieder des Schachclubs</h2>
+                <p className="text-gray-700">
+                  Falls du bereits Mitglied in unserem Schachclub bist, aber noch keinen Account besitzt, schreibe uns einfach über die Kontaktseite. Wir legen deinen Account schnell für dich an.
+                </p>
+
+                <div className="mt-6 flex items-center gap-3">
+                    <Link to="/kontakt" className="inline-flex px-4 py-2 border border-gray-200 rounded hover:bg-gray-50">Kontakt</Link>
                 </div>
             </div>
         </div>

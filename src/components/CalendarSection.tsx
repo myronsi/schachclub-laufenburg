@@ -151,6 +151,23 @@ const CalendarSection = () => {
     }
   };
 
+  const getEventTypeColorForDots = (type: string) => {
+    switch (type) {
+      case 'tournament':
+        return 'bg-red-600';
+      case 'meeting':
+        return 'bg-blue-600';
+      case 'training':
+        return 'bg-green-600';
+      case 'special':
+        return 'bg-purple-600';
+      case 'holiday':
+        return 'bg-yellow-600';
+      default:
+        return 'bg-gray-600';
+    }
+  }
+
   const getEventTypeColorForToday = (type: string) => {
     switch (type) {
       case 'tournament':
@@ -229,16 +246,25 @@ const CalendarSection = () => {
             const key = toKey(d);
             const evs = eventsByDate[key] || [];
             const isSelected = selectedDate === key;
+            const isToday = toKey(d) === todayKey;
+            const cellClass = isSelected
+              ? 'bg-sky-100 ring-2 ring-sky-200 border-sky-200 shadow'
+              : isToday
+              ? 'bg-amber-50 ring-2 ring-amber-300 border-amber-200 shadow-md'
+              : isSameMonth(d)
+              ? 'hover:bg-sky-50'
+              : 'bg-gray-50 text-gray-400 hover:bg-sky-50';
+
             return (
               <button
                 key={idx}
                 onClick={() => { setSelectedDate(key); setDialogOpen(true); }}
                 aria-pressed={isSelected}
-                  className={`group p-3 h-28 text-left flex flex-col justify-between rounded-sm focus:outline-none transition-colors duration-150 border border-gray-200 bg-white ${isSelected ? 'bg-sky-100 ring-2 ring-sky-200 border-sky-200 shadow' : (toKey(d) === todayKey) ? 'bg-sky-100 border-sky-200' : isSameMonth(d) ? 'hover:bg-sky-50' : 'bg-gray-50 text-gray-400 hover:bg-sky-50'}`}
+                  className={`group p-3 h-28 text-left flex flex-col justify-between rounded-sm focus:outline-none transition-colors duration-150 border border-gray-200 bg-white ${cellClass}`}
               >
                 <div className="flex items-start justify-between">
                     <div className={`flex items-center gap-2`}> 
-                      <div className={`text-sm font-semibold ${isSameMonth(d) ? 'text-sky-900' : 'text-gray-400'}`}>{d.getDate()}</div>
+                      <div className={`text-sm ${isToday ? 'text-amber-800 font-bold' : 'font-semibold'} ${isSameMonth(d) ? 'text-sky-900' : 'text-gray-400'}`}>{d.getDate()}</div>
                     </div>
                 </div>
 
@@ -249,7 +275,7 @@ const CalendarSection = () => {
                       <span
                         key={`${key}-${i}`}
                         title={ev.title}
-                        className={`w-2 h-2 rounded-sm inline-block border shadow-md ${ (toKey(d) === todayKey) ? getEventTypeColorForToday(ev.type) : getEventTypeColor(ev.type)}`}
+                        className={`${getEventTypeColorForDots(ev.type)} w-3 h-3 rounded-md inline-block border ${isToday ? 'ring-2 ring-white/60' : ''}`}
                         style={{flex: '0 0 auto'}}
                       />
                     ))}
