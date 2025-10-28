@@ -78,15 +78,9 @@ const ArchiveSection = () => {
 						beitragen, kontaktieren Sie uns bitte.
 					</p>
 					<div className="flex gap-3">
-						<a
-							href="mailto:info@sc-laufenburg.de"
-							className="inline-flex items-center gap-2 px-4 py-2 rounded bg-club-accent text-white hover:bg-club-dark transition"
-						>
-							Kontakt per E‑Mail
-						</a>
 						<Link
 							to="/kontakt"
-							className="inline-flex items-center gap-2 px-4 py-2 rounded bg-gray-100 text-gray-800 hover:bg-gray-200 transition"
+							className="inline-flex items-center gap-2 px-4 py-2 rounded bg-club-accent text-white hover:bg-club-dark transition"
 						>
 							Kontaktformular
 						</Link>

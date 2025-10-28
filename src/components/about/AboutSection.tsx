@@ -8,7 +8,7 @@ import FastInfo from "@/components/about/FastInfo";
 const REMOTE_CALENDAR_URL = "/calendar-proxy.php";
 
 function isCalendarEvent(obj: any): obj is CalendarEvent {
-  return obj && typeof obj.title === 'string' && typeof obj.date === 'string' && ['tournament','meeting','training','special'].includes(obj.type);
+  return obj && typeof obj.title === 'string' && typeof obj.date === 'string' && ['tournament','meeting','training','special', 'holiday'].includes(obj.type);
 }
 
 const UpcomingEvents = () => {
@@ -55,7 +55,7 @@ const UpcomingEvents = () => {
         <p className="text-sm text-gray-700">{fallbackMessage}</p>
       )}
       <div className="mt-4">
-        <Link to="/kalender" className="text-sm underline text-club-primary hover:text-club-accent">Alle Termine & Turniere</Link>
+        <Link to="/kalender" className="inline-flex items-center gap-2 text-sm px-3 py-1 rounded bg-club-accent hover:bg-club-dark text-white w-max">Alle Termine & Turniere</Link>
       </div>
     </>
   );
@@ -103,7 +103,9 @@ const AboutSection = () => {
                   </div>
                 </div>
                 <div className="mt-4 flex gap-2">
-                  <a href="https://maps.app.goo.gl/MuWvmbJBxckqRG489" target="_blank" rel="noopener noreferrer" className="text-sm underline text-club-primary hover:text-club-accent">Anfahrt</a>
+                  <Link to="/spiellokal" rel="noopener noreferrer" className="text-sm underline text-club-primary hover:text-club-accent">
+                    Mehr erfahren
+                  </Link>
                 </div>
               </div>
             </CardContent>
@@ -126,9 +128,9 @@ const AboutSection = () => {
               </ul>
 
               <div className="mt-4 flex flex-col gap-2">
-                <a href="mailto:1.Vorsitzender@sc-laufenburg.de" className="inline-flex items-center gap-2 text-sm px-3 py-1 rounded bg-club-accent hover:bg-club-dark text-white w-max">
-                  <Mail className="w-4 h-4" /> E-Mail schreiben
-                </a>
+                <Link to="/kontakt" className="inline-flex items-center gap-2 text-sm px-3 py-1 rounded bg-club-accent hover:bg-club-dark text-white w-max">
+                  <Mail className="w-4 h-4" /> Kontaktieren
+                </Link>
               </div>
             </CardContent>
           </Card>
@@ -188,15 +190,15 @@ const AboutSection = () => {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Heart className="text-club-accent" /> Mitglied werden
+                <Users className="text-club-accent" /> Mitgliederbereich
               </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-gray-700 space-y-2">
-                Als Mitglied unterstützt du den Verein und profitierst von regelmäßigen Spielabenden, Trainings und Vereinsaktivitäten.
+                Geschützter Bereich für Mitglieder: Termine, Protokolle und exklusive Informationen. Bitte melde dich an, um Zugriff zu erhalten.
               </p>
               <div className="mt-4">
-                <Link to="/mitgliedwerden" className="inline-flex items-center gap-2 text-sm px-3 py-1 rounded bg-club-accent hover:bg-club-dark text-white w-max">Jetzt Mitglied werden</Link>
+                <Link to="/mitgliederbereich" className="inline-flex items-center gap-2 text-sm px-3 py-1 rounded bg-club-accent hover:bg-club-dark text-white w-max">Zum Mitgliederbereich</Link>
               </div>
             </CardContent>
           </Card>

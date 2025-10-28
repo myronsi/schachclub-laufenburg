@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Image, SortDesc } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Image, SortDesc, Lock } from "lucide-react";
 import { ImageItem, images } from "@/components/arrays/mediaImages";
 import { Button } from "@/components/ui/button";
 import { ButtonToTop } from "@/components/ui/arrowToTop";
@@ -16,6 +16,9 @@ const GalerieComponent = () => {
   const [selectedImage, setSelectedImage] = useState<ImageItem | null>(null);
   const [isReversed, setIsReversed] = useState(false);
   const [openDialogsCount, setOpenDialogsCount] = useState(0);
+  const [checkingAuth, setCheckingAuth] = useState(true);
+  const [authenticated, setAuthenticated] = useState(false);
+  const [authError, setAuthError] = useState<string | null>(null);
 
   const sortedImages = isReversed ? [...images].reverse() : images;
 
@@ -23,6 +26,41 @@ const GalerieComponent = () => {
     setOpenDialogsCount(prev => open ? prev + 1 : Math.max(prev - 1, 0));
     if (!open) setSelectedImage(null);
   };
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('auth_username');
+    const storedSession = localStorage.getItem('auth_session_id');
+    if (!storedUser || !storedSession) {
+      setAuthenticated(false);
+      setCheckingAuth(false);
+      return;
+    }
+
+    (async () => {
+      setCheckingAuth(true);
+      try {
+        const res = await fetch('https://viserix.com/auth.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'check', username: storedUser, session_id: storedSession })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          setAuthenticated(true);
+        } else {
+          setAuthenticated(false);
+          setAuthError(data.message || 'Ungültige Session');
+          localStorage.removeItem('auth_username');
+          localStorage.removeItem('auth_session_id');
+        }
+      } catch (err: any) {
+        setAuthenticated(false);
+        setAuthError('Verbindungsfehler');
+      } finally {
+        setCheckingAuth(false);
+      }
+    })();
+  }, []);
 
   const renderImages = (items: ImageItem[]) => (
     <div className="space-y-4">
@@ -54,7 +92,42 @@ const GalerieComponent = () => {
 
   return (
     <>
-      <section id="media" className="py-16 animate-fadeIn relative">
+      {checkingAuth ? (
+        <section className="py-16 animate-fadeIn">
+          <div className="container mx-auto px-4 text-center">
+            <p className="text-gray-600">Login-Status wird überprüft…</p>
+          </div>
+        </section>
+      ) : !authenticated ? (
+        <section className="py-16 animate-fadeIn">
+          <div className="container mx-auto px-4">
+            <div className="max-w-2xl mx-auto">
+              <div className="p-8 bg-white shadow-lg rounded-xl border border-gray-100 text-center">
+                <div className="flex items-center justify-center mb-4">
+                  <div className="rounded-full bg-club-accent/10 p-4">
+                    <Lock className="w-8 h-8 text-club-accent" />
+                  </div>
+                </div>
+                <h3 className="text-2xl font-semibold mb-2">Mitgliederbereich - Zutritt geschützt</h3>
+                <p className="text-sm text-gray-600 mb-4">Unsere Fotogalerie ist exklusiv für Vereinsmitglieder verfügbar. Bitte melde dich an, um die vollständige Sammlung zu sehen.</p>
+                {authError && <p className="text-red-600 text-sm mb-4">{authError}</p>}
+
+                <ul className="text-sm text-gray-700 mb-6 space-y-2 list-inside list-disc text-left max-w-md mx-auto">
+                  <li>Exklusive Turnier- und Vereinsfotos</li>
+                  <li>Ergebnisse & Protokolle (für Mitglieder)</li>
+                </ul>
+
+                <div className="flex items-center justify-center gap-3">
+                  <a href="/login" className="inline-flex items-center gap-2 text-sm px-4 py-2 rounded bg-club-accent hover:bg-club-dark text-white">Zum Login</a>
+                  <a href="/kontakt" className="inline-flex items-center gap-2 text-sm px-4 py-2 rounded border border-gray-200 hover:bg-gray-50">Kontakt</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+  ) : (
+  <>
+  <section id="media" className="py-16 animate-fadeIn relative">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-club-primary mb-12 text-center">
             Fotogalerie
@@ -109,8 +182,10 @@ const GalerieComponent = () => {
         </div>
       </section>
 
-      <ButtonToTop forceHide={openDialogsCount > 0} />
-    </>
+  <ButtonToTop forceHide={openDialogsCount > 0} />
+  </>
+  )}
+  </>
   );
 };
 

@@ -46,7 +46,7 @@ const Header = () => {
     <header className="sticky top-0 bg-club-primary text-white w-full z-50" style={{ boxShadow: '0 -12px 24px rgba(0,0,0,0.24), 0 6px 12px rgba(0,0,0,0.06)' }}>
       <div className="absolute left-0 inset-y-0 pl-4 flex items-center pointer-events-auto">
         <Link to="/" aria-label="Startseite">
-          <img src="/photos/logo.png" alt="Schachclub Laufenburg" className="h-full max-h-16 object-contain" />
+          <img src="/photos/logo.jpg" alt="Schachclub Laufenburg" className="h-full max-h-16 object-contain" />
         </Link>
       </div>
 

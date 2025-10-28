@@ -10,7 +10,7 @@ import type { CalendarEvent } from "@/types/calendarTypes";
 const REMOTE_CALENDAR_URL = "/calendar-proxy.php";
 
 function isCalendarEvent(obj: any): obj is CalendarEvent {
-  return obj && typeof obj.title === 'string' && typeof obj.date === 'string' && ['tournament','meeting','training','special'].includes(obj.type);
+  return obj && typeof obj.title === 'string' && typeof obj.date === 'string' && ['tournament','meeting','training','special','holiday'].includes(obj.type);
 }
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
@@ -93,8 +93,15 @@ const CalendarSection = () => {
       d.setDate(start.getDate() + i);
       dates.push(d);
     }
+
+    // If the final (6th) week contains no days from the current month,
+    // drop that week so the calendar shows 5 rows instead of an all-next-month row.
+    const lastWeek = dates.slice(5 * 7, 6 * 7);
+    const hasCurrentMonthInLastWeek = lastWeek.some(d => d.getMonth() === currentMonth.getMonth() && d.getFullYear() === currentMonth.getFullYear());
+    if (!hasCurrentMonthInLastWeek) return dates.slice(0, 5 * 7);
+
     return dates;
-  }, [startOfCalendar]);
+  }, [startOfCalendar, currentMonth]);
 
   const prevMonth = () => setCurrentMonth(m => new Date(m.getFullYear(), m.getMonth() - 1, 1));
   const nextMonth = () => setCurrentMonth(m => new Date(m.getFullYear(), m.getMonth() + 1, 1));
@@ -137,12 +144,30 @@ const CalendarSection = () => {
         return 'bg-green-100 text-green-800';
       case 'special':
         return 'bg-purple-100 text-purple-800';
+      case 'holiday':
+        return 'bg-yellow-100 text-yellow-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
   };
 
-  // Use stronger, solid colors for badges when the cell is the current day
+  const getEventTypeColorForDots = (type: string) => {
+    switch (type) {
+      case 'tournament':
+        return 'bg-red-600';
+      case 'meeting':
+        return 'bg-blue-600';
+      case 'training':
+        return 'bg-green-600';
+      case 'special':
+        return 'bg-purple-600';
+      case 'holiday':
+        return 'bg-yellow-600';
+      default:
+        return 'bg-gray-600';
+    }
+  }
+
   const getEventTypeColorForToday = (type: string) => {
     switch (type) {
       case 'tournament':
@@ -153,6 +178,8 @@ const CalendarSection = () => {
         return 'bg-green-600 text-white';
       case 'special':
         return 'bg-purple-600 text-white';
+      case 'holiday':
+        return 'bg-yellow-500 text-gray-900';
       default:
         return 'bg-gray-600 text-white';
     }
@@ -168,6 +195,8 @@ const CalendarSection = () => {
         return 'Training';
       case 'special':
         return 'Besondere';
+      case 'holiday':
+        return 'Ferien';
       default:
         return type;
     }
@@ -185,6 +214,7 @@ const CalendarSection = () => {
             </button>
             <button onClick={() => setSelectedType('tournament')} className={`px-3 py-1 rounded-full text-sm ${selectedType === 'tournament' ? 'bg-red-600 text-white' : 'bg-white border border-gray-200'}`}>Turniere</button>
             <button onClick={() => setSelectedType('training')} className={`px-3 py-1 rounded-full text-sm ${selectedType === 'training' ? 'bg-green-600 text-white' : 'bg-white border border-gray-200'}`}>Training</button>
+            <button onClick={() => setSelectedType('holiday')} className={`px-3 py-1 rounded-full text-sm ${selectedType === 'holiday' ? 'bg-yellow-600 text-white' : 'bg-white border border-gray-200'}`}>Ferien</button>
             <button onClick={() => setSelectedType('meeting')} className={`px-3 py-1 rounded-full text-sm ${selectedType === 'meeting' ? 'bg-blue-600 text-white' : 'bg-white border border-gray-200'}`}>Versammlungen</button>
             <button onClick={() => setSelectedType('special')} className={`px-3 py-1 rounded-full text-sm ${selectedType === 'special' ? 'bg-purple-600 text-white' : 'bg-white border border-gray-200'}`}>Besondere</button>
           </div>
@@ -216,24 +246,59 @@ const CalendarSection = () => {
             const key = toKey(d);
             const evs = eventsByDate[key] || [];
             const isSelected = selectedDate === key;
+            const isToday = toKey(d) === todayKey;
+            const cellClass = isSelected
+              ? 'bg-sky-100 ring-2 ring-sky-200 border-sky-200 shadow'
+              : isToday
+              ? 'bg-amber-50 ring-2 ring-amber-300 border-amber-200 shadow-md'
+              : isSameMonth(d)
+              ? 'hover:bg-sky-50'
+              : 'bg-gray-50 text-gray-400 hover:bg-sky-50';
+
             return (
               <button
                 key={idx}
                 onClick={() => { setSelectedDate(key); setDialogOpen(true); }}
                 aria-pressed={isSelected}
-                  className={`group p-3 h-28 text-left flex flex-col justify-between rounded-sm border focus:outline-none transition-colors duration-150 ${isSelected ? 'bg-sky-100 ring-2 ring-sky-200' : (toKey(d) === todayKey) ? 'bg-sky-100' : isSameMonth(d) ? 'bg-white hover:bg-sky-50' : 'bg-gray-50 text-gray-400 hover:bg-sky-50'}`}
+                  className={`group p-3 h-28 text-left flex flex-col justify-between rounded-sm focus:outline-none transition-colors duration-150 border border-gray-200 bg-white ${cellClass}`}
               >
                 <div className="flex items-start justify-between">
                     <div className={`flex items-center gap-2`}> 
-                      <div className={`text-sm font-semibold text-sky-900`}>{d.getDate()}</div>
+                      <div className={`text-sm ${isToday ? 'text-amber-800 font-bold' : 'font-semibold'} ${isSameMonth(d) ? 'text-sky-900' : 'text-gray-400'}`}>{d.getDate()}</div>
                     </div>
                 </div>
 
-                <div className="flex flex-col gap-1">
-                  {evs.slice(0,2).map((ev, i) => (
-                    <span key={`${key}-${i}`} className={`text-xs truncate px-2 py-0.5 rounded ${ (toKey(d) === todayKey && !isSelected) ? getEventTypeColorForToday(ev.type) : getEventTypeColor(ev.type)}`}>{ev.title}</span>
-                  ))}
-                  {evs.length > 2 && <span className="text-xs text-gray-500">+{evs.length - 2} weitere</span>}
+                <div className="flex items-center gap-2">
+                  {/* Mobile: compact dots */}
+                  <div className="flex items-center gap-1 md:hidden">
+                    {evs.slice(0,3).map((ev, i) => (
+                      <span
+                        key={`${key}-${i}`}
+                        title={ev.title}
+                        className={`${getEventTypeColorForDots(ev.type)} w-3 h-3 rounded-md inline-block border ${isToday ? 'ring-2 ring-white/60' : ''}`}
+                        style={{flex: '0 0 auto'}}
+                      />
+                    ))}
+                    {evs.length > 3 && (
+                      <span className="text-xs text-gray-500">+{evs.length - 3}</span>
+                    )}
+                  </div>
+
+                  {/* Desktop: show full colored badges with titles */}
+                  <div className="hidden md:flex flex-col gap-1 w-full">
+                    {evs.slice(0,2).map((ev, i) => (
+                      <span
+                        key={`${key}-badge-${i}`}
+                        title={ev.title}
+                        className={`${(toKey(d) === todayKey) ? getEventTypeColorForToday(ev.type) : getEventTypeColor(ev.type)} text-xs px-2 py-0.5 rounded truncate max-w-full`}
+                      >
+                        {ev.title}
+                      </span>
+                    ))}
+                    {evs.length > 2 && (
+                      <span className="text-xs text-gray-500">+{evs.length - 2} weitere</span>
+                    )}
+                  </div>
                 </div>
               </button>
             );
@@ -260,7 +325,7 @@ const CalendarSection = () => {
                         {ev.description && <div className="text-sm text-gray-600 mt-1">{ev.description}</div>}
                       </div>
                       <div className="mt-3 sm:mt-0">
-                        <span className={`px-2 py-1 text-xs rounded ${getEventTypeColor(ev.type)}`}>{getEventTypeLabel(ev.type)}</span>
+                        <span className={`px-2 py-1 text-xs rounded ${(selectedDate === todayKey) ? getEventTypeColorForToday(ev.type) : getEventTypeColor(ev.type)}`}>{getEventTypeLabel(ev.type)}</span>
                       </div>
                     </div>
                   ))}
