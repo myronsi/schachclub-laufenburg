@@ -1,20 +1,26 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { news } from "./arrays/newsList"
 
 const NewsSlider = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
-  
-  const sortedNews = [...news].sort((a, b) => a.id - b.id);
+  const [items, setItems] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const sortedNews = [...items].sort((a, b) => a.id - b.id);
+  const slides = sortedNews.filter((v, i, a) => {
+    if (!v || !v.slug) return false;
+    return a.findIndex(x => x.slug === v.slug) === i;
+  });
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setCurrentSlide((prev) => (prev + 1) % sortedNews.length);
+      if (sortedNews.length > 0) setCurrentSlide((prev) => (prev + 1) % sortedNews.length);
     }, 15000);
-  
+
     return () => clearTimeout(timer);
   }, [currentSlide, sortedNews.length]);
 
@@ -32,6 +38,26 @@ const NewsSlider = () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, []);  
+
+  // fetch news from API
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    fetch('https://viserix.com/news.php')
+      .then(async (res) => {
+        if (!res.ok) throw new Error((await res.json())?.message || `HTTP ${res.status}`);
+        return res.json();
+      })
+      .then((data) => {
+        if (!cancelled && Array.isArray(data)) setItems(data);
+      })
+      .catch((err) => {
+        if (!cancelled) setError(String(err?.message || err));
+      })
+      .finally(() => { if (!cancelled) setLoading(false); });
+
+    return () => { cancelled = true; };
+  }, []);
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % sortedNews.length);
@@ -84,12 +110,13 @@ const NewsSlider = () => {
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
-      {sortedNews.map((item, index) => (
+      {slides.map((item, index) => (
         <div
-          key={item.id}
+          key={`${item.id ?? 'n'}-${item.slug}-${index}`}
           className={`absolute inset-0 w-full h-full transition-opacity duration-500 ${
-            index === currentSlide ? "opacity-100" : "opacity-0"
+            index === currentSlide ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
           }`}
+          aria-hidden={index === currentSlide ? 'false' : 'true'}
         >
           <div
             className="absolute inset-0 w-full h-full"
@@ -105,31 +132,18 @@ const NewsSlider = () => {
           <div className="relative h-full flex items-center justify-center text-center text-white px-4">
             <div className="max-w-2xl animate-fadeIn mx-4">
               {renderSlideContent(item)}
-              {item.link && (
-                (typeof item.link === 'string' && item.link.startsWith('http')) ? (
-                  <a
-                    href={item.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-block mt-6 bg-club-accent text-white px-4 py-2 rounded hover:bg-club-dark transition-colors"
-                  >
-                    Mehr erfahren
-                  </a>
-                ) : (
-                  <Link
-                    to={item.link}
-                    className="inline-block mt-6 bg-club-accent text-white px-4 py-2 rounded hover:bg-club-dark transition-colors"
-                  >
-                    Mehr erfahren
-                  </Link>
-                )
-              )}
+              <Link
+                to={`/aktuelles/${encodeURIComponent(item.slug)}`}
+                className="inline-block mt-6 bg-club-accent text-white px-4 py-2 rounded hover:bg-club-dark transition-colors"
+              >
+                Mehr erfahren
+              </Link>
             </div>
           </div>
         </div>
       ))}
 
-      {sortedNews.length > 1 && (
+  {slides.length > 1 && (
         <>
           <button
             onClick={prevSlide}
@@ -149,7 +163,7 @@ const NewsSlider = () => {
       )}
 
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3">
-        {sortedNews.map((_, index) => (
+        {slides.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentSlide(index)}

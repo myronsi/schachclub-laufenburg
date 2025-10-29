@@ -1,5 +1,5 @@
 export const navItems = [
-    { path: "/", label: "Aktuelles" },
+    { path: "/aktuelles", label: "Aktuelles" },
     { path: "/ueberuns", label: "Über uns" },
     { path: "/mitgliedwerden", label: "Mitglied werden" },
     { path: "/mannschaften", label: "Mannschaften" },
