@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -16,28 +16,17 @@ const NewsSlider = () => {
     return a.findIndex(x => x.slug === v.slug) === i;
   });
 
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (sortedNews.length > 0) setCurrentSlide((prev) => (prev + 1) % sortedNews.length);
+      if (slides.length > 0) setCurrentSlide((prev) => (prev + 1) % slides.length);
     }, 15000);
 
     return () => clearTimeout(timer);
-  }, [currentSlide, sortedNews.length]);
+  }, [currentSlide, slides.length]);
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowRight") {
-        nextSlide();
-      } else if (e.key === "ArrowLeft") {
-        prevSlide();
-      }
-    };
   
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, []);  
 
   // fetch news from API
   useEffect(() => {
@@ -59,13 +48,47 @@ const NewsSlider = () => {
     return () => { cancelled = true; };
   }, []);
 
-  const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % sortedNews.length);
-  };
+  const nextSlide = useCallback(() => {
+    if (slides.length === 0) return;
+    setCurrentSlide((prev) => (Number.isFinite(prev) ? (prev + 1) % slides.length : 0));
+  }, [slides.length]);
 
-  const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + sortedNews.length) % sortedNews.length);
-  };
+  const prevSlide = useCallback(() => {
+    if (slides.length === 0) return;
+    setCurrentSlide((prev) => {
+      const p = Number.isFinite(prev) ? prev : 0;
+      return (p - 1 + slides.length) % slides.length;
+    });
+  }, [slides.length]);
+
+  const handleKeyDown = useCallback((e: KeyboardEvent | React.KeyboardEvent) => {
+    const key = 'key' in e ? e.key : (e as KeyboardEvent).key;
+    if (key === 'ArrowRight' || key === 'Right') {
+      e.preventDefault?.();
+      nextSlide();
+    } else if (key === 'ArrowLeft' || key === 'Left') {
+      e.preventDefault?.();
+      prevSlide();
+    }
+  }, [nextSlide, prevSlide]);
+
+  useEffect(() => {
+    // Global listener as a fallback
+    const listener = (e: KeyboardEvent) => handleKeyDown(e);
+    document.addEventListener('keydown', listener);
+    return () => document.removeEventListener('keydown', listener);
+  }, [handleKeyDown]);
+
+  // Keep currentSlide in-range when slide list changes
+  useEffect(() => {
+    if (slides.length === 0) {
+      setCurrentSlide(0);
+      return;
+    }
+    if (!Number.isFinite(currentSlide) || currentSlide >= slides.length) {
+      setCurrentSlide(0);
+    }
+  }, [slides.length]);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     setTouchEnd(null);
@@ -91,13 +114,20 @@ const NewsSlider = () => {
   };
 
   const renderSlideContent = (item: any) => {
+    const desc = String(item.description ?? "");
+    const len = desc.length;
+    const descSize = len > 320
+      ? 'text-[clamp(0.75rem,2.2vw,1.1rem)]'
+      : len > 200
+        ? 'text-[clamp(0.875rem,2.8vw,1.25rem)]'
+        : 'text-[clamp(1rem,3.5vw,1.75rem)]';
     return (
       <>
-        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6">
+        <h2 className="font-extrabold mb-4 md:mb-6 break-words hyphens-auto leading-tight text-[clamp(1.5rem,5vw,3.5rem)]">
           {item.title}
         </h2>
-        <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl mb-6 md:mb-8">
-          {item.description}
+        <p className={`mb-6 md:mb-8 leading-snug break-words hyphens-auto ${descSize}`}>
+          {desc}
         </p>
       </>
     );
@@ -106,9 +136,14 @@ const NewsSlider = () => {
   return (
     <div 
       className="absolute inset-0 w-full h-full overflow-hidden"
+      ref={containerRef}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
+      onKeyDown={(e) => handleKeyDown(e)}
+      tabIndex={0}
+      role="region"
+      aria-label="News Slider"
     >
       {slides.map((item, index) => (
         <div

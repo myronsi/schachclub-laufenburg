@@ -138,14 +138,22 @@ function AktuellesDetailSection() {
 
   return (
     <article className="mx-auto px-4 pt-16 py-16 max-w-6xl animate-fadeIn">
-      <header className="mb-6 relative">
-        <Link to="/aktuelles" aria-label="Zurück zur Übersicht" className="absolute left-0 top-0 md:top-1 flex items-center text-gray-600 hover:text-club-primary">
-          <ArrowLeft className="w-5 h-5" />
-          <span className="ml-2 hidden sm:inline">Zurück</span>
-        </Link>
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-club-primary">{newsItem.title}</h1>
-          <p className="mt-2 text-sm text-gray-500">{new Date(newsItem.date).toLocaleDateString('de-DE')}</p>
+      <header className="mb-6">
+        <div className="grid grid-cols-[auto_1fr_auto] items-center gap-2">
+          <Link to="/aktuelles" aria-label="Zurück zur Übersicht" className="flex items-center text-gray-600 hover:text-club-primary justify-self-start">
+            <ArrowLeft className="w-5 h-5" />
+            <span className="ml-2 hidden sm:inline">Zurück</span>
+          </Link>
+          <div className="text-center">
+            <h1 className="text-3xl font-bold text-club-primary break-words">{newsItem.title}</h1>
+            <p className="mt-2 text-sm text-gray-500">{new Date(newsItem.date).toLocaleDateString('de-DE')}</p>
+          </div>
+          <div className="justify-self-end">
+            <span className="inline-flex items-center opacity-0 pointer-events-none">
+              <ArrowLeft className="w-5 h-5" />
+              <span className="ml-2 hidden sm:inline">Zurück</span>
+            </span>
+          </div>
         </div>
       </header>
 
@@ -163,7 +171,7 @@ function AktuellesDetailSection() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-3 mt-2 bg-club-accent text-white px-4 py-2 rounded hover:bg-club-dark transition-colors shadow-sm"
               >
-                <ExternalLink className="w-4 h-4" />
+                <ExternalLink className="hidden sm:inline-block w-4 h-4" />
                 <span className="font-medium">Weitere Informationen</span>
                 <span className="ml-3 text-xs text-white/90 bg-white/10 px-2 py-0.5 rounded">
                   {formatLinkLabel(newsItem.link)}
