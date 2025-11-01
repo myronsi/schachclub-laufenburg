@@ -1,14 +1,52 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { ArrowBigDown, ArrowBigUp } from 'lucide-react';
 
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
-import { timeline } from '@/components/arrays/historyList';
 import { ScrollButton } from '@/components/ui/scroll-button';
+import { transformHistoryData } from '@/utils/historyTransformer';
+
+interface TimelineEvent {
+  date: string;
+  text: string;
+}
+
+interface TimelineGroup {
+  year: string;
+  events: TimelineEvent[];
+}
 
 const ChronikComponent: React.FC = () => {
   const timelineAnimation = useScrollAnimation({ threshold: 0.01, rootMargin: '100px' });
   const historySectionRef = useRef<HTMLDivElement>(null);
   const timelineEndRef = useRef<HTMLDivElement>(null);
+  const [timeline, setTimeline] = useState<TimelineGroup[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('https://sc-laufenburg.de/api/history.php');
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        const transformedData = transformHistoryData(data);
+        setTimeline(transformedData);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching history:', err);
+        setError(err instanceof Error ? err.message : 'Failed to fetch history');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHistory();
+  }, []);
 
   const scrollToTimelineEnd = () => {
     timelineEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -24,6 +62,18 @@ const ChronikComponent: React.FC = () => {
         <h2 className="text-3xl font-bold text-club-primary mb-12 text-center">
           Unsere Geschichte
         </h2>
+        {loading && (
+          <div className="text-center py-8">
+            <p className="text-gray-600">Lade Geschichte...</p>
+          </div>
+        )}
+        {error && (
+          <div className="text-center py-4 mb-4 bg-yellow-50 border border-yellow-200 rounded">
+            <p className="text-yellow-800 text-sm">
+              Es ist ein Fehler beim Laden der Artikel aufgetreten. Bitte versuche es später erneut.
+            </p>
+          </div>
+        )}
         <div
           ref={timelineAnimation.elementRef}
           className="mb-8 md:mb-12"
