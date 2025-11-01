@@ -23,7 +23,7 @@ const Login = () => {
       (async () => {
         setLoading(true);
         try {
-          const res = await fetch('https://viserix.com/auth.php', {
+          const res = await fetch('https://sc-laufenburg.de/api/auth.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ action: 'check', username: storedUser, session_id: storedSession })
@@ -59,7 +59,7 @@ const Login = () => {
     setSuccess(false);
 
     try {
-      const res = await fetch('https://viserix.com/auth.php', {
+      const res = await fetch('https://sc-laufenburg.de/api/auth.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
@@ -139,7 +139,7 @@ const Login = () => {
                   if (!tempSessionId) { setMessage('Session ungültig'); return; }
                   setSettingPassword(true);
                   try {
-                    const res = await fetch('https://viserix.com/auth.php', {
+                    const res = await fetch('https://sc-laufenburg.de/api/auth.php', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
                       body: JSON.stringify({ action: 'set_password', username, session_id: tempSessionId, new_password: newPassword })

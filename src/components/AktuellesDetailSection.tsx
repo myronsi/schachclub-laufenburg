@@ -63,7 +63,7 @@ function AktuellesDetailSection() {
     if (!slug) return;
     setLoading(true);
     setError(null);
-    fetch(`https://viserix.com/news.php?slug=${encodeURIComponent(slug)}`)
+    fetch(`https://sc-laufenburg.de/api/news.php?slug=${encodeURIComponent(slug)}`)
       .then(async (res) => {
         if (res.status === 404) {
           setNewsItem(null);

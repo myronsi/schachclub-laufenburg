@@ -39,7 +39,7 @@ const GalerieComponent = () => {
     (async () => {
       setCheckingAuth(true);
       try {
-        const res = await fetch('https://viserix.com/auth.php', {
+        const res = await fetch('https://sc-laufenburg.de/api/auth.php', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ action: 'check', username: storedUser, session_id: storedSession })

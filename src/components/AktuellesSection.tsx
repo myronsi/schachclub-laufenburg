@@ -17,9 +17,7 @@ const NewsThumb = ({ src, alt }: { src?: string | null; alt: string }) => {
   const [errored, setErrored] = useState(false);
 
   if (!src || errored) {
-    return (
-      <div className="w-full h-full bg-gray-100 rounded flex items-center justify-center text-xs text-gray-400">kein Bild</div>
-    );
+    return null;
   }
 
   return (
@@ -40,7 +38,7 @@ const AktuellesSection = () => {
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
-    fetch('https://viserix.com/news.php')
+    fetch('https://sc-laufenburg.de/api/news.php')
       .then(async (res) => {
         if (!res.ok) throw new Error((await res.json()).message || `HTTP ${res.status}`);
         return res.json();
@@ -100,9 +98,11 @@ const AktuellesSection = () => {
                     <p className="text-sm mt-3 text-gray-700">{it.description}</p>
                   </div>
 
-                  <div className="w-28 h-20 md:w-36 md:h-24 flex-shrink-0 self-center md:self-start">
-                    <NewsThumb src={it.image} alt={it.title} />
-                  </div>
+                  {it.image && (
+                    <div className="w-28 h-20 md:w-36 md:h-24 flex-shrink-0 self-center md:self-start">
+                      <NewsThumb src={it.image} alt={it.title} />
+                    </div>
+                  )}
                 </div>
               </article>
             ))}

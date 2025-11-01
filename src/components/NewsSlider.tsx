@@ -9,8 +9,13 @@ const NewsSlider = () => {
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [imageErrors, setImageErrors] = useState<Set<number>>(new Set());
 
-  const sortedNews = [...items].sort((a, b) => a.id - b.id);
+  const sortedNews = [...items].sort((a, b) => {
+    const dateA = new Date(a.date || 0).getTime();
+    const dateB = new Date(b.date || 0).getTime();
+    return dateB - dateA;
+  }).slice(0, 3);
   const slides = sortedNews.filter((v, i, a) => {
     if (!v || !v.slug) return false;
     return a.findIndex(x => x.slug === v.slug) === i;
@@ -32,7 +37,7 @@ const NewsSlider = () => {
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
-    fetch('https://viserix.com/news.php')
+    fetch('https://sc-laufenburg.de/api/news.php')
       .then(async (res) => {
         if (!res.ok) throw new Error((await res.json())?.message || `HTTP ${res.status}`);
         return res.json();
@@ -113,6 +118,22 @@ const NewsSlider = () => {
     }
   };
 
+  const fallbackImages = ['/photos/schach_bunt.png', '/photos/schach_schwarz.png', '/photos/schach_sb.png'];
+  
+  const getBackgroundImage = (item: any) => {
+    const itemId = item.id ?? 0;
+    // If this item's image has errored, use fallback
+    if (!item.image || imageErrors.has(itemId)) {
+      const idx = itemId % fallbackImages.length;
+      return fallbackImages[idx];
+    }
+    return item.image;
+  };
+
+  const handleImageError = (itemId: number) => {
+    setImageErrors((prev) => new Set(prev).add(itemId));
+  };
+
   const renderSlideContent = (item: any) => {
     const desc = String(item.description ?? "");
     const len = desc.length;
@@ -156,13 +177,22 @@ const NewsSlider = () => {
           <div
             className="absolute inset-0 w-full h-full"
             style={{ 
-              backgroundImage: `url(${item.image})`,
+              backgroundImage: `url(${getBackgroundImage(item)})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center center',
               minHeight: '100%'
             }}
           >
             <div className="absolute inset-0 bg-black/50 w-full h-full" />
+            {/* Hidden img to detect 404 errors */}
+            {item.image && !imageErrors.has(item.id ?? 0) && (
+              <img
+                src={item.image}
+                alt=""
+                className="hidden"
+                onError={() => handleImageError(item.id ?? 0)}
+              />
+            )}
           </div>
           <div className="relative h-full flex items-center justify-center text-center text-white px-4">
             <div className="max-w-2xl animate-fadeIn mx-4">
