@@ -62,15 +62,18 @@ const Login = () => {
       const res = await fetch('https://sc-laufenburg.de/api/auth.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
+        body: JSON.stringify({ username, password, action: 'login' })
       });
       const data = await res.json();
       if (res.ok && data.success) {
-        // If server requires a password change (initial plaintext password), prompt for it
         if (data.must_change_password) {
           setNeedsPasswordChange(true);
           setTempSessionId(data.session_id || null);
           setMessage(data.message || 'Bitte neues Passwort setzen');
+          if (data.session_id) {
+            localStorage.setItem('auth_username', username);
+            localStorage.setItem('auth_session_id', data.session_id);
+          }
         } else {
           setSuccess(true);
           setMessage(data.message || 'Erfolgreich angemeldet');
@@ -87,6 +90,34 @@ const Login = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleLogout = async () => {
+    const storedUser = localStorage.getItem('auth_username');
+    const storedSession = localStorage.getItem('auth_session_id');
+    
+    if (storedUser && storedSession) {
+      try {
+        await fetch('https://sc-laufenburg.de/api/auth.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            action: 'logout', 
+            username: storedUser, 
+            session_id: storedSession 
+          })
+        });
+      } catch (err) {
+        console.error('Logout error:', err);
+      }
+    }
+    
+    localStorage.removeItem('auth_username');
+    localStorage.removeItem('auth_session_id');
+    setSuccess(false);
+    setUsername('');
+    setPassword('');
+    setMessage('Abgemeldet');
   };
 
   return (
@@ -112,14 +143,7 @@ const Login = () => {
         {success ? (
           <div className="max-w-md mx-auto flex justify-center">
             <Button
-              onClick={() => {
-                localStorage.removeItem('auth_username');
-                localStorage.removeItem('auth_session_id');
-                setSuccess(false);
-                setUsername('');
-                setPassword('');
-                setMessage('Abgemeldet');
-              }}
+              onClick={handleLogout}
               className="bg-red-600 hover:bg-red-700 text-white"
             >
               Logout
@@ -146,7 +170,6 @@ const Login = () => {
                     });
                     const data = await res.json();
                     if (res.ok && data.success) {
-                      // store session and mark success
                       localStorage.setItem('auth_username', username);
                       if (tempSessionId) localStorage.setItem('auth_session_id', tempSessionId);
                       setSuccess(true);

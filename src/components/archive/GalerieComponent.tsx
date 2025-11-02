@@ -30,8 +30,36 @@ const GalerieComponent = () => {
   const [images, setImages] = useState<ImageItem[]>([]);
   const [loadingImages, setLoadingImages] = useState(false);
   const [imageError, setImageError] = useState<string | null>(null);
+  const [username, setUsername] = useState<string>('');
 
   const sortedImages = isReversed ? [...images].reverse() : images;
+
+  const handleLogout = async () => {
+    const storedUser = localStorage.getItem('auth_username');
+    const storedSession = localStorage.getItem('auth_session_id');
+    
+    if (storedUser && storedSession) {
+      try {
+        await fetch('https://sc-laufenburg.de/api/auth.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            action: 'logout', 
+            username: storedUser, 
+            session_id: storedSession 
+          })
+        });
+      } catch (err) {
+        console.error('Logout error:', err);
+      }
+    }
+    
+    localStorage.removeItem('auth_username');
+    localStorage.removeItem('auth_session_id');
+    setAuthenticated(false);
+    setUsername('');
+    setImages([]);
+  };
 
   const handleDialogOpenChange = (open: boolean) => {
     setOpenDialogsCount(prev => open ? prev + 1 : Math.max(prev - 1, 0));
@@ -58,6 +86,7 @@ const GalerieComponent = () => {
         const data = await res.json();
         if (res.ok && data.success) {
           setAuthenticated(true);
+          setUsername(storedUser);
         } else {
           setAuthenticated(false);
           setAuthError(data.message || 'Ungültige Session');
