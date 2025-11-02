@@ -1,13 +1,72 @@
 import { Card } from "@/components/ui/card";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { ImageOff, Calendar, Users, Phone, ExternalLink } from "lucide-react";
-import { useState } from "react";
-import { teams} from "./arrays/mannschaftenList";
+import { useState, useEffect } from "react";
+
+interface Team {
+  id: number;
+  name: string;
+  league: string;
+  image: string;
+  url: string;
+  captain?: string;
+  contact?: string;
+  nextMatch?: string;
+  venue?: string;
+  record?: { w: number; d: number; l: number };
+  squad?: string[];
+  notes?: string;
+  founded?: number;
+}
 
 const MannschaftSection = () => {
   const { elementRef } = useScrollAnimation();
   const [imageErrors, setImageErrors] = useState<{[key: number]: boolean}>({});
   const [openTeam, setOpenTeam] = useState<number | null>(null);
+  const [teams, setTeams] = useState<Team[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchTeams = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('https://sc-laufenburg.de/api/teams.php');
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        const transformedTeams = data.map((team: any) => ({
+          id: team.id,
+          name: team.name,
+          league: team.league,
+          image: team.image,
+          url: team.url,
+          captain: team.captain || undefined,
+          contact: team.contact || undefined,
+          nextMatch: team.nextMatch || undefined,
+          venue: team.venue || undefined,
+          record: team.record ? JSON.parse(team.record) : undefined,
+          squad: team.squad ? JSON.parse(team.squad) : undefined,
+          notes: team.notes || undefined,
+          founded: team.founded || undefined
+        }));
+        
+        setTeams(transformedTeams);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching teams:', err);
+        setError(err instanceof Error ? err.message : 'Failed to fetch teams');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTeams();
+  }, []);
 
   const handleImageError = (teamId: number) => {
     setImageErrors(prev => ({...prev, [teamId]: true}));
@@ -18,6 +77,20 @@ const MannschaftSection = () => {
       <h2 className="text-3xl font-bold text-center mb-12 text-club-primary">
         Unsere Mannschaften
       </h2>
+
+      {loading && (
+        <div className="text-center py-8">
+          <p className="text-gray-600">Lade Mannschaften...</p>
+        </div>
+      )}
+      
+      {error && (
+        <div className="text-center py-4 mb-4 bg-yellow-50 border border-yellow-200 rounded">
+          <p className="text-yellow-800 text-sm">
+            Es ist ein Fehler beim Laden der Artikel aufgetreten. Bitte versuche es später erneut.
+          </p>
+        </div>
+      )}
 
       <div className="bg-white rounded-lg shadow-md p-6 mb-8">
         <h3 className="text-xl font-semibold mb-4">Aktuell</h3>
@@ -50,7 +123,12 @@ const MannschaftSection = () => {
         {teams.map((team: any) => (
           <Card key={team.id} className="overflow-hidden group transform transition-all duration-300 hover:-translate-y-1 hover:shadow-xl cursor-pointer">
             <div className="h-56 md:h-64 flex items-stretch">
-              <div className="w-2/5 bg-gray-50 flex items-center justify-center overflow-hidden transition-transform duration-500 group-hover:scale-105">
+              <a 
+                href={team.url} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="w-2/5 bg-gray-50 flex items-center justify-center overflow-hidden transition-transform duration-500 group-hover:scale-105"
+              >
                 {imageErrors[team.id] || team.image === "nicht eingegeben" ? (
                   <div className="flex items-center justify-center w-full h-full bg-gray-100">
                     <ImageOff className="w-10 h-10 opacity-50 text-gray-400" />
@@ -63,13 +141,26 @@ const MannschaftSection = () => {
                     onError={() => handleImageError(team.id)}
                   />
                 )}
-              </div>
+              </a>
 
               <div className="w-3/5 p-6 flex flex-col justify-between transition-colors duration-300 group-hover:bg-white/5">
                 <div>
-                  <h3 className="text-xl font-semibold mb-1">{team.name}</h3>
-                  <p className="text-gray-600 text-sm mb-3">{team.league}</p>
-                  {/* short meta row */}
+                  <a 
+                    href={team.url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="hover:text-club-accent transition-colors"
+                  >
+                    <h3 className="text-xl font-semibold mb-1">{team.name}</h3>
+                  </a>
+                  <a 
+                    href={team.url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="hover:text-club-accent transition-colors"
+                  >
+                    <p className="text-gray-600 text-sm mb-3">{team.league}</p>
+                  </a>
                   <div className="flex items-center gap-3 text-xs text-gray-500 mb-2">
                     {team.captain && (
                       <span className="flex items-center gap-1"><Users className="w-4 h-4" /> {team.captain}</span>
@@ -81,8 +172,8 @@ const MannschaftSection = () => {
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    {team.record ? (
+                  {team.record && (team.record.w > 0 || team.record.d > 0 || team.record.l > 0) && (
+                    <div className="flex items-center gap-2">
                       <div className="text-sm text-gray-700">
                         <strong className="text-club-primary">{team.record.w}</strong> W
                         <span className="mx-2">·</span>
@@ -90,13 +181,11 @@ const MannschaftSection = () => {
                         <span className="mx-2">·</span>
                         <strong className="text-club-primary">{team.record.l}</strong> L
                       </div>
-                    ) : (
-                      <a href={team.url} target="_blank" rel="noopener noreferrer" className="text-sm text-gray-500 flex items-center gap-1"><ExternalLink className="w-4 h-4" /> Ergebnisse</a>
-                    )}
-                  </div>
+                    </div>
+                  )}
 
-                  <div className="flex items-center gap-2">
-                    {(team.venue || (team.squad && team.squad.length) || team.notes || team.record || team.captain || team.nextMatch) && (
+                  <div className="flex items-center gap-2 ml-auto">
+                    {(team.venue || (team.squad && team.squad.length > 0) || team.notes) && (
                       <button
                         onClick={() => setOpenTeam(openTeam === team.id ? null : team.id)}
                         className="text-sm px-3 py-1 rounded bg-white/10 hover:bg-white/20 transition-colors"
@@ -112,11 +201,10 @@ const MannschaftSection = () => {
                   </div>
                 </div>
 
-                {/* expandable details */}
                 <div className={`mt-3 overflow-hidden transition-all ${openTeam === team.id ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'}`}>
                   <div className="text-sm text-gray-600 space-y-2">
                     {team.venue && <div><strong>Spielort:</strong> {team.venue}</div>}
-                    {team.squad && (
+                    {team.squad && team.squad.length > 0 && (
                       <div>
                         <strong>Kader:</strong>
                         <div className="flex flex-wrap gap-2 mt-2">
