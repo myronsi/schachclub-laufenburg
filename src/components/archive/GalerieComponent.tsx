@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { Image, SortDesc, Lock } from "lucide-react";
-import { ImageItem, images } from "@/components/arrays/mediaImages";
 import { Button } from "@/components/ui/button";
 import { ButtonToTop } from "@/components/ui/arrowToTop";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Dialog,
   DialogContent,
@@ -12,6 +12,14 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 
+interface ImageItem {
+  id?: number;
+  src: string;
+  title: string;
+  description?: string;
+  children?: ImageItem[];
+}
+
 const GalerieComponent = () => {
   const [selectedImage, setSelectedImage] = useState<ImageItem | null>(null);
   const [isReversed, setIsReversed] = useState(false);
@@ -19,6 +27,9 @@ const GalerieComponent = () => {
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [authenticated, setAuthenticated] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
+  const [images, setImages] = useState<ImageItem[]>([]);
+  const [loadingImages, setLoadingImages] = useState(false);
+  const [imageError, setImageError] = useState<string | null>(null);
 
   const sortedImages = isReversed ? [...images].reverse() : images;
 
@@ -61,6 +72,45 @@ const GalerieComponent = () => {
       }
     })();
   }, []);
+
+  useEffect(() => {
+    if (!authenticated) return;
+
+    const fetchImages = async () => {
+      setLoadingImages(true);
+      try {
+        const response = await fetch('https://sc-laufenburg.de/api/media.php');
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        // Transform API response
+        const transformedImages = data.map((item: any) => ({
+          id: item.id,
+          src: `https://sc-laufenburg.de/${item.src}`,
+          title: item.title,
+          description: item.description || undefined,
+          children: item.children ? JSON.parse(item.children).map((child: any) => ({
+            ...child,
+            src: `https://sc-laufenburg.de/${child.src}`
+          })) : undefined
+        }));
+        
+        setImages(transformedImages);
+        setImageError(null);
+      } catch (err) {
+        console.error('Error fetching images:', err);
+        setImageError(err instanceof Error ? err.message : 'Failed to fetch images');
+      } finally {
+        setLoadingImages(false);
+      }
+    };
+
+    fetchImages();
+  }, [authenticated]);
 
   const renderImages = (items: ImageItem[]) => (
     <div className="space-y-4">
@@ -133,6 +183,14 @@ const GalerieComponent = () => {
             Fotogalerie
           </h2>
 
+          {imageError && (
+            <div className="text-center py-4 mb-4 bg-yellow-50 border border-yellow-200 rounded">
+              <p className="text-yellow-800 text-sm">
+                Fehler beim Laden der Bilder. Bitte versuchen Sie es später erneut.
+              </p>
+            </div>
+          )}
+
           <div className="mb-13">
             <div className="flex justify-end items-center mb-6">
               <div>
@@ -140,13 +198,25 @@ const GalerieComponent = () => {
                   variant="outline"
                   onClick={() => setIsReversed(!isReversed)}
                   className="flex items-center gap-2"
+                  disabled={loadingImages}
                 >
                   <SortDesc className="h-4 w-4" />
                   {isReversed ? "Älteste ist zuerst" : "Neuste ist zuerst"}
                 </Button>
               </div>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-6 lg:grid-cols-6 gap-4">
+            
+            {loadingImages ? (
+              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-6 lg:grid-cols-6 gap-4">
+                {[...Array(12)].map((_, i) => (
+                  <div key={i} className="flex flex-col gap-2">
+                    <Skeleton className="aspect-square rounded-lg" />
+                    <Skeleton className="h-4 w-3/4 mx-auto" />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-6 lg:grid-cols-6 gap-4">
               {sortedImages.map((image, index) => (
                 <Dialog 
                   key={index}
@@ -178,6 +248,7 @@ const GalerieComponent = () => {
                 </Dialog>
               ))}
             </div>
+            )}
           </div>
         </div>
       </section>
