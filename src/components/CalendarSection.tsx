@@ -6,8 +6,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { CalendarEvent } from "@/types/calendarTypes";
-const REMOTE_CALENDAR_URL = "/calendar-proxy.php";
+const REMOTE_CALENDAR_URL = "https://sc-laufenburg.de/api/events.php?action=list";
 
 function isCalendarEvent(obj: any): obj is CalendarEvent {
   return obj && typeof obj.title === 'string' && typeof obj.date === 'string' && ['tournament','meeting','training','special','holiday'].includes(obj.type);
@@ -33,12 +34,27 @@ const CalendarSection = () => {
       setLoading(true);
       setFetchError(null);
       try {
-  const url = `${REMOTE_CALENDAR_URL}?_=${Date.now()}`;
-  const res = await fetch(url, { cache: 'no-store' });
+        const year = currentMonth.getFullYear();
+        const month = currentMonth.getMonth() + 1; // JavaScript months are 0-indexed
+        
+        const url = `https://sc-laufenburg.de/api/events.php?action=month&year=${year}&month=${month}`;
+        const res = await fetch(url, { cache: 'no-store' });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
-        if (!Array.isArray(data)) throw new Error('Invalid JSON');
-        const validated = data.filter(isCalendarEvent);
+        
+        // events.php returns { events: [...] }
+        const eventsArray = data.events || [];
+        if (!Array.isArray(eventsArray)) throw new Error('Invalid JSON structure');
+        
+        // Transform time format from hh:mm:ss to hh:mm
+        const transformedEvents = eventsArray.map((event: any) => ({
+          ...event,
+          time: event.time && typeof event.time === 'string' 
+            ? event.time.substring(0, 5) // Extract only hh:mm from hh:mm:ss
+            : event.time
+        }));
+        
+        const validated = transformedEvents.filter(isCalendarEvent);
         if (!cancelled) setCalendarEvents(validated);
       } catch (err: any) {
         if (!cancelled) {
@@ -51,7 +67,7 @@ const CalendarSection = () => {
 
     load();
     return () => { cancelled = true; };
-  }, []);
+  }, [currentMonth]);
 
   const filteredEvents = useMemo(
     () => (selectedType === "all" ? calendarEvents : calendarEvents.filter(e => e.type === selectedType)),
@@ -221,11 +237,6 @@ const CalendarSection = () => {
 
           <div className="flex items-center gap-3">
             <div className="text-lg font-semibold">{formatHeader(currentMonth)}</div>
-            {loading ? (
-              <div className="text-sm text-gray-500">Wird geladen...</div>
-            ) : fetchError ? (
-              <div className="text-sm text-red-600">Fehler beim Laden</div>
-            ) : null}
             <button onClick={prevMonth} className="p-2 pr-0 rounded hover:bg-gray-100" aria-label="Vorheriger Monat"><ChevronLeft className="w-5 h-5"/></button>
             <button onClick={nextMonth} className="p-2 pl-0 rounded hover:bg-gray-100" aria-label="Nächster Monat"><ChevronRight className="w-5 h-5"/></button>
             <button onClick={goToToday} className="ml-3 px-3 py-1 rounded text-sm bg-amber-600 text-white hover:bg-amber-700" aria-label="Heute">Heute</button>
@@ -233,7 +244,29 @@ const CalendarSection = () => {
         </div>
 
         {loading ? (
-          <div className="text-center py-12 text-gray-500">Wird geladen...</div>
+          <div className="grid grid-cols-7 gap-1 bg-white rounded-md overflow-hidden border shadow-xl p-2">
+            {/* Weekday headers skeleton */}
+            {Array.from({length:7}).map((_, i) => (
+              <Skeleton key={`header-${i}`} className="h-8 rounded-md" />
+            ))}
+            {/* Calendar cells skeleton */}
+            {Array.from({length:35}).map((_, i) => (
+              <Skeleton key={`cell-${i}`} className="h-28 rounded-sm" />
+            ))}
+          </div>
+        ) : fetchError ? (
+          <div className="text-center py-12 bg-red-50 border border-red-200 rounded-lg">
+            <div className="text-red-600 font-semibold mb-2">Fehler beim Laden des Kalenders</div>
+            <p className="text-sm text-red-500 mb-4">{fetchError}</p>
+            <button 
+              onClick={() => {
+                setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1));
+              }}
+              className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 text-sm"
+            >
+              Erneut versuchen
+            </button>
+          </div>
         ) : (
           <div className="grid grid-cols-7 gap-1 bg-white rounded-md overflow-hidden border shadow-xl p-2">
           {Array.from({length:7}).map((_, i) => (
@@ -317,18 +350,47 @@ const CalendarSection = () => {
                 <div className="text-center py-6 text-gray-500">Keine Termine an diesem Datum.</div>
               ) : (
                 <div className="space-y-3">
-                  {eventsForSelected.map((ev, i) => (
-                    <div key={`${selectedDate}-${i}`} className="p-3 border rounded flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                      <div>
-                        <div className="font-medium text-gray-800">{ev.title}</div>
-                        <div className="text-sm text-gray-500">{ev.time ? `${ev.time} Uhr` : ''} {ev.location ? `• ${ev.location}` : ''}</div>
-                        {ev.description && <div className="text-sm text-gray-600 mt-1">{ev.description}</div>}
+                  {eventsForSelected.map((ev, i) => {
+                    // Function to detect and make links clickable
+                    const renderDescription = (text: string) => {
+                      const urlRegex = /(https?:\/\/[^\s]+)/g;
+                      const parts = text.split(urlRegex);
+                      
+                      return parts.map((part, index) => {
+                        if (part.match(urlRegex)) {
+                          return (
+                            <a
+                              key={index}
+                              href={part}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-sm underline text-club-primary hover:text-club-accent"
+                            >
+                              {part}
+                            </a>
+                          );
+                        }
+                        return <span key={index}>{part}</span>;
+                      });
+                    };
+
+                    return (
+                      <div key={`${selectedDate}-${i}`} className="p-3 border rounded flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                          <div className="font-medium text-gray-800">{ev.title}</div>
+                          <div className="text-sm text-gray-500">{ev.time ? `${ev.time} Uhr` : ''} {ev.location ? `• ${ev.location}` : ''}</div>
+                          {ev.description && (
+                            <div className="text-sm text-gray-600 mt-1">
+                              {renderDescription(ev.description)}
+                            </div>
+                          )}
+                        </div>
+                        <div className="mt-3 sm:mt-0">
+                          <span className={`px-2 py-1 text-xs rounded ${(selectedDate === todayKey) ? getEventTypeColorForToday(ev.type) : getEventTypeColor(ev.type)}`}>{getEventTypeLabel(ev.type)}</span>
+                        </div>
                       </div>
-                      <div className="mt-3 sm:mt-0">
-                        <span className={`px-2 py-1 text-xs rounded ${(selectedDate === todayKey) ? getEventTypeColorForToday(ev.type) : getEventTypeColor(ev.type)}`}>{getEventTypeLabel(ev.type)}</span>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </DialogContent>

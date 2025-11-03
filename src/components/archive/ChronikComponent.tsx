@@ -4,6 +4,7 @@ import { ArrowBigDown, ArrowBigUp } from 'lucide-react';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import { ScrollButton } from '@/components/ui/scroll-button';
 import { transformHistoryData } from '@/utils/historyTransformer';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface TimelineEvent {
   date: string;
@@ -62,11 +63,6 @@ const ChronikComponent: React.FC = () => {
         <h2 className="text-3xl font-bold text-club-primary mb-12 text-center">
           Unsere Geschichte
         </h2>
-        {loading && (
-          <div className="text-center py-8">
-            <p className="text-gray-600">Lade Geschichte...</p>
-          </div>
-        )}
         {error && (
           <div className="text-center py-4 mb-4 bg-yellow-50 border border-yellow-200 rounded">
             <p className="text-yellow-800 text-sm">
@@ -115,7 +111,27 @@ const ChronikComponent: React.FC = () => {
             />
 
             <div className="space-y-6 md:space-y-8 relative pl-4 md:pl-8">
-              {timeline.map((group, groupIndex) => (
+              {loading ? (
+                <>
+                  {[0, 1, 2, 3, 4].map((n) => (
+                    <div key={n} className="relative">
+                      <div className="absolute -left-[32px] md:-left-[42px] top-0 flex items-center gap-2 mb-4">
+                        <div className="w-3 h-3 md:w-4 md:h-4 bg-club-accent rounded-full transform translate-x-[7px] md:translate-x-[9px] z-10" />
+                        <Skeleton className="h-6 w-16 ml-1" />
+                      </div>
+                      <div className="pt-10 md:pt-12 pl-2 md:pl-4 space-y-3 md:space-y-4">
+                        {[0, 1, 2].map((i) => (
+                          <div key={i} className="flex gap-2 md:gap-3">
+                            <Skeleton className="w-16 md:w-20 h-4 shrink-0" />
+                            <Skeleton className="h-4 w-full" />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </>
+              ) : (
+                timeline.map((group, groupIndex) => (
                 <div
                   key={group.year}
                   className={`relative transform transition-all duration-500 ease-out ${
@@ -157,7 +173,8 @@ const ChronikComponent: React.FC = () => {
                     ))}
                   </div>
                 </div>
-              ))}
+              ))
+              )}
             </div>
             <div
               ref={timelineEndRef}

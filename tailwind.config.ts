@@ -101,6 +101,10 @@ export default {
         slideInUp: "slideInUp 0.5s ease-out forwards",
         scaleIn: "scaleIn 0.5s ease-out forwards",
       },
+      screens: {
+        "mdl": "1426px",
+        "mds": "1124px",
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],

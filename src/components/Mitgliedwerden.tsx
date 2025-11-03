@@ -271,7 +271,7 @@ const MitgliedwerdenSection = () => {
         <div className="mt-6">
           <Card
             ref={newcomerAnim.elementRef}
-            className={`p-6 opacity-0 max-w-2xl mx-auto ${newcomerAnim.isVisible ? 'animate-slideInUp' : ''}`}
+            className={`opacity-0 max-w-2xl mx-auto ${newcomerAnim.isVisible ? 'animate-slideInUp' : ''}`}
           >
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -292,8 +292,8 @@ const MitgliedwerdenSection = () => {
                 </div>
 
                 <div>
-                  <p className='text-sm/5 font-medium pb-1'>Telefon (optional)</p>
-                  <Input name="phone" placeholder="Ihr Telefon" value={newcomerData.phone} onChange={handleNewcomerChange} />
+                  <p className='text-sm/5 font-medium pb-1'>Telefonnummer (optional)</p>
+                  <Input name="phone" placeholder="Ihre Telefonnummer" value={newcomerData.phone} onChange={handleNewcomerChange} />
                 </div>
 
                 <div>
@@ -341,7 +341,7 @@ const MitgliedwerdenSection = () => {
 
                 <div>
                   <p className='text-sm/5 font-medium pb-1'>Alter (optional)</p>
-                  <Input name="age" placeholder="z. B. 14" value={newcomerData.age} onChange={handleNewcomerChange} />
+                  <Input name="age" placeholder="Ihr Alter" value={newcomerData.age} onChange={handleNewcomerChange} />
                 </div>
 
                 <div>

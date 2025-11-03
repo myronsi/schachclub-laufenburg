@@ -1,13 +1,40 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
-import { navItems } from "./arrays/navItems";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
   const location = useLocation();
   const mobileMenuRef = useRef<HTMLDivElement>(null);
+
+  const navItems = [
+    { path: "/aktuelles", label: "Aktuelles" },
+    { path: "/ueberuns", label: "Über uns" },
+    { path: "/mitgliedwerden", label: "Mitglied werden" },
+    { path: "/kalender", label: "Kalender" },
+    { path: "/mannschaften", label: "Mannschaften" },
+    { 
+      path: "/turniere", 
+      label: "Turniere",
+      children: [
+        { path: "/nikolausblitz", label: "Nikolausblitz" },
+        { path: "/vereinsmeister", label: "Vereinsmeister" },
+        { path: "/pokalsieger", label: "Pokalsieger" },
+        { path: "/blitzsieger", label: "Blitzsieger" },
+      ]
+    },
+    {
+      path: "/archiv",
+      label: "Archiv",
+      children: [
+        { path: "/chronik", label: "Chronik" },
+        { path: "/galerie", label: "Galerie" },
+        { path: "/dokumente", label: "Dokumente" },
+      ],
+    },
+    { path: "/kontakt", label: "Kontakt" },
+  ];
   
   const isActive = (path: string) => {
     return location.pathname === path;
@@ -50,23 +77,23 @@ const Header = () => {
         </Link>
       </div>
 
-      <div className="hidden xl:flex absolute left-20 inset-y-0 items-center pointer-events-auto">
+      <div className="hidden mdl:flex absolute left-20 inset-y-0 items-center pointer-events-auto">
         <Link to="/" className="text-2xl font-bold whitespace-nowrap">
           Schachclub Laufenburg e. V.
         </Link>
       </div>
 
-      <div className="absolute right-0 inset-y-0 pr-4 hidden lg:flex items-center pointer-events-none">
+      <div className="absolute right-0 inset-y-0 pr-4 hidden mdl:flex items-center pointer-events-none">
         <img src="/photos/part.png" alt="Part" className="h-full max-h-16 object-contain" />
       </div>
 
-      <div className="container mx-auto px-4 py-4 pl-16 pr-16 lg:pl-24 lg:pr-24">
+      <div className="container mx-auto px-4 py-4 pl-20 pr-16 mdl:pl-18 mdl:pr-18">
         <div className="flex items-center justify-between">
           <div className="flex-1 flex items-center justify-center">
-            <Link to="/" className="lg:hidden text-2xl font-bold">
+            <Link to="/" className="mds:hidden text-2xl font-bold">
               Schachclub Laufenburg
             </Link>
-            <div className="lg:hidden absolute right-4">
+            <div className="mds:hidden absolute right-4">
               <button
                 onClick={handleMenuClick}
                 className="p-3 hover:text-club-accent transition-colors"
@@ -80,7 +107,7 @@ const Header = () => {
               </button>
             </div>
 
-            <nav className="hidden lg:flex gap-8 relative xl:ml-96">
+            <nav className="hidden mds:flex gap-8 relative mdl:ml-96">
             {navItems.map((item) => {
               const parentActive = isActive(item.path) || (item.children?.some((c) => isActive(resolvePath(item.path, c.path))));
 
@@ -95,7 +122,7 @@ const Header = () => {
                     >
                       {item.label}
                     </Link>
-                    <div className="absolute left-0 top-full w-44 bg-club-primary text-white rounded shadow-lg opacity-0 -translate-y-2 group-hover:translate-y-0 group-hover:opacity-100 transform transition-all duration-300 ease-out pointer-events-none group-hover:pointer-events-auto origin-top">
+                    <div className="absolute left-0 top-full w-44 bg-club-primary text-white rounded shadow-mdl opacity-0 -translate-y-2 group-hover:translate-y-0 group-hover:opacity-100 transform transition-all duration-300 ease-out pointer-events-none group-hover:pointer-events-auto origin-top">
                       {item.children.map((sub) => {
                         const fullPath = resolvePath(item.path, sub.path);
                         return (
@@ -131,7 +158,7 @@ const Header = () => {
           {/* Mobile Navigation */}
           <div
             ref={mobileMenuRef}
-            className={`absolute left-0 right-0 top-full w-full bg-club-primary lg:hidden overflow-auto transition-all duration-300 ease-in-out transform shadow-lg z-[100] ${
+            className={`absolute left-0 right-0 top-full w-full bg-club-primary mds:hidden overflow-auto transition-all duration-300 ease-in-out transform shadow-mdl z-[100] ${
               isMenuOpen ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-2 pointer-events-none"
             }`}
           >

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Search } from "lucide-react";
 
 type NewsItem = {
   id: number;
@@ -34,6 +35,14 @@ const AktuellesSection = () => {
   const [items, setItems] = useState<NewsItem[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+
+  const filteredItems = useMemo(() => {
+    if (!items) return [] as NewsItem[];
+    const q = query.trim().toLowerCase();
+    if (!q) return items;
+    return items.filter(i => i.title.toLowerCase().includes(q));
+  }, [items, query]);
 
   useEffect(() => {
     let cancelled = false;
@@ -87,9 +96,26 @@ const AktuellesSection = () => {
           </div>
         }
 
+        <div className="max-w-3xl mx-auto mb-6">
+          <label className="sr-only">Suche Nachrichten</label>
+          <div className="relative">
+            <span className="absolute inset-y-0 left-3 flex items-center text-gray-400"><Search className="w-4 h-4" /></span>
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Nach Titel suchen"
+              className="w-full pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-club-accent"
+            />
+          </div>
+        </div>
+
         {items && (
           <div className="space-y-4">
-            {items.map((it) => (
+            {filteredItems.length === 0 && (
+              <div className="mx-auto max-w-2xl p-4 text-center text-gray-600">Keine Artikel gefunden.</div>
+            )}
+            {filteredItems.map((it) => (
               <article key={it.id} className="bg-white border rounded-lg p-4">
                 <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                   <div className="flex-1">

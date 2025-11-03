@@ -1,61 +1,114 @@
-import { Euro, Users, MapPin, Clock, Phone, Mail, Calendar, BookOpen, Heart } from "lucide-react";
+import { Euro, Users, MapPin, Clock, Phone, Mail, Calendar, CalendarSync, Sparkles, BookOpen } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useRef, useState, useEffect } from "react";
 import type { CalendarEvent } from "@/types/calendarTypes";
 import { Link } from "react-router-dom";
 import FastInfo from "@/components/about/FastInfo";
-const REMOTE_CALENDAR_URL = "/calendar-proxy.php";
+const UPCOMING_EVENTS_URL = "https://sc-laufenburg.de/api/events.php?action=upcoming";
 
 function isCalendarEvent(obj: any): obj is CalendarEvent {
   return obj && typeof obj.title === 'string' && typeof obj.date === 'string' && ['tournament','meeting','training','special', 'holiday'].includes(obj.type);
 }
 
 const UpcomingEvents = () => {
-  const [items, setItems] = useState<CalendarEvent[] | null>(null);
+  const [recurringEvents, setRecurringEvents] = useState<CalendarEvent[]>([]);
+  const [specialEvents, setSpecialEvents] = useState<CalendarEvent[]>([]);
   const [err, setErr] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
     const load = async () => {
       try {
-        const url = `${REMOTE_CALENDAR_URL}?_=${Date.now()}`;
-        const res = await fetch(url, { cache: 'no-store' });
+        setLoading(true);
+        const res = await fetch(UPCOMING_EVENTS_URL, { cache: 'no-store' });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
-        if (!Array.isArray(data)) throw new Error('Invalid JSON');
-        const validated = (data as any[]).filter(isCalendarEvent) as CalendarEvent[];
-        const today = new Date();
-        const upcoming = validated
-          .map(e => ({...e, _d: new Date(e.date)}))
-          .filter(e => e._d >= new Date(today.getFullYear(), today.getMonth(), today.getDate()))
-          .sort((a,b) => a._d.getTime() - b._d.getTime())
-          .slice(0,2)
-          .map(e => ({ title: e.title, date: e.date, time: e.time, location: e.location, description: e.description, type: e.type }));
-        if (!cancelled) setItems(upcoming.length ? upcoming : null);
+        
+        const eventsArray = data.events || [];
+        if (!Array.isArray(eventsArray)) throw new Error('Invalid JSON structure');
+        
+        const transformedEvents = eventsArray.map((event: any) => ({
+          ...event,
+          time: event.time && typeof event.time === 'string' 
+            ? event.time.substring(0, 5)
+            : event.time,
+          is_recurring: event.is_recurring === 1 || event.is_recurring === true
+        }));
+        
+        const validated = (transformedEvents as any[]).filter(isCalendarEvent) as CalendarEvent[];
+        
+        const recurring = validated.filter(e => e.is_recurring).slice(0, 2);
+        const special = validated.filter(e => !e.is_recurring).slice(0, 1);
+        
+        if (!cancelled) {
+          setRecurringEvents(recurring);
+          setSpecialEvents(special);
+        }
       } catch (e: any) {
         if (!cancelled) setErr(String(e?.message || e));
+      } finally {
+        if (!cancelled) setLoading(false);
       }
     };
     load();
     return () => { cancelled = true; };
   }, []);
 
-  const fallbackMessage = 'Aktuell liegen uns keine Termine vor — das Problem wird bald behoben.';
-
   return (
     <>
-      {items && items.length > 0 ? (
-        <ul className="text-sm text-gray-700 space-y-2">
-          {items.map((ev, i) => (
-            <li key={i}><strong>{new Date(ev.date).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })}:</strong> {ev.title} {ev.description ? `— ${ev.description}` : ''}</li>
-          ))}
-        </ul>
-      ) : (
-        <p className="text-sm text-gray-700">{fallbackMessage}</p>
-      )}
-      <div className="mt-4">
-        <Link to="/kalender" className="inline-flex items-center gap-2 text-sm px-3 py-1 rounded bg-club-accent hover:bg-club-dark text-white w-max">Alle Termine & Turniere</Link>
+      <div className="mb-4">
+        <h4 className="text-sm font-semibold text-gray-800 mb-2 flex items-center gap-2"><CalendarSync className="w-4 h-4 text-club-accent" />Wiederkehrende Termine</h4>
+        {loading ? (
+          <ul className="text-sm text-gray-700 space-y-2">
+            {[0,1].map((n) => (
+              <li key={n} className="flex items-center gap-3">
+                <Skeleton className="h-4 w-20" />
+                <Skeleton className="h-4 w-40" />
+              </li>
+            ))}
+          </ul>
+        ) : recurringEvents.length > 0 ? (
+          <ul className="text-sm text-gray-700 space-y-2">
+            {recurringEvents.map((ev, i) => (
+              <li key={i}>
+                <strong>{new Date(ev.date).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })}:</strong>{' '}
+                <Link to="/kalender" className="text-club-primary hover:underline" aria-label={`Öffne Termin ${ev.title} im Kalender`}>
+                  {ev.title}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-sm text-gray-600 italic">Keine wiederkehrenden Termine</p>
+        )}
+      </div>
+
+      <div className="mb-4">
+        <h4 className="text-sm font-semibold text-gray-800 mb-2 flex items-center gap-2"><Sparkles className="w-4 h-4 text-club-accent" />Besondere Termine</h4>
+        {loading ? (
+          <ul className="text-sm text-gray-700 space-y-2">
+            <li className="flex items-center gap-3">
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-4 w-40" />
+            </li>
+          </ul>
+        ) : specialEvents.length > 0 ? (
+          <ul className="text-sm text-gray-700 space-y-2">
+            {specialEvents.map((ev, i) => (
+              <li key={i}>
+                <strong>{new Date(ev.date).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })}:</strong>{' '}
+                <Link to="/kalender" className="text-club-primary hover:underline" aria-label={`Öffne Termin ${ev.title} im Kalender`}>
+                  {ev.title}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-sm text-gray-600 italic">Keine besonderen Termine</p>
+        )}
       </div>
     </>
   );
