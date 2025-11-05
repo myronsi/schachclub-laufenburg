@@ -1,4 +1,5 @@
 import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { ImageOff, Calendar, Users, Phone, ExternalLink } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -26,6 +27,8 @@ const MannschaftSection = () => {
   const [teams, setTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [description, setDescription] = useState<{ id: string; name: string; text: string } | null>(null);
+  const [descriptionLoading, setDescriptionLoading] = useState(true);
 
   useEffect(() => {
     const fetchTeams = async () => {
@@ -65,7 +68,26 @@ const MannschaftSection = () => {
       }
     };
 
+    const fetchDescription = async () => {
+      try {
+        setDescriptionLoading(true);
+        const response = await fetch('https://sc-laufenburg.de/api/teams.php?id=0');
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        setDescription(data);
+      } catch (err) {
+        console.error('Error fetching description:', err);
+      } finally {
+        setDescriptionLoading(false);
+      }
+    };
+
     fetchTeams();
+    fetchDescription();
   }, []);
 
   const handleImageError = (teamId: number) => {
@@ -78,12 +100,6 @@ const MannschaftSection = () => {
         Unsere Mannschaften
       </h2>
 
-      {loading && (
-        <div className="text-center py-8">
-          <p className="text-gray-600">Lade Mannschaften...</p>
-        </div>
-      )}
-      
       {error && (
         <div className="text-center py-4 mb-4 bg-yellow-50 border border-yellow-200 rounded">
           <p className="text-yellow-800 text-sm">
@@ -92,35 +108,54 @@ const MannschaftSection = () => {
         </div>
       )}
 
-      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-        <h3 className="text-xl font-semibold mb-4">Aktuell</h3>
-        <p className="mb-2">
-          <a 
-            href="https://bsv-ergebnisdienst.de/index.php?p1=0:pa:BK9-24-4" 
-            target="_blank"
-            className="underline hover:text-club-accent hover:underline"
-          >
-            Bezirksklasse Hochrhein
-          </a>
-        </p>
-        <p className="mb-4">
-          In diesem Jahr spielen wir nicht ganz um den<br />
-          Aufstieg in die{"  "}
-          <a 
-            href="https://bsv-ergebnisdienst.de/index.php?p1=0:pa:BLS3-24-7" 
-            target="_blank"
-            className="underline hover:text-club-accent hover:underline"
-          >
-            Bereichsliga Süd Staffel 3
-          </a>
-        </p>
-      </div>
+      {descriptionLoading ? (
+        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+          <Skeleton className="h-6 w-32 mb-4" />
+          <Skeleton className="h-4 w-full mb-2" />
+          <Skeleton className="h-4 w-3/4" />
+        </div>
+      ) : description ? (
+        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+          <h3 className="text-xl font-semibold mb-4">{description.name}</h3>
+          <div dangerouslySetInnerHTML={{ __html: description.text }} />
+        </div>
+      ) : null}
 
       <div 
         ref={elementRef}
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8"
       >
-        {teams.map((team: any) => (
+        {loading ? (
+          <>
+            {[0, 1].map((n) => (
+              <Card key={n} className="overflow-hidden">
+                <div className="h-56 md:h-64 flex items-stretch">
+                  <div className="w-2/5 bg-gray-50 flex items-center justify-center">
+                    <Skeleton className="w-full h-full" />
+                  </div>
+                  <div className="w-3/5 p-6 flex flex-col justify-between">
+                    <div>
+                      <Skeleton className="h-6 w-3/4 mb-2" />
+                      <Skeleton className="h-4 w-1/2 mb-3" />
+                      <div className="flex items-center gap-3 mb-2">
+                        <Skeleton className="h-4 w-24" />
+                        <Skeleton className="h-4 w-28" />
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Skeleton className="h-5 w-32" />
+                      <div className="flex items-center gap-2">
+                        <Skeleton className="h-8 w-20" />
+                        <Skeleton className="h-8 w-24" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </>
+        ) : (
+          teams.map((team: any) => (
           <Card key={team.id} className="overflow-hidden group transform transition-all duration-300 hover:-translate-y-1 hover:shadow-xl cursor-pointer">
             <div className="h-56 md:h-64 flex items-stretch">
               <a 
@@ -220,7 +255,8 @@ const MannschaftSection = () => {
               </div>
             </div>
           </Card>
-        ))}
+        ))
+        )}
       </div>
     </section>
   );
