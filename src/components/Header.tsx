@@ -37,7 +37,9 @@ const Header = () => {
   ];
   
   const isActive = (path: string) => {
-    return location.pathname === path;
+    if (!path) return false;
+    if (location.pathname === path) return true;
+    return location.pathname.startsWith(path.endsWith('/') ? path : `${path}/`);
   };
 
   const resolvePath = (parentPath: string, childPath: string) => {

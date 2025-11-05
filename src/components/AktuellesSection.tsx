@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Search } from "lucide-react";
 
@@ -37,28 +37,35 @@ const AktuellesSection = () => {
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
 
-  const filteredItems = useMemo(() => {
-    if (!items) return [] as NewsItem[];
-    const q = query.trim().toLowerCase();
-    if (!q) return items;
-    return items.filter(i => i.title.toLowerCase().includes(q));
-  }, [items, query]);
-
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
-    fetch('https://sc-laufenburg.de/api/news.php')
-      .then(async (res) => {
-        if (!res.ok) throw new Error((await res.json()).message || `HTTP ${res.status}`);
-        return res.json();
-      })
-      .then((data) => {
-        if (!cancelled) setItems(Array.isArray(data) ? data.slice(0,5) : []);
-      })
-      .catch((err) => { if (!cancelled) setError(String(err?.message || err)); })
-      .finally(() => { if (!cancelled) setLoading(false); });
-    return () => { cancelled = true; };
-  }, []);
+
+    const timer = setTimeout(() => {
+      const q = query.trim();
+      const url = `https://sc-laufenburg.de/api/news.php${q ? `?q=${encodeURIComponent(q)}` : ''}`;
+
+      fetch(url)
+        .then(async (res) => {
+          if (!res.ok) throw new Error((await res.json()).message || `HTTP ${res.status}`);
+          return res.json();
+        })
+        .then((data) => {
+          if (!cancelled) setItems(Array.isArray(data) ? data.slice(0, 5) : []);
+        })
+        .catch((err) => {
+          if (!cancelled) setError(String(err?.message || err));
+        })
+        .finally(() => {
+          if (!cancelled) setLoading(false);
+        });
+    }, 250);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [query]);
 
   return (
     <section className="pt-16 py-16 animate-fadeIn">
@@ -67,6 +74,22 @@ const AktuellesSection = () => {
           <h1 className="text-3xl font-bold text-club-primary">Aktuelles</h1>
           <p className="mt-3 text-gray-600 max-w-2xl mx-auto">Neuigkeiten, Berichte und Ankündigungen aus dem Verein.</p>
         </header>
+
+        
+
+        <div className="max-w-3xl mx-auto mb-6">
+          <label className="sr-only">Suche Nachrichten</label>
+          <div className="relative">
+            <span className="absolute inset-y-0 left-3 flex items-center text-gray-400"><Search className="w-4 h-4" /></span>
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Nach Artikel suchen"
+              className="w-full pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-club-accent"
+            />
+          </div>
+        </div>
 
         {loading && (
           <div className="space-y-4">
@@ -96,26 +119,12 @@ const AktuellesSection = () => {
           </div>
         }
 
-        <div className="max-w-3xl mx-auto mb-6">
-          <label className="sr-only">Suche Nachrichten</label>
-          <div className="relative">
-            <span className="absolute inset-y-0 left-3 flex items-center text-gray-400"><Search className="w-4 h-4" /></span>
-            <input
-              type="search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Nach Titel suchen"
-              className="w-full pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-club-accent"
-            />
-          </div>
-        </div>
-
-        {items && (
+        {!loading && items && (
           <div className="space-y-4">
-            {filteredItems.length === 0 && (
+            {items.length === 0 && (
               <div className="mx-auto max-w-2xl p-4 text-center text-gray-600">Keine Artikel gefunden.</div>
             )}
-            {filteredItems.map((it) => (
+            {items.map((it) => (
               <article key={it.id} className="bg-white border rounded-lg p-4">
                 <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                   <div className="flex-1">

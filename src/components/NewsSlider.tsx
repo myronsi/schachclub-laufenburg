@@ -78,13 +78,11 @@ const NewsSlider = () => {
   }, [nextSlide, prevSlide]);
 
   useEffect(() => {
-    // Global listener as a fallback
     const listener = (e: KeyboardEvent) => handleKeyDown(e);
     document.addEventListener('keydown', listener);
     return () => document.removeEventListener('keydown', listener);
   }, [handleKeyDown]);
 
-  // Keep currentSlide in-range when slide list changes
   useEffect(() => {
     if (slides.length === 0) {
       setCurrentSlide(0);
@@ -122,7 +120,6 @@ const NewsSlider = () => {
   
   const getBackgroundImage = (item: any) => {
     const itemId = item.id ?? 0;
-    // If this item's image has errored, use fallback
     if (!item.image || imageErrors.has(itemId)) {
       const idx = itemId % fallbackImages.length;
       return fallbackImages[idx];
@@ -184,7 +181,6 @@ const NewsSlider = () => {
             }}
           >
             <div className="absolute inset-0 bg-black/50 w-full h-full" />
-            {/* Hidden img to detect 404 errors */}
             {item.image && !imageErrors.has(item.id ?? 0) && (
               <img
                 src={item.image}
