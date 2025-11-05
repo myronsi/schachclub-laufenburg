@@ -72,6 +72,7 @@ const CalendarSection = () => {
     return () => { cancelled = true; };
   }, [currentMonth]);
 
+  // Sync URL -> currentMonth and selectedDate (only when URL changes externally)
   useEffect(() => {
     const prefixes = ['/kalender'];
     const path = location.pathname || '';
@@ -82,43 +83,53 @@ const CalendarSection = () => {
         const y = currentMonth.getFullYear();
         const m = String(currentMonth.getMonth() + 1).padStart(2, '0');
         const target = `${prefix}/${y}-${m}`;
-        if (path !== target) {
-          navigate(target, { replace: true });
-        }
+        navigate(target, { replace: true });
         return;
       }
     }
 
-    // If path contains a yyyy-mm, ensure currentMonth matches it
-    const match = path.match(/\/(kalender)\/(\d{4}-\d{2})/);
-    if (match && match[2]) {
-      const [year, month] = match[2].split('-').map((s) => parseInt(s, 10));
+    // If path contains yyyy-mm-dd (full date), open dialog for that date
+    const dateMatch = path.match(/\/(kalender)\/(\d{4}-\d{2}-\d{2})/);
+    if (dateMatch && dateMatch[2]) {
+      const dateStr = dateMatch[2];
+      const [year, month, day] = dateStr.split('-').map((s) => parseInt(s, 10));
+      
+      if (!Number.isNaN(year) && !Number.isNaN(month) && !Number.isNaN(day)) {
+        // Set the month to match the date
+        const urlMonth = new Date(year, month - 1, 1);
+        const urlMonthKey = `${year}-${String(month).padStart(2, '0')}`;
+        const currentMonthKey = `${currentMonth.getFullYear()}-${String(currentMonth.getMonth() + 1).padStart(2, '0')}`;
+        
+        if (urlMonthKey !== currentMonthKey) {
+          setCurrentMonth(urlMonth);
+        }
+        
+        // Open the dialog for this date
+        if (selectedDate !== dateStr) {
+          setSelectedDate(dateStr);
+          setDialogOpen(true);
+        }
+      }
+      return;
+    }
+
+    // If path contains yyyy-mm (month only), ensure currentMonth matches it
+    const monthMatch = path.match(/\/(kalender)\/(\d{4}-\d{2})$/);
+    if (monthMatch && monthMatch[2]) {
+      const [year, month] = monthMatch[2].split('-').map((s) => parseInt(s, 10));
       if (!Number.isNaN(year) && !Number.isNaN(month)) {
-        const desired = new Date(year, month - 1, 1);
-        if (desired.getFullYear() !== currentMonth.getFullYear() || desired.getMonth() !== currentMonth.getMonth()) {
-          setCurrentMonth(desired);
+        const urlMonth = new Date(year, month - 1, 1);
+        const urlKey = `${year}-${String(month).padStart(2, '0')}`;
+        const currentKey = `${currentMonth.getFullYear()}-${String(currentMonth.getMonth() + 1).padStart(2, '0')}`;
+        
+        // Only update if URL month is different from current state
+        if (urlKey !== currentKey) {
+          setCurrentMonth(urlMonth);
         }
       }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.pathname]);
-
-  // When currentMonth changes (user navigated inside calendar), update the URL to reflect it.
-  useEffect(() => {
-    const prefixes = ['/kalender'];
-    const path = location.pathname || '';
-    const y = currentMonth.getFullYear();
-    const m = String(currentMonth.getMonth() + 1).padStart(2, '0');
-
-  // determine base prefix: prefer existing prefix in URL, otherwise default to /kalender
-  const base = prefixes.find(p => path.startsWith(p)) ?? '/kalender';
-    const target = `${base}/${y}-${m}`;
-    if (!path.startsWith(`${base}/${y}-${m}`)) {
-      // push a new history entry so back/forward works when changing months
-      navigate(target, { replace: false });
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentMonth]);
+  }, [location.pathname, navigate]);
 
   const filteredEvents = useMemo(
     () => (selectedType === "all" ? calendarEvents : calendarEvents.filter(e => e.type === selectedType)),
@@ -170,11 +181,25 @@ const CalendarSection = () => {
     return dates;
   }, [startOfCalendar, currentMonth]);
 
-  const prevMonth = () => setCurrentMonth(m => new Date(m.getFullYear(), m.getMonth() - 1, 1));
-  const nextMonth = () => setCurrentMonth(m => new Date(m.getFullYear(), m.getMonth() + 1, 1));
+  const prevMonth = () => {
+    const newMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1);
+    const y = newMonth.getFullYear();
+    const m = String(newMonth.getMonth() + 1).padStart(2, '0');
+    navigate(`/kalender/${y}-${m}`);
+  };
+  
+  const nextMonth = () => {
+    const newMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1);
+    const y = newMonth.getFullYear();
+    const m = String(newMonth.getMonth() + 1).padStart(2, '0');
+    navigate(`/kalender/${y}-${m}`);
+  };
+  
   const goToToday = () => {
     const t = new Date();
-    setCurrentMonth(new Date(t.getFullYear(), t.getMonth(), 1));
+    const y = t.getFullYear();
+    const m = String(t.getMonth() + 1).padStart(2, '0');
+    navigate(`/kalender/${y}-${m}`);
     setSelectedDate(toKey(t));
   };
 
@@ -306,17 +331,10 @@ const CalendarSection = () => {
             ))}
           </div>
         ) : fetchError ? (
-          <div className="text-center py-12 bg-red-50 border border-red-200 rounded-lg">
-            <div className="text-red-600 font-semibold mb-2">Fehler beim Laden des Kalenders</div>
-            <p className="text-sm text-red-500 mb-4">{fetchError}</p>
-            <button 
-              onClick={() => {
-                setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1));
-              }}
-              className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 text-sm"
-            >
-              Erneut versuchen
-            </button>
+          <div className="text-center py-4 mb-4 bg-yellow-50 border border-yellow-200 rounded">
+            <p className="text-yellow-800 text-sm">
+              Es ist ein Fehler beim Laden der Artikel aufgetreten. Bitte versuche es später erneut.
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-7 gap-1 bg-white rounded-md overflow-hidden border shadow-xl p-2">
@@ -342,7 +360,12 @@ const CalendarSection = () => {
             return (
               <button
                 key={idx}
-                onClick={() => { setSelectedDate(key); setDialogOpen(true); }}
+                onClick={() => { 
+                  const y = d.getFullYear();
+                  const m = String(d.getMonth() + 1).padStart(2, '0');
+                  const day = String(d.getDate()).padStart(2, '0');
+                  navigate(`/kalender/${y}-${m}-${day}`);
+                }}
                 aria-pressed={isSelected}
                   className={`group p-3 h-28 text-left flex flex-col justify-between rounded-sm focus:outline-none transition-colors duration-150 border border-gray-200 bg-white ${cellClass}`}
               >
@@ -390,7 +413,16 @@ const CalendarSection = () => {
           </div>
         )}
 
-        <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) setSelectedDate(null); }}>
+        <Dialog open={dialogOpen} onOpenChange={(open) => { 
+          setDialogOpen(open); 
+          if (!open) {
+            setSelectedDate(null);
+            // Navigate back to month view when closing dialog
+            const y = currentMonth.getFullYear();
+            const m = String(currentMonth.getMonth() + 1).padStart(2, '0');
+            navigate(`/kalender/${y}-${m}`, { replace: true });
+          }
+        }}>
           {selectedDate && (
             <DialogContent className={`${dialogSizeClass}`}>
               <DialogHeader className="space-y-2">

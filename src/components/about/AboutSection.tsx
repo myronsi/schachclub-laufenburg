@@ -72,14 +72,17 @@ const UpcomingEvents = () => {
           </ul>
         ) : recurringEvents.length > 0 ? (
           <ul className="text-sm text-gray-700 space-y-2">
-            {recurringEvents.map((ev, i) => (
-              <li key={i}>
-                <strong>{new Date(ev.date).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })}:</strong>{' '}
-                <Link to="/kalender" className="text-club-primary hover:underline" aria-label={`Öffne Termin ${ev.title} im Kalender`}>
-                  {ev.title}
-                </Link>
-              </li>
-            ))}
+            {recurringEvents.map((ev, i) => {
+              const eventDate = ev.date.slice(0, 10);
+              return (
+                <li key={i}>
+                  <strong>{new Date(ev.date).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })}:</strong>{' '}
+                  <Link to={`/kalender/${eventDate}`} className="text-club-primary hover:underline" aria-label={`Öffne Termin ${ev.title} im Kalender`}>
+                    {ev.title}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         ) : (
           <p className="text-sm text-gray-600 italic">Keine wiederkehrenden Termine</p>
@@ -97,14 +100,17 @@ const UpcomingEvents = () => {
           </ul>
         ) : specialEvents.length > 0 ? (
           <ul className="text-sm text-gray-700 space-y-2">
-            {specialEvents.map((ev, i) => (
-              <li key={i}>
-                <strong>{new Date(ev.date).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })}:</strong>{' '}
-                <Link to="/kalender" className="text-club-primary hover:underline" aria-label={`Öffne Termin ${ev.title} im Kalender`}>
-                  {ev.title}
-                </Link>
-              </li>
-            ))}
+            {specialEvents.map((ev, i) => {
+              const eventDate = ev.date.slice(0, 10);
+              return (
+                <li key={i}>
+                  <strong>{new Date(ev.date).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })}:</strong>{' '}
+                  <Link to={`/kalender/${eventDate}`} className="text-club-primary hover:underline" aria-label={`Öffne Termin ${ev.title} im Kalender`}>
+                    {ev.title}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         ) : (
           <p className="text-sm text-gray-600 italic">Keine besonderen Termine</p>

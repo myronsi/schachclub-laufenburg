@@ -111,13 +111,13 @@ const AktuellesSection = () => {
             ))}
           </div>
         )}
-        {error &&     
-          <div className="mx-auto max-w-2xl p-6 bg-red-50 border border-red-200 text-red-700 rounded-lg">
-            <strong className="block text-lg">Fehler beim Laden</strong>
-            <p className="mt-2 text-sm">Es ist ein Fehler beim Laden der Artikel aufgetreten. Bitte versuche es später erneut.</p>
-            <p className="mt-3 text-xs text-red-600">{error}</p>
+        {error && (
+          <div className="text-center py-4 mb-4 bg-yellow-50 border border-yellow-200 rounded">
+            <p className="text-yellow-800 text-sm">
+              Es ist ein Fehler beim Laden der Artikel aufgetreten. Bitte versuche es später erneut.
+            </p>
           </div>
-        }
+        )}
 
         {!loading && items && (
           <div className="space-y-4">

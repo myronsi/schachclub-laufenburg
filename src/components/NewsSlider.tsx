@@ -33,20 +33,29 @@ const NewsSlider = () => {
 
   
 
-  // fetch news from API
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
     fetch('https://sc-laufenburg.de/api/news.php')
       .then(async (res) => {
-        if (!res.ok) throw new Error((await res.json())?.message || `HTTP ${res.status}`);
+        if (!res.ok) {
+          if (res.status === 500) {
+            throw new Error('HTTP 500');
+          }
+          throw new Error('Network error');
+        }
         return res.json();
       })
       .then((data) => {
         if (!cancelled && Array.isArray(data)) setItems(data);
       })
       .catch((err) => {
-        if (!cancelled) setError(String(err?.message || err));
+        if (!cancelled) {
+          const errMsg = String(err?.message || err);
+          if (errMsg.includes('500')) {
+            setError(errMsg);
+          }
+        }
       })
       .finally(() => { if (!cancelled) setLoading(false); });
 
@@ -169,9 +178,6 @@ const NewsSlider = () => {
             <a href="/kontakt" className="underline hover:text-club-accent transition-colors">
               unserer Kontaktseite
             </a>.
-          </p>
-          <p className="text-sm text-gray-400 mt-6">
-            Technische Details: {error}
           </p>
       </div>
       </div>
