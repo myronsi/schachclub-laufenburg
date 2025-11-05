@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Link } from "react-router-dom";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, TriangleAlert } from "lucide-react";
 
 const NewsSlider = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -150,6 +150,33 @@ const NewsSlider = () => {
       </>
     );
   };
+
+  if (error) {
+    return (
+      <div className="absolute inset-0 w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900 text-white px-6">
+        <div className="max-w-2xl text-center space-y-4">
+          <TriangleAlert className="mx-auto w-20 h-20 text-yellow-400" />
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            Entschuldigung!
+          </h2>
+          <p className="text-lg md:text-xl leading-relaxed mb-4">
+            Dieser Teil der Website ist vorübergehend nicht verfügbar. 
+            Wir arbeiten bereits an der Behebung des Problems.
+          </p>
+          <p className="text-base md:text-lg text-gray-300 leading-relaxed">
+            Bitte versuchen Sie es in einigen Minuten erneut. 
+            Bei anhaltenden Problemen kontaktieren Sie uns gerne unter{' '}
+            <a href="/kontakt" className="underline hover:text-club-accent transition-colors">
+              unserer Kontaktseite
+            </a>.
+          </p>
+          <p className="text-sm text-gray-400 mt-6">
+            Technische Details: {error}
+          </p>
+      </div>
+      </div>
+    );
+  }
 
   return (
     <div 

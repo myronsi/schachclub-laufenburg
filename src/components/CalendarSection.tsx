@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Users, ChevronLeft, ChevronRight } from "lucide-react";
 import {
   Dialog,
@@ -17,6 +18,8 @@ import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 const CalendarSection = () => {
   const introAnim = useScrollAnimation();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [selectedType, setSelectedType] = useState<string>("all");
   const [currentMonth, setCurrentMonth] = useState(() => {
     const d = new Date();
@@ -67,6 +70,54 @@ const CalendarSection = () => {
 
     load();
     return () => { cancelled = true; };
+  }, [currentMonth]);
+
+  useEffect(() => {
+    const prefixes = ['/kalender'];
+    const path = location.pathname || '';
+
+    // If path is exactly one of the calendar prefixes (no month), replace with current month
+    for (const prefix of prefixes) {
+      if (path === prefix || path === prefix + '/') {
+        const y = currentMonth.getFullYear();
+        const m = String(currentMonth.getMonth() + 1).padStart(2, '0');
+        const target = `${prefix}/${y}-${m}`;
+        if (path !== target) {
+          navigate(target, { replace: true });
+        }
+        return;
+      }
+    }
+
+    // If path contains a yyyy-mm, ensure currentMonth matches it
+    const match = path.match(/\/(kalender)\/(\d{4}-\d{2})/);
+    if (match && match[2]) {
+      const [year, month] = match[2].split('-').map((s) => parseInt(s, 10));
+      if (!Number.isNaN(year) && !Number.isNaN(month)) {
+        const desired = new Date(year, month - 1, 1);
+        if (desired.getFullYear() !== currentMonth.getFullYear() || desired.getMonth() !== currentMonth.getMonth()) {
+          setCurrentMonth(desired);
+        }
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname]);
+
+  // When currentMonth changes (user navigated inside calendar), update the URL to reflect it.
+  useEffect(() => {
+    const prefixes = ['/kalender'];
+    const path = location.pathname || '';
+    const y = currentMonth.getFullYear();
+    const m = String(currentMonth.getMonth() + 1).padStart(2, '0');
+
+  // determine base prefix: prefer existing prefix in URL, otherwise default to /kalender
+  const base = prefixes.find(p => path.startsWith(p)) ?? '/kalender';
+    const target = `${base}/${y}-${m}`;
+    if (!path.startsWith(`${base}/${y}-${m}`)) {
+      // push a new history entry so back/forward works when changing months
+      navigate(target, { replace: false });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentMonth]);
 
   const filteredEvents = useMemo(
@@ -353,11 +404,14 @@ const CalendarSection = () => {
                   {eventsForSelected.map((ev, i) => {
                     // Function to detect and make links clickable
                     const renderDescription = (text: string) => {
-                      const urlRegex = /(https?:\/\/[^\s]+)/g;
+                      // Match external URLs (http/https) or internal absolute paths starting with '/'
+                      const urlRegex = /(https?:\/\/[^\s]+|\/[A-Za-z0-9_\-\/\?=&%#\.\+~]+)/g;
                       const parts = text.split(urlRegex);
-                      
+
                       return parts.map((part, index) => {
-                        if (part.match(urlRegex)) {
+                        if (!part) return <span key={index} />;
+                        if (part.match(/^https?:\/\//)) {
+                          // external link
                           return (
                             <a
                               key={index}
@@ -368,6 +422,14 @@ const CalendarSection = () => {
                             >
                               {part}
                             </a>
+                          );
+                        }
+                        if (part.startsWith('/')) {
+                          // internal link — use client-side navigation
+                          return (
+                            <Link key={index} to={part} className="text-sm underline text-club-primary hover:text-club-accent">
+                              {part}
+                            </Link>
                           );
                         }
                         return <span key={index}>{part}</span>;
