@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Users, ChevronLeft, ChevronRight } from "lucide-react";
 import {
@@ -27,6 +27,7 @@ const CalendarSection = () => {
   });
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const closeTimerRef = useRef<number | null>(null);
   const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([]);
   const [loading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
@@ -38,22 +39,20 @@ const CalendarSection = () => {
       setFetchError(null);
       try {
         const year = currentMonth.getFullYear();
-        const month = currentMonth.getMonth() + 1; // JavaScript months are 0-indexed
+        const month = currentMonth.getMonth() + 1;
         
         const url = `https://sc-laufenburg.de/api/events.php?action=month&year=${year}&month=${month}`;
         const res = await fetch(url, { cache: 'no-store' });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         
-        // events.php returns { events: [...] }
         const eventsArray = data.events || [];
         if (!Array.isArray(eventsArray)) throw new Error('Invalid JSON structure');
         
-        // Transform time format from hh:mm:ss to hh:mm
         const transformedEvents = eventsArray.map((event: any) => ({
           ...event,
           time: event.time && typeof event.time === 'string' 
-            ? event.time.substring(0, 5) // Extract only hh:mm from hh:mm:ss
+            ? event.time.substring(0, 5)
             : event.time
         }));
         
@@ -72,12 +71,10 @@ const CalendarSection = () => {
     return () => { cancelled = true; };
   }, [currentMonth]);
 
-  // Sync URL -> currentMonth and selectedDate (only when URL changes externally)
   useEffect(() => {
     const prefixes = ['/kalender'];
     const path = location.pathname || '';
 
-    // If path is exactly one of the calendar prefixes (no month), replace with current month
     for (const prefix of prefixes) {
       if (path === prefix || path === prefix + '/') {
         const y = currentMonth.getFullYear();
@@ -88,14 +85,12 @@ const CalendarSection = () => {
       }
     }
 
-    // If path contains yyyy-mm-dd (full date), open dialog for that date
     const dateMatch = path.match(/\/(kalender)\/(\d{4}-\d{2}-\d{2})/);
     if (dateMatch && dateMatch[2]) {
       const dateStr = dateMatch[2];
       const [year, month, day] = dateStr.split('-').map((s) => parseInt(s, 10));
       
       if (!Number.isNaN(year) && !Number.isNaN(month) && !Number.isNaN(day)) {
-        // Set the month to match the date
         const urlMonth = new Date(year, month - 1, 1);
         const urlMonthKey = `${year}-${String(month).padStart(2, '0')}`;
         const currentMonthKey = `${currentMonth.getFullYear()}-${String(currentMonth.getMonth() + 1).padStart(2, '0')}`;
@@ -104,7 +99,6 @@ const CalendarSection = () => {
           setCurrentMonth(urlMonth);
         }
         
-        // Open the dialog for this date
         if (selectedDate !== dateStr) {
           setSelectedDate(dateStr);
           setDialogOpen(true);
@@ -113,7 +107,6 @@ const CalendarSection = () => {
       return;
     }
 
-    // If path contains yyyy-mm (month only), ensure currentMonth matches it
     const monthMatch = path.match(/\/(kalender)\/(\d{4}-\d{2})$/);
     if (monthMatch && monthMatch[2]) {
       const [year, month] = monthMatch[2].split('-').map((s) => parseInt(s, 10));
@@ -122,14 +115,21 @@ const CalendarSection = () => {
         const urlKey = `${year}-${String(month).padStart(2, '0')}`;
         const currentKey = `${currentMonth.getFullYear()}-${String(currentMonth.getMonth() + 1).padStart(2, '0')}`;
         
-        // Only update if URL month is different from current state
         if (urlKey !== currentKey) {
           setCurrentMonth(urlMonth);
         }
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname, navigate]);
+
+  useEffect(() => {
+    return () => {
+      if (closeTimerRef.current) {
+        window.clearTimeout(closeTimerRef.current);
+        closeTimerRef.current = null;
+      }
+    };
+  }, []);
 
   const filteredEvents = useMemo(
     () => (selectedType === "all" ? calendarEvents : calendarEvents.filter(e => e.type === selectedType)),
@@ -172,8 +172,6 @@ const CalendarSection = () => {
       dates.push(d);
     }
 
-    // If the final (6th) week contains no days from the current month,
-    // drop that week so the calendar shows 5 rows instead of an all-next-month row.
     const lastWeek = dates.slice(5 * 7, 6 * 7);
     const hasCurrentMonthInLastWeek = lastWeek.some(d => d.getMonth() === currentMonth.getMonth() && d.getFullYear() === currentMonth.getFullYear());
     if (!hasCurrentMonthInLastWeek) return dates.slice(0, 5 * 7);
@@ -321,11 +319,9 @@ const CalendarSection = () => {
 
         {loading ? (
           <div className="grid grid-cols-7 gap-1 bg-white rounded-md overflow-hidden border shadow-xl p-2">
-            {/* Weekday headers skeleton */}
             {Array.from({length:7}).map((_, i) => (
               <Skeleton key={`header-${i}`} className="h-8 rounded-md" />
             ))}
-            {/* Calendar cells skeleton */}
             {Array.from({length:35}).map((_, i) => (
               <Skeleton key={`cell-${i}`} className="h-28 rounded-sm" />
             ))}
@@ -376,7 +372,6 @@ const CalendarSection = () => {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  {/* Mobile: compact dots */}
                   <div className="flex items-center gap-1 md:hidden">
                     {evs.slice(0,3).map((ev, i) => (
                       <span
@@ -391,7 +386,6 @@ const CalendarSection = () => {
                     )}
                   </div>
 
-                  {/* Desktop: show full colored badges with titles */}
                   <div className="hidden md:flex flex-col gap-1 w-full">
                     {evs.slice(0,2).map((ev, i) => (
                       <span
@@ -413,14 +407,20 @@ const CalendarSection = () => {
           </div>
         )}
 
-        <Dialog open={dialogOpen} onOpenChange={(open) => { 
-          setDialogOpen(open); 
+        <Dialog open={dialogOpen} onOpenChange={(open) => {
+          if (closeTimerRef.current) {
+            window.clearTimeout(closeTimerRef.current);
+            closeTimerRef.current = null;
+          }
+          setDialogOpen(open);
           if (!open) {
-            setSelectedDate(null);
-            // Navigate back to month view when closing dialog
             const y = currentMonth.getFullYear();
             const m = String(currentMonth.getMonth() + 1).padStart(2, '0');
-            navigate(`/kalender/${y}-${m}`, { replace: true });
+            closeTimerRef.current = window.setTimeout(() => {
+              setSelectedDate(null);
+              navigate(`/kalender/${y}-${m}`, { replace: true });
+              closeTimerRef.current = null;
+            }, 220);
           }
         }}>
           {selectedDate && (
@@ -434,16 +434,13 @@ const CalendarSection = () => {
               ) : (
                 <div className="space-y-3">
                   {eventsForSelected.map((ev, i) => {
-                    // Function to detect and make links clickable
                     const renderDescription = (text: string) => {
-                      // Match external URLs (http/https) or internal absolute paths starting with '/'
                       const urlRegex = /(https?:\/\/[^\s]+|\/[A-Za-z0-9_\-\/\?=&%#\.\+~]+)/g;
                       const parts = text.split(urlRegex);
 
                       return parts.map((part, index) => {
                         if (!part) return <span key={index} />;
                         if (part.match(/^https?:\/\//)) {
-                          // external link
                           return (
                             <a
                               key={index}
@@ -457,7 +454,6 @@ const CalendarSection = () => {
                           );
                         }
                         if (part.startsWith('/')) {
-                          // internal link — use client-side navigation
                           return (
                             <Link key={index} to={part} className="text-sm underline text-club-primary hover:text-club-accent">
                               {part}

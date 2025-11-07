@@ -1,18 +1,42 @@
-import { Users, BookOpen, Flag, Trophy } from "lucide-react";
+import * as LucideIcons from "lucide-react";
+import { LucideIcon } from "lucide-react";
 import { useRef, useEffect, useState } from "react";
+import React from "react";
+
+interface StatData {
+  id: number;
+  icon: string;
+  label: string;
+  targetValue: number;
+  delay: number;
+}
+
+interface StatValue {
+  [key: string]: number;
+}
 
 const FastInfo = () => {
   const historySectionRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
-  const [year, setYear] = useState(2025);
-  const [members, setMembers] = useState(0);
-  const [teams, setTeams] = useState(0);
-  const [rotationAngles, setRotationAngles] = useState<Record<string, number>>({
-    jugend: 0,
-  });
-  const [animationCompleted, setAnimationCompleted] = useState({
-    jugend: false,
-  });
+  const [statValues, setStatValues] = useState<StatValue>({});
+  const [statsData, setStatsData] = useState<StatData[]>([]);
+  const [visibleItems, setVisibleItems] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await fetch('https://sc-laufenburg.de/api/fastinfo.php');
+        if (response.ok) {
+          const data = await response.json();
+          setStatsData(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch stats:', error);
+      }
+    };
+
+    fetchStats();
+  }, []);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -30,76 +54,86 @@ const FastInfo = () => {
   }, []);
 
   useEffect(() => {
-    if (isVisible) {
-      const yearInterval = setInterval(() => {
-        setYear(prev => prev > 1969 ? prev - 1 : 1969);
-      }, 30);
-      
-      const membersInterval = setInterval(() => {
-        setMembers(prev => prev < 30 ? prev + 1 : 30);
-      }, 30);
-      
-      const teamsInterval = setInterval(() => {
-        setTeams(prev => {
-          if (prev < 1) return Math.min(prev + 0.05, 1);
-          return 1;
-        });
-      }, 20);
-      
-      let angle = 0;
-      const rotationInterval = setInterval(() => {
-        angle = (angle + 5);
-        
-        setRotationAngles(prev => ({
-          jugend: prev.jugend >= 360 ? 360 : angle,
-        }));
-        
-        if (angle >= 360) {
-          setAnimationCompleted({
-            jugend: true,
-          });
-          clearInterval(rotationInterval);
+    if (isVisible && statsData.length > 0) {
+      const initialValues: StatValue = {};
+      statsData.forEach(stat => {
+        initialValues[stat.label] = 0;
+      });
+      setStatValues(initialValues);
+
+      const totalDuration = 4000;
+      const updateInterval = 20;
+      const totalSteps = totalDuration / updateInterval;
+
+      const intervals: NodeJS.Timeout[] = [];
+      const timeouts: NodeJS.Timeout[] = [];
+
+      const easeOut = (progress: number): number => {
+        if (progress < 0.4) {
+          return progress;
+        } else {
+          const adjustedProgress = (progress - 0.4) / 0.6;
+          const eased = 1 - Math.pow(1 - adjustedProgress, 4);
+          return 0.4 + (eased * 0.6);
         }
-      }, 20);
+      };
+
+      statsData.forEach(stat => {
+        let currentStep = 0;
+        
+        const startTimeout = setTimeout(() => {
+          setVisibleItems(prev => new Set(prev).add(stat.label));
+          
+          const interval = setInterval(() => {
+            currentStep++;
+            const progress = currentStep / totalSteps;
+            const easedProgress = easeOut(progress);
+            const newValue = stat.targetValue * easedProgress;
+
+            setStatValues(prev => {
+              if (currentStep >= totalSteps) {
+                return { ...prev, [stat.label]: stat.targetValue };
+              }
+              return {
+                ...prev,
+                [stat.label]: Math.min(newValue, stat.targetValue)
+              };
+            });
+          }, updateInterval);
+
+          intervals.push(interval);
+        }, stat.delay);
+
+        timeouts.push(startTimeout);
+      });
 
       return () => {
-        clearInterval(yearInterval);
-        clearInterval(membersInterval);
-        clearInterval(teamsInterval);
-        clearInterval(rotationInterval);
+        intervals.forEach(interval => clearInterval(interval));
+        timeouts.forEach(timeout => clearTimeout(timeout));
       };
     }
-  }, [isVisible]);
+  }, [isVisible, statsData]);
 
-  const getCircleProgress = (item: any): number => {
-    if (item.label === "Gegründet") {
-      return (2025 - year) / (2025 - 1969);
-    } else if (item.label === "Mitglieder") {
-      return members / 30;
-    } else if (item.label === "Teams") {
-      return teams / 1;
-    }
-    return item.rotationKey ? Math.min(rotationAngles[item.rotationKey] / 360, 1) : 1;
+  const getCircleProgress = (label: string): number => {
+    const currentValue = statValues[label] || 0;
+    return currentValue > 0 ? 1 : 0;
   };
 
-  const getTransitionDuration = (item: any): string => {
-    if (item.label === "Teams") {
-      return "0.8s";
-    } else if (item.label === "Gegründet") {
-      return "2s";
-    } else if (item.label === "Mitglieder") {
-      return "1s";
-    } else {
-      return "0.05s";
-    }
+  const getTransitionDuration = (): string => {
+    return "4s";
   };
 
-  const infoItems = [
-    { icon: Flag, label: "Gegründet", value: Math.floor(year), delay: 0, rotationKey: null },
-    { icon: Users, label: "Mitglieder", value: Math.floor(members), delay: 200, rotationKey: null },
-    { icon: Trophy, label: "Teams", value: Math.floor(teams), delay: 400, rotationKey: null },
-    { icon: BookOpen, label: "Jugend", value: "aktiv", delay: 600, rotationKey: "jugend" },
-  ];
+  const getTransitionTimingFunction = (): string => {
+    return "cubic-bezier(0.4, 0, 0.2, 1)";
+  };
+
+  const infoItems = statsData.map(stat => ({
+    iconName: stat.icon,
+    label: stat.label,
+    value: Math.floor(statValues[stat.label] || 0),
+    targetValue: stat.targetValue,
+    delay: stat.delay,
+  }));
 
   const CIRCLE_CIRCUMFERENCE = 295.31; // 2 * π * 47 (the radius)
 
@@ -118,29 +152,27 @@ const FastInfo = () => {
       className="bg-white rounded-lg shadow-sm p-8 transition-all duration-1000"
     >
       <div className="flex flex-wrap justify-center gap-10">
-        {infoItems.map((item, index) => (
-          <div 
-            key={index} 
-            className={`relative flex flex-col items-center transform transition-all duration-700 ${
-              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-            }`}
-            style={{ transitionDelay: `${item.delay}ms` }}
-          >
-            <div className="relative w-36 h-36 md:w-44 md:h-44 mb-4">
+        {infoItems.map((item, index) => {
+          const isItemVisible = visibleItems.has(item.label);
+          
+          return (
+            <div 
+              key={index} 
+              className={`relative flex flex-col items-center transform transition-all duration-700 ${
+                isItemVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}
+            >
+              <div className="relative w-36 h-36 md:w-44 md:h-44 mb-4">
               <div className="absolute inset-0 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center">
                 <div className="flex flex-col items-center justify-center p-4 text-center z-10">
-                  <item.icon className={`w-7 h-7 mb-2 text-gray-500`} />
+                  {LucideIcons[item.iconName as keyof typeof LucideIcons] ? (
+                    React.createElement(LucideIcons[item.iconName as keyof typeof LucideIcons] as LucideIcon, { 
+                      className: "w-7 h-7 mb-2 text-gray-500" 
+                    })
+                  ) : null}
                   <div className="font-medium text-gray-600 text-sm">{item.label}</div>
                   <div className="text-2xl font-bold mt-1 text-gray-800">
-                    {typeof item.value === 'number' ? (
-                      <span className="inline-block">{item.value}</span>
-                    ) : (
-                      <span className="inline-block" style={{ 
-                        transform: `rotate(${item.rotationKey && !animationCompleted[item.rotationKey as keyof typeof animationCompleted] ? 
-                          rotationAngles[item.rotationKey] % 10 - 5 : 0}deg)`,
-                        transition: 'transform 0.2s ease-out'
-                      }}>{item.value}</span>
-                    )}
+                    <span className="inline-block">{item.value}</span>
                   </div>
                 </div>
               </div>
@@ -174,18 +206,19 @@ const FastInfo = () => {
                   strokeDasharray={CIRCLE_CIRCUMFERENCE}
                   strokeDashoffset={
                     isVisible ? 
-                    CIRCLE_CIRCUMFERENCE * (1 - getCircleProgress(item)) : 
+                    CIRCLE_CIRCUMFERENCE * (1 - getCircleProgress(item.label)) : 
                     CIRCLE_CIRCUMFERENCE
                   }
                   strokeLinecap="round"
                   style={{
-                    transition: `stroke-dashoffset ${getTransitionDuration(item)} ease-out`
+                    transition: `stroke-dashoffset ${getTransitionDuration()} ${getTransitionTimingFunction()}`
                   }}
                 />
               </svg>
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
