@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
-import { Search, Filter } from "lucide-react";
+import { Search, Filter, Download } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Select,
@@ -85,8 +85,31 @@ const DocumentsSection = () => {
     return Array.from(cats).sort();
   }, [documents]);
 
+  const extractYear = (text: string): number | null => {
+    const yearMatch = text.match(/\b(19\d{2}|20\d{2})\b/);
+    return yearMatch ? parseInt(yearMatch[0]) : null;
+  };
+
   const filteredDocs = useMemo(() => {
-    return documents;
+    return [...documents].sort((a, b) => {
+      const aIsStatuten = a.category?.toLowerCase() === 'statuten';
+      const bIsStatuten = b.category?.toLowerCase() === 'statuten';
+
+      if (aIsStatuten && !bIsStatuten) return -1;
+      if (!aIsStatuten && bIsStatuten) return 1;
+
+      const aYear = extractYear(a.name) || extractYear(a.filename);
+      const bYear = extractYear(b.name) || extractYear(b.filename);
+
+      if (!aYear && bYear) return -1;
+      if (aYear && !bYear) return 1;
+
+      if (aYear && bYear) {
+        return bYear - aYear;
+      }
+
+      return 0;
+    });
   }, [documents]);
 
   const formatFileSize = (bytes?: number) => {
@@ -254,11 +277,13 @@ const DocumentsSection = () => {
                     href={doc.filepath}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm px-4 py-2 rounded-md bg-club-accent text-white hover:bg-club-dark transition whitespace-nowrap flex items-center gap-2"
+                    className="group text-sm p-2 rounded-md bg-club-accent text-white hover:bg-club-dark transition-all duration-300 ease-in-out whitespace-nowrap flex items-center overflow-hidden hover:px-4"
                     title="Dokument herunterladen"
                   >
-                    <span></span>
-                    <span>Download</span>
+                    <Download className="w-4 h-4 flex-shrink-0" />
+                    <span className="hidden md:block max-w-0 opacity-0 translate-x-2 group-hover:max-w-xs group-hover:opacity-100 group-hover:translate-x-0 group-hover:ml-2 transition-all duration-300 ease-in-out overflow-hidden">
+                      Download
+                    </span>
                   </a>
                 </div>
               </li>
