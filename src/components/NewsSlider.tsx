@@ -184,6 +184,42 @@ const NewsSlider = () => {
     );
   }
 
+  if (loading) {
+    const loadingImage = '/photos/schach_schwarz.png';
+    
+    return (
+      <div className="absolute inset-0 w-full h-full overflow-hidden">
+        <div className="absolute inset-0 w-full h-full">
+          <div
+            className="absolute inset-0 w-full h-full"
+            style={{ 
+              backgroundImage: `url(${loadingImage})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center center',
+              minHeight: '100%'
+            }}
+          >
+            <div className="absolute inset-0 bg-black/50 w-full h-full" />
+          </div>
+          <div className="relative h-full flex items-center justify-center text-center text-white px-4">
+            <div className="max-w-2xl mx-4 w-full">
+              <div className="mb-4 md:mb-6 space-y-3">
+                <div className="h-8 md:h-12 bg-white/20 rounded animate-pulse w-3/4 mx-auto"></div>
+                <div className="h-8 md:h-12 bg-white/20 rounded animate-pulse w-1/2 mx-auto"></div>
+              </div>
+              
+              <div className="mb-6 md:mb-8 space-y-2">
+                <div className="h-4 md:h-5 bg-white/20 rounded animate-pulse w-full mx-auto"></div>
+                <div className="h-4 md:h-5 bg-white/20 rounded animate-pulse w-5/6 mx-auto"></div>
+                <div className="h-4 md:h-5 bg-white/20 rounded animate-pulse w-4/5 mx-auto"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div 
       className="absolute inset-0 w-full h-full overflow-hidden"
