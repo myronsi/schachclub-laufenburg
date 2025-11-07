@@ -1,6 +1,7 @@
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import React, { useEffect } from "react";
 import Header from "@/components/Header";
 import ScrollToTop from "@/components/ScrollToTop";
 import Home from "./pages/Home";
@@ -32,6 +33,18 @@ import NotFound from "./pages/notFound";
 
 const queryClient = new QueryClient();
 
+const TitleRoute = ({ title, element }: { title?: string; element: React.ReactElement }) => {
+  useEffect(() => {
+    if (title) {
+      document.title = `SC Laufenburg - ${title}`;
+    } else {
+      document.title = `SC Laufenburg`;
+    }
+  }, [title]);
+
+  return element;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -40,32 +53,32 @@ const App = () => (
         <div className="min-h-screen flex flex-col">
           <Header />
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/ueberuns" element={<About />} />
-            <Route path="/mannschaften" element={<Mannschaften />} />
-            <Route path="/jugend" element={<Youth />} />
-            <Route path="/spiellokal" element={<Spiellokal />}/>
-            <Route path="/turniere" element={<Tournaments />} />
-            <Route path="/turniere/vereinsmeister" element={<Vereinsmeister />} />
-            <Route path="/turniere/pokalsieger" element={<Pokalsieger />} />
-            <Route path="/turniere/nikolausblitz" element={<Nikolausblitz />} />
-            <Route path="/turniere/blitzsieger" element={<Blitzsieger />} />
-            <Route path="/archiv" element={<Media />} />
-            <Route path="/archiv/chronik" element={<Chronik />} />
-            <Route path="/archiv/galerie" element={<Galerie />} />
-            <Route path="/archiv/dokumente" element={<Documents />} />
-            <Route path="/kontakt" element={<Contact />} />
-            <Route path="/kontakt-ok" element={<ContactOk />} />
-            <Route path="/kalender" element={<Calendar />} />
-            <Route path="/kalender/*" element={<Calendar />} />
-            <Route path="/mitgliedwerden" element={<Mitgliedwerden />} />
-            <Route path="/mitgliederbereich" element={<Mitgliederbereich />} />
-            <Route path="/aktuelles/:slug" element={<AktuellesDetail />} />
-            <Route path="/aktuelles" element={<Aktuelles />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/impressum" element={<Impressum />} />
-            <Route path="/datenschutz" element={<Datenschutz />} />
-            <Route path="*" element={<NotFound />} />
+            <Route path="/" element={<TitleRoute element={<Home />} />} />
+            <Route path="/ueberuns" element={<TitleRoute title={"Über uns"} element={<About />} />} />
+            <Route path="/mannschaften" element={<TitleRoute title={"Mannschaften"} element={<Mannschaften />} />} />
+            <Route path="/jugend" element={<TitleRoute title={"Jugend"} element={<Youth />} />} />
+            <Route path="/spiellokal" element={<TitleRoute title={"Spiellokal"} element={<Spiellokal />} />} />
+            <Route path="/turniere" element={<TitleRoute title={"Turniere"} element={<Tournaments />} />} />
+            <Route path="/turniere/vereinsmeister" element={<TitleRoute title={"Vereinsmeister"} element={<Vereinsmeister />} />} />
+            <Route path="/turniere/pokalsieger" element={<TitleRoute title={"Pokalsieger"} element={<Pokalsieger />} />} />
+            <Route path="/turniere/nikolausblitz" element={<TitleRoute title={"Nikolausblitz"} element={<Nikolausblitz />} />} />
+            <Route path="/turniere/blitzsieger" element={<TitleRoute title={"Blitzsieger"} element={<Blitzsieger />} />} />
+            <Route path="/archiv" element={<TitleRoute title={"Archiv"} element={<Media />} />} />
+            <Route path="/archiv/chronik" element={<TitleRoute title={"Chronik"} element={<Chronik />} />} />
+            <Route path="/archiv/galerie" element={<TitleRoute title={"Galerie"} element={<Galerie />} />} />
+            <Route path="/archiv/dokumente" element={<TitleRoute title={"Dokumente"} element={<Documents />} />} />
+            <Route path="/kontakt" element={<TitleRoute title={"Kontakt"} element={<Contact />} />} />
+            <Route path="/kontakt-ok" element={<TitleRoute title={"Kontakt - Bestätigt"} element={<ContactOk />} />} />
+            <Route path="/kalender" element={<TitleRoute title={"Kalender"} element={<Calendar />} />} />
+            <Route path="/kalender/*" element={<TitleRoute title={"Kalender"} element={<Calendar />} />} />
+            <Route path="/mitgliedwerden" element={<TitleRoute title={"Mitglied werden"} element={<Mitgliedwerden />} />} />
+            <Route path="/mitgliederbereich" element={<TitleRoute title={"Mitgliederbereich"} element={<Mitgliederbereich />} />} />
+            <Route path="/aktuelles/:slug" element={<TitleRoute title={"Aktuelles"} element={<AktuellesDetail />} />} />
+            <Route path="/aktuelles" element={<TitleRoute title={"Aktuelles"} element={<Aktuelles />} />} />
+            <Route path="/login" element={<TitleRoute title={"Login"} element={<Login />} />} />
+            <Route path="/impressum" element={<TitleRoute title={"Impressum"} element={<Impressum />} />} />
+            <Route path="/datenschutz" element={<TitleRoute title={"Datenschutz"} element={<Datenschutz />} />} />
+            <Route path="*" element={<TitleRoute title={"404"} element={<NotFound />} />} />
           </Routes>
           <Footer />
         </div>
