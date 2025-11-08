@@ -5,13 +5,50 @@ import { Link, useLocation } from "react-router-dom";
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
+  const [authenticated, setAuthenticated] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
   const location = useLocation();
   const mobileMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('auth_username');
+    const storedSession = localStorage.getItem('auth_session_id');
+    
+    if (!storedUser || !storedSession) {
+      setAuthenticated(false);
+      setCheckingAuth(false);
+      return;
+    }
+
+    (async () => {
+      try {
+        const res = await fetch('https://sc-laufenburg.de/api/auth.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'check', username: storedUser, session_id: storedSession })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          setAuthenticated(true);
+        } else {
+          setAuthenticated(false);
+          localStorage.removeItem('auth_username');
+          localStorage.removeItem('auth_session_id');
+        }
+      } catch (err) {
+        setAuthenticated(false);
+      } finally {
+        setCheckingAuth(false);
+      }
+    })();
+  }, [location.pathname]);
 
   const navItems = [
     { path: "/aktuelles", label: "Aktuelles" },
     { path: "/ueberuns", label: "Über uns" },
-    { path: "/mitgliedwerden", label: "Mitglied werden" },
+    authenticated 
+      ? { path: "/mitgliederbereich", label: "Mitgliederbereich" }
+      : { path: "/mitgliedwerden", label: "Mitglied werden" },
     { path: "/kalender", label: "Kalender" },
     { path: "/mannschaften", label: "Mannschaften" },
     { 

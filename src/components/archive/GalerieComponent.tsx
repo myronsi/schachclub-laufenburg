@@ -3,7 +3,7 @@ import { Image, SortDesc, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ButtonToTop } from "@/components/ui/arrowToTop";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   Dialog,
   DialogContent,
@@ -188,26 +188,18 @@ const GalerieComponent = () => {
         <section className="py-16 animate-fadeIn">
           <div className="container mx-auto px-4">
             <div className="max-w-2xl mx-auto">
-              <div className="p-8 bg-white shadow-lg rounded-xl border border-gray-100 text-center">
-                <div className="flex items-center justify-center mb-4">
+                <div className="flex items-center justify-center mb-6">
                   <div className="rounded-full bg-club-accent/10 p-4">
                     <Lock className="w-8 h-8 text-club-accent" />
                   </div>
                 </div>
-                <h3 className="text-2xl font-semibold mb-2">Mitgliederbereich - Zutritt geschützt</h3>
-                <p className="text-sm text-gray-600 mb-4">Unsere Fotogalerie ist exklusiv für Vereinsmitglieder verfügbar. Bitte melde dich an, um die vollständige Sammlung zu sehen.</p>
-                {authError && <p className="text-red-600 text-sm mb-4">{authError}</p>}
-
-                <ul className="text-sm text-gray-700 mb-6 space-y-2 list-inside list-disc text-left max-w-md mx-auto">
-                  <li>Exklusive Turnier- und Vereinsfotos</li>
-                  <li>Ergebnisse & Protokolle (für Mitglieder)</li>
-                </ul>
-
-                <div className="flex items-center justify-center gap-3">
-                  <a href="/login" className="inline-flex items-center gap-2 text-sm px-4 py-2 rounded bg-club-accent hover:bg-club-dark text-white">Zum Login</a>
-                  <a href="/kontakt" className="inline-flex items-center gap-2 text-sm px-4 py-2 rounded border border-gray-200 hover:bg-gray-50">Kontakt</a>
+                <h2 className="text-xl font-semibold mb-3 text-center">Tut uns leid, aber dieser Inhalt kann nur mit ausreichender Berechtigung angezeigt werden.</h2>
+                
+                <div className="mt-6 flex justify-center">
+                  <Link to="/login" className="inline-flex px-6 py-3 bg-club-accent text-white rounded hover:bg-club-dark">
+                    Einloggen
+                  </Link>
                 </div>
-              </div>
             </div>
           </div>
         </section>

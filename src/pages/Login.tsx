@@ -1,10 +1,11 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const Login = () => {
+  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -16,7 +17,7 @@ const Login = () => {
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [settingPassword, setSettingPassword] = useState(false);
 
-  useState(() => {
+  useEffect(() => {
     const storedUser = localStorage.getItem('auth_username');
     const storedSession = localStorage.getItem('auth_session_id');
     if (storedUser && storedSession) {
@@ -36,9 +37,7 @@ const Login = () => {
               setUsername(storedUser);
               setMessage('Bitte neues Passwort setzen');
             } else {
-              setSuccess(true);
-              setUsername(storedUser);
-              setMessage('Angemeldet als ' + storedUser);
+              navigate('/mitgliederbereich');
             }
           } else {
             localStorage.removeItem('auth_username');
@@ -50,7 +49,7 @@ const Login = () => {
         }
       })();
     }
-  });
+  }, [navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,12 +74,11 @@ const Login = () => {
             localStorage.setItem('auth_session_id', data.session_id);
           }
         } else {
-          setSuccess(true);
-          setMessage(data.message || 'Erfolgreich angemeldet');
           if (data.session_id) {
             localStorage.setItem('auth_username', username);
             localStorage.setItem('auth_session_id', data.session_id);
           }
+          navigate('/mitgliederbereich');
         }
       } else {
         setMessage(data.message || 'Anmeldung fehlgeschlagen');
@@ -172,9 +170,7 @@ const Login = () => {
                     if (res.ok && data.success) {
                       localStorage.setItem('auth_username', username);
                       if (tempSessionId) localStorage.setItem('auth_session_id', tempSessionId);
-                      setSuccess(true);
-                      setNeedsPasswordChange(false);
-                      setMessage('Passwort gesetzt. Eingeloggt.');
+                      navigate('/mitgliederbereich');
                     } else {
                       setMessage(data.message || 'Fehler beim Setzen des Passworts');
                     }

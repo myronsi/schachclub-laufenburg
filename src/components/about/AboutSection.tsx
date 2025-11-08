@@ -1,4 +1,4 @@
-import { Euro, Users, MapPin, Clock, Phone, Mail, Calendar, CalendarSync, Sparkles, BookOpen } from "lucide-react";
+import { Euro, Users, MapPin, Clock, Mail, Calendar, CalendarSync, Sparkles, BookOpen, KeyRound } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
@@ -60,7 +60,7 @@ const UpcomingEvents = () => {
   return (
     <>
       <div className="mb-4">
-        <h4 className="text-sm font-semibold text-gray-800 mb-2 flex items-center gap-2"><CalendarSync className="w-4 h-4 text-club-accent" />Wiederkehrende Termine</h4>
+        <h4 className="text-sm font-semibold text-gray-800 mb-2 flex items-center gap-2"><CalendarSync className="w-4 h-4 text-gray-500" />Wiederkehrende Termine</h4>
         {loading ? (
           <ul className="text-sm text-gray-700 space-y-2">
             {[0,1].map((n) => (
@@ -90,7 +90,7 @@ const UpcomingEvents = () => {
       </div>
 
       <div className="mb-4">
-        <h4 className="text-sm font-semibold text-gray-800 mb-2 flex items-center gap-2"><Sparkles className="w-4 h-4 text-club-accent" />Besondere Termine</h4>
+        <h4 className="text-sm font-semibold text-gray-800 mb-2 flex items-center gap-2"><Sparkles className="w-4 h-4 text-gray-500" />Besondere Termine</h4>
         {loading ? (
           <ul className="text-sm text-gray-700 space-y-2">
             <li className="flex items-center gap-3">
@@ -186,10 +186,16 @@ const AboutSection = () => {
                 <li><strong>Schatzmeister:</strong> Daniel Bahner</li>
               </ul>
 
-              <div className="mt-4 flex flex-col gap-2">
-                <Link to="/kontakt" className="inline-flex items-center gap-2 text-sm px-3 py-1 rounded bg-club-accent hover:bg-club-dark text-white w-max">
-                  <Mail className="w-4 h-4" /> Kontaktieren
-                </Link>
+              <div className="mt-4 flex">
+                  <Link
+                    to="/kontakt"
+                    className="group text-sm p-2 rounded-md bg-club-accent text-white hover:bg-club-dark transition-all duration-300 ease-in-out whitespace-nowrap flex items-center overflow-hidden hover:px-4"
+                  >
+                    <Mail className="w-4 h-4 flex-shrink-0" />
+                    <span className="hidden md:block max-w-0 opacity-0 translate-x-2 group-hover:max-w-xs group-hover:opacity-100 group-hover:translate-x-0 group-hover:ml-2 transition-all duration-300 ease-in-out overflow-hidden">
+                      Kontaktieren
+                    </span>
+                  </Link>
               </div>
             </CardContent>
           </Card>
@@ -256,8 +262,16 @@ const AboutSection = () => {
               <p className="text-sm text-gray-700 space-y-2">
                 Geschützter Bereich für Mitglieder: Termine, Protokolle und exklusive Informationen. Bitte melde dich an, um Zugriff zu erhalten.
               </p>
-              <div className="mt-4">
-                <Link to="/mitgliederbereich" className="inline-flex items-center gap-2 text-sm px-3 py-1 rounded bg-club-accent hover:bg-club-dark text-white w-max">Zum Mitgliederbereich</Link>
+              <div className="mt-4 flex">
+                  <Link
+                    to="/mitgliederbereich"
+                    className="group text-sm p-2 rounded-md bg-club-accent text-white hover:bg-club-dark transition-all duration-300 ease-in-out whitespace-nowrap flex items-center overflow-hidden hover:px-4"
+                  >
+                    <KeyRound className="w-4 h-4 flex-shrink-0" />
+                    <span className="hidden md:block max-w-0 opacity-0 translate-x-2 group-hover:max-w-xs group-hover:opacity-100 group-hover:translate-x-0 group-hover:ml-2 transition-all duration-300 ease-in-out overflow-hidden">
+                      Zum Mitgliederbereich 
+                    </span>
+                  </Link>
               </div>
             </CardContent>
           </Card>
