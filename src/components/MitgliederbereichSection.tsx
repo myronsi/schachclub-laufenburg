@@ -13,6 +13,13 @@ const MitgliederbereichSection = () => {
   const [authenticated, setAuthenticated] = useState(false);
   const [username, setUsername] = useState<string>('');
 
+  // Capitalize first letter of username for display
+  const capitalizeFirst = (s: string) => {
+    if (!s) return s;
+    const trimmed = s.trim();
+    return trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
+  };
+
   useEffect(() => {
     const storedUser = localStorage.getItem('auth_username');
     const storedSession = localStorage.getItem('auth_session_id');
@@ -92,7 +99,7 @@ const MitgliederbereichSection = () => {
               <div className="max-w-3xl mx-auto bg-white border rounded-lg shadow p-6">
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h2 className="text-xl font-semibold">Willkommen zurück, {username}!</h2>
+                    <h2 className="text-xl font-semibold">Willkommen zurück, {capitalizeFirst(username)}!</h2>
                     <p className="text-sm text-gray-600 mt-1">Du bist angemeldet und hast Zugriff auf alle Mitgliederbereiche.</p>
                   </div>
                   <button
