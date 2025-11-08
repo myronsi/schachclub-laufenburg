@@ -51,7 +51,12 @@ const NikolausblitzComponent = () => {
     <main>
       <section className="py-16 animate-fadeIn">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-8 text-club-primary">Nikolausblitz</h2>
+          <header className="text-center mb-10">
+            <h2 className="text-3xl font-bold text-club-primary">Nikolausblitz</h2>
+            <p className="mt-3 text-gray-600 max-w-2xl mx-auto">
+              Vorweihnachtliches Blitzturnier: Kurze Bedenkzeiten, viel Tempo und eine große Portion Spaß für alle Teilnehmer.
+            </p>
+          </header>
           {error && (
             <div className="text-center py-4 mb-4 bg-yellow-50 border border-yellow-200 rounded">
               <p className="text-yellow-800 text-sm">

@@ -28,7 +28,6 @@ import Login from "./pages/Login";
 import AktuellesDetail from "./pages/AktuellesDetail";
 import Aktuelles from "./pages/Aktuelles";
 import Mitgliederbereich from "./pages/Mitgliederbereich";
-import Footer from "@/components/Footer";
 import NotFound from "./pages/notFound";
 
 const queryClient = new QueryClient();
@@ -81,7 +80,6 @@ const App = () => (
             <Route path="/datenschutz" element={<TitleRoute title={"Datenschutz"} element={<Datenschutz />} />} />
             <Route path="*" element={<TitleRoute title={"404"} element={<NotFound />} />} />
           </Routes>
-          <Footer />
         </div>
       </BrowserRouter>
     </TooltipProvider>

@@ -2,7 +2,7 @@ import ContactOkSection from "@/components/ContactOkSection";
 
 const Contact = () => {
   return (
-    <div className="pt-16">
+    <div>
       <main>
         <ContactOkSection />
       </main>

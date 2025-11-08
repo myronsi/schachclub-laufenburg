@@ -2,7 +2,7 @@ import PokalsiegerComponent from "@/components/tournaments/PokalsiegerComponent"
 
 const Pokalsieger = () => {
   return (
-    <div className="pt-16">
+    <div>
       <main>
         <PokalsiegerComponent />
       </main>

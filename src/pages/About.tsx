@@ -2,7 +2,7 @@ import AboutSection from "@/components/about/AboutSection";
 
 const About = () => {
   return (
-    <div className="pt-16">
+    <div>
       <main>
         <AboutSection />
       </main>

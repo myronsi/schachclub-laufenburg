@@ -102,8 +102,8 @@ export default {
         scaleIn: "scaleIn 0.5s ease-out forwards",
       },
       screens: {
-        "mdl": "1426px",
-        "mds": "1124px",
+        "mdl": "1689px",
+        "mds": "1170px",
       },
     },
   },

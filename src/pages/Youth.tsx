@@ -4,7 +4,7 @@ export const LAST_MODIFIED = "26.02.2025";
 
 const Youth = () => {
   return (
-    <div className="pt-16">
+    <div>
       <main>
         <YouthSection />
       </main>

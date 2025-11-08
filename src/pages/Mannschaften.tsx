@@ -2,7 +2,7 @@ import MannschaftSection from "@/components/MannschaftSection";
 
 const Mannschaften = () => {
   return (
-    <div className="pt-16">
+    <div>
       <main>
         <MannschaftSection />
       </main>

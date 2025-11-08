@@ -2,7 +2,7 @@ import ArchiveSection from "@/components/archive/ArchiveSection";
 
 const Media = () => {
   return (
-    <div className="min-h-screen pt-16">
+    <div className="min-h-screen">
       <main>
         <ArchiveSection />
       </main>

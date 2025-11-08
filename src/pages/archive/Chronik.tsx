@@ -2,7 +2,7 @@ import ChronikComponent from "@/components/archive/ChronikComponent";
 
 const Chronik = () => {
   return (
-    <div className="min-h-screen pt-16">
+    <div className="min-h-screen">
       <main>
         <ChronikComponent />
       </main>

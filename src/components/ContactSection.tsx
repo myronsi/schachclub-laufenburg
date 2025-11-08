@@ -54,7 +54,7 @@ const ContactSection = () => {
   };
 
   return (
-    <section id="contact" className="py-16 animate-fadeIn">
+    <section id="contact" className="pt-16 animate-fadeIn">
       <div className="container mx-auto px-4">
         <header className="text-center mb-8">
           <h2 className="text-3xl font-bold text-club-primary">Kontakt</h2>

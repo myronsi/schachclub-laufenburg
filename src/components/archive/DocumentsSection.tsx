@@ -138,10 +138,12 @@ const DocumentsSection = () => {
   return (
     <section id="documents" className="py-16 animate-fadeIn">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-club-primary mb-12 text-center">
-          Dokumente
-        </h2>
-        
+        <header className="text-center mb-10">
+          <h2 className="text-3xl font-bold text-club-primary">Dokumente</h2>
+          <p className="mt-3 text-gray-600 max-w-2xl mx-auto">
+            Offizielle Dokumente des Schachclub Laufenburg — Satzungen, Protokolle, Formulare und Berichte.
+          </p>
+        </header>
         <div className="max-w-3xl mx-auto mb-8">
           <div className="flex gap-2">
             <div className="flex-1">

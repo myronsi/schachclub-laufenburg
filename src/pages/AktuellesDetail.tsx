@@ -2,7 +2,7 @@ import AktuellesDetailSection from "@/components/AktuellesDetailSection";
 
 const AktuellesDetail = () => {
   return (
-    <div className="pt-16">
+    <div>
       <main>
         <AktuellesDetailSection />
       </main>

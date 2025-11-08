@@ -2,7 +2,7 @@ import DocumentsSection from "@/components/archive/DocumentsSection";
 
 const Documents = () => {
   return (
-    <div className="min-h-screen pt-16">
+    <div className="min-h-screen">
       <main>
         <DocumentsSection />
       </main>

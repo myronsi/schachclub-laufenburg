@@ -2,7 +2,7 @@ import VereinsmeisterComponent from "@/components/tournaments/VereinsmeisterComp
 
 const Vereinsmeister = () => {
   return (
-    <div className="pt-16">
+    <div>
       <main>
         <VereinsmeisterComponent />
       </main>

@@ -48,11 +48,9 @@ const TournamentSection = () => {
   return (
     <section id="tournaments" className="py-16 animate-fadeIn">
       <div className="container mx-auto px-4">
-        <header className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-club-primary mb-6 text-center">
-            Turniere &amp; Sieger
-          </h2>
-          <p className="max-w-2xl mx-auto text-center text-gray-600 mb-8">
+        <header className="text-center mb-10">
+          <h2 className="text-3xl font-bold text-club-primary">Turniere &amp; Sieger</h2>
+          <p className="mt-3 text-gray-600 max-w-2xl mx-auto">
             Von klassischen Vereinsmeisterschaften bis zu schnellen Blitz-Events — Termine, Ergebnisse und Highlights unserer Turniere.
           </p>
         </header>

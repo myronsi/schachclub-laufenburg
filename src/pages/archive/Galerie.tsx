@@ -2,7 +2,7 @@ import GalerieComponent from "@/components/archive/GalerieComponent";
 
 const Galerie = () => {
   return (
-    <div className="min-h-screen pt-16">
+    <div className="min-h-screen">
       <main>
         <GalerieComponent />
       </main>

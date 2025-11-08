@@ -2,7 +2,7 @@ import BlitzsiegerComponent from "@/components/tournaments/BlitzsiegerComponent"
 
 const Blitzsieger = () => {
   return (
-    <div className="pt-16">
+    <div>
       <main>
         <BlitzsiegerComponent />
       </main>

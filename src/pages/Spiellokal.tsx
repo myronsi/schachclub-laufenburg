@@ -2,7 +2,7 @@ import SpiellokalSection from "@/components/SpiellokalSection";
 
 const Spiellokal = () => {
   return (
-    <div className="pt-16">
+    <div>
       <main>
         <SpiellokalSection />
       </main>

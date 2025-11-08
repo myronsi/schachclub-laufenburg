@@ -131,8 +131,8 @@ const NotFoundSection = () => {
           <a 
             href="/" 
             className="inline-block bg-club-accent text-white px-6 py-3 md:px-8 md:py-4 
-                      rounded-full hover:underline transition-colors duration-150 
-                      text-base md:text-lg"
+                      rounded-full transition-colors duration-150 
+                      text-base md:text-lg hover:bg-club-dark "
           >
             Zurück zur Hauptseite
           </a>

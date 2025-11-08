@@ -4,7 +4,7 @@ export const LAST_MODIFIED = "2024-06-10";
 
 const Contact = () => {
   return (
-    <div className="pt-16">
+    <div>
       <main>
         <ContactSection />
       </main>

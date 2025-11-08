@@ -71,6 +71,7 @@ const Header = () => {
       ],
     },
     { path: "/kontakt", label: "Kontakt" },
+    { path: "/impressum", label: "Impressum" }
   ];
   
   const isActive = (path: string) => {
@@ -87,15 +88,36 @@ const Header = () => {
     return `${parent}/${child}`;
   };
 
-  const handleMenuClick = useCallback(() => {
-    setIsMenuOpen((prevState) => !prevState);
+  const getActiveParentPath = () => {
+    const parent = navItems.find(item => item.children && (isActive(item.path) || item.children.some(c => isActive(resolvePath(item.path, c.path)))));
+    return parent ? parent.path : null;
+  };
+
+  useEffect(() => {
   }, []);
+
+  useEffect(() => {
+  }, [openSubmenu]);
+
+  useEffect(() => {
+    setOpenSubmenu(null);
+  }, [location.pathname]);
+
+  const handleMenuClick = () => {
+    setIsMenuOpen((prevState) => {
+      const next = !prevState;
+      if (next && !openSubmenu) {
+        const activeParent = getActiveParentPath();
+        if (activeParent) setOpenSubmenu(activeParent);
+      }
+      return next;
+    });
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
         setIsMenuOpen(false);
-        setOpenSubmenu(null);
       }
     };
 
@@ -127,26 +149,15 @@ const Header = () => {
       </div>
 
       <div className="container mx-auto px-4 py-4 pl-20 pr-16 mdl:pl-18 mdl:pr-18">
-        <div className="flex items-center justify-between">
-          <div className="flex-1 flex items-center justify-center">
+        <div className="flex items-center justify-between w-full">
+          <div className="flex items-center gap-4">
             <Link to="/" className="mds:hidden text-2xl font-bold">
               Schachclub Laufenburg
             </Link>
-            <div className="mds:hidden absolute right-4">
-              <button
-                onClick={handleMenuClick}
-                className="p-3 hover:text-club-accent transition-colors"
-                aria-label="Menü öffnen"
-              >
-                {isMenuOpen ? (
-                  <X size={24} className="w-6 h-6" />
-                ) : (
-                  <Menu size={24} className="w-6 h-6" />
-                )}
-              </button>
-            </div>
+          </div>
 
-            <nav className="hidden mds:flex gap-8 relative mdl:ml-96">
+          <div className="flex-1 flex items-center mds:justify-center mdl:justify-end">
+            <nav className="hidden mds:flex gap-8 relative mdl:mr-[10px]">
             {navItems.map((item) => {
               const parentActive = isActive(item.path) || (item.children?.some((c) => isActive(resolvePath(item.path, c.path))));
 
@@ -155,11 +166,12 @@ const Header = () => {
                   <div key={item.label} className="relative group">
                     <Link
                       to={item.path}
-                      className={`relative inline-block py-2 ${parentActive ? "text-club-accent" : "text-white"}`}
+                      className={`relative inline-block py-2 flex items-center gap-2 ${parentActive ? "text-club-accent" : "text-white"}`}
                       aria-haspopup="true"
                       aria-expanded={parentActive}
                     >
-                      {item.label}
+                      <span>{item.label}</span>
+                      <ChevronDown className={`w-4 h-4 transition-transform group-hover:rotate-180 `} />
                     </Link>
                     <div className="absolute left-0 top-full w-44 bg-club-primary text-white rounded shadow-mdl opacity-0 -translate-y-2 group-hover:translate-y-0 group-hover:opacity-100 transform transition-all duration-300 ease-out pointer-events-none group-hover:pointer-events-auto origin-top">
                       {item.children.map((sub) => {
@@ -194,6 +206,18 @@ const Header = () => {
           </nav>
           </div>
 
+          <button
+            onClick={handleMenuClick}
+            className="mds:hidden absolute right-4 top-1/2 -translate-y-1/2 p-3 hover:text-club-accent transition-colors z-50"
+            aria-label="Menü öffnen"
+          >
+            {isMenuOpen ? (
+              <X size={24} className="w-6 h-6" />
+            ) : (
+              <Menu size={24} className="w-6 h-6" />
+            )}
+          </button>
+
           {/* Mobile Navigation */}
           <div
             ref={mobileMenuRef}
@@ -225,7 +249,7 @@ const Header = () => {
                       }}
                     >
                       <span className={isActive(item.path) || (item.children?.some((c) => isActive(resolvePath(item.path, c.path)))) ? "text-club-accent" : "text-white"}>{item.label}</span>
-                      <ChevronDown className={`w-4 h-4 transition-transform ${openSubmenu === item.path ? "rotate-180" : ""}`} />
+                      <ChevronDown className={`w-4 h-4 transition-transform ${openSubmenu === item.path ? "rotate-180" : ""} ${(isActive(item.path) || (item.children?.some((c) => isActive(resolvePath(item.path, c.path)))) ) ? 'text-club-accent' : 'text-white'}`} />
                     </button>
 
                     <div className={`overflow-hidden transition-[max-height,opacity,transform] duration-300 ease-in-out transform origin-top ${openSubmenu === item.path ? "max-h-[480px] opacity-100 translate-y-0 pointer-events-auto" : "max-h-0 opacity-0 -translate-y-2 pointer-events-none"}`}>
@@ -242,7 +266,7 @@ const Header = () => {
                                 opacity: openSubmenu === item.path ? 1 : 0,
                                 transform: openSubmenu === item.path ? "translateY(0)" : "translateY(-6px)",
                               }}
-                              onClick={() => { setIsMenuOpen(false); setOpenSubmenu(null); }}
+                              onClick={() => { setIsMenuOpen(false); }}
                             >
                               {sub.label}
                             </Link>
@@ -263,7 +287,7 @@ const Header = () => {
                       opacity: isMenuOpen ? 1 : 0,
                       transform: isMenuOpen ? "translateY(0)" : "translateY(-10px)",
                     }}
-                    onClick={() => setIsMenuOpen(false)}
+                    onClick={() => { setIsMenuOpen(false); }}
                   >
                     {item.label}
                   </Link>
