@@ -66,6 +66,7 @@ const App = () => (
             <Route path="/archiv" element={<TitleRoute title={"Archiv"} element={<Media />} />} />
             <Route path="/archiv/chronik" element={<TitleRoute title={"Chronik"} element={<Chronik />} />} />
             <Route path="/archiv/galerie" element={<TitleRoute title={"Galerie"} element={<Galerie />} />} />
+            <Route path="/archiv/galerie/:title" element={<TitleRoute title={"Galerie"} element={<Galerie />} />} />
             <Route path="/archiv/dokumente" element={<TitleRoute title={"Dokumente"} element={<Documents />} />} />
             <Route path="/kontakt" element={<TitleRoute title={"Kontakt"} element={<Contact />} />} />
             <Route path="/kontakt-ok" element={<TitleRoute title={"Kontakt - Bestätigt"} element={<ContactOk />} />} />

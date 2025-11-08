@@ -3,6 +3,7 @@ import { Image, SortDesc, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ButtonToTop } from "@/components/ui/arrowToTop";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   Dialog,
   DialogContent,
@@ -21,6 +22,8 @@ interface ImageItem {
 }
 
 const GalerieComponent = () => {
+  const navigate = useNavigate();
+  const { title } = useParams<{ title?: string }>();
   const [selectedImage, setSelectedImage] = useState<ImageItem | null>(null);
   const [isReversed, setIsReversed] = useState(false);
   const [openDialogsCount, setOpenDialogsCount] = useState(0);
@@ -34,36 +37,29 @@ const GalerieComponent = () => {
 
   const sortedImages = isReversed ? [...images].reverse() : images;
 
-  const handleLogout = async () => {
-    const storedUser = localStorage.getItem('auth_username');
-    const storedSession = localStorage.getItem('auth_session_id');
-    
-    if (storedUser && storedSession) {
-      try {
-        await fetch('https://sc-laufenburg.de/api/auth.php', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            action: 'logout', 
-            username: storedUser, 
-            session_id: storedSession 
-          })
-        });
-      } catch (err) {
-        console.error('Logout error:', err);
-      }
-    }
-    
-    localStorage.removeItem('auth_username');
-    localStorage.removeItem('auth_session_id');
-    setAuthenticated(false);
-    setUsername('');
-    setImages([]);
+  const createSlug = (title: string) => {
+    return title
+      .toLowerCase()
+      .replace(/[äöü]/g, (char) => ({ ä: 'ae', ö: 'oe', ü: 'ue' }[char] || char))
+      .replace(/ß/g, 'ss')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
   };
 
-  const handleDialogOpenChange = (open: boolean) => {
+  const findImageBySlug = (slug: string): ImageItem | null => {
+    return images.find(img => createSlug(img.title) === slug) || null;
+  };
+
+  const handleDialogOpenChange = (open: boolean, image?: ImageItem) => {
     setOpenDialogsCount(prev => open ? prev + 1 : Math.max(prev - 1, 0));
-    if (!open) setSelectedImage(null);
+    if (open && image) {
+      const slug = createSlug(image.title);
+      navigate(`/archiv/galerie/${slug}`, { replace: false });
+      setSelectedImage(image);
+    } else {
+      navigate('/archiv/galerie', { replace: false });
+      setSelectedImage(null);
+    }
   };
 
   useEffect(() => {
@@ -116,7 +112,6 @@ const GalerieComponent = () => {
         
         const data = await response.json();
         
-        // Transform API response
         const transformedImages = data.map((item: any) => ({
           id: item.id,
           src: `https://sc-laufenburg.de/${item.src}`,
@@ -140,6 +135,18 @@ const GalerieComponent = () => {
 
     fetchImages();
   }, [authenticated]);
+
+  useEffect(() => {
+    if (!authenticated || loadingImages || !title || images.length === 0) return;
+
+    const imageToOpen = findImageBySlug(title);
+    if (imageToOpen && (!selectedImage || createSlug(selectedImage.title) !== title)) {
+      setSelectedImage(imageToOpen);
+      setOpenDialogsCount(1);
+    } else if (!imageToOpen && title) {
+      navigate('/archiv/galerie', { replace: true });
+    }
+  }, [authenticated, loadingImages, title, images]);
 
   const renderImages = (items: ImageItem[]) => (
     <div className="space-y-4">
@@ -249,7 +256,8 @@ const GalerieComponent = () => {
               {sortedImages.map((image, index) => (
                 <Dialog 
                   key={index}
-                  onOpenChange={handleDialogOpenChange}
+                  open={selectedImage?.title === image.title}
+                  onOpenChange={(open) => handleDialogOpenChange(open, image)}
                 >
                   <DialogTrigger asChild>
                     <div className="flex flex-col gap-2 cursor-pointer">
