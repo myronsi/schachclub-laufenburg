@@ -132,7 +132,6 @@ Copyright © 2025 SC Laufenburg e.V. All rights reserved.
 For questions about the website or the chess club:
 
 - **Website**: https://sc-laufenburg.de/
-- **Email**: 1.Vorsitzender@sc-laufenburg.de
 - **Developer**: myron.ilchenko@gmail.com
 
 ---
