@@ -23,7 +23,8 @@ export const useAuth = (): UseAuthReturn => {
     isAuthenticated: false,
     username: null,
     status: null,
-    mustChangePassword: false
+    mustChangePassword: false,
+    isBlocked: false
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -42,7 +43,8 @@ export const useAuth = (): UseAuthReturn => {
         isAuthenticated: false,
         username: null,
         status: null,
-        mustChangePassword: false
+        mustChangePassword: false,
+        isBlocked: false
       });
     } finally {
       setLoading(false);
@@ -94,7 +96,8 @@ export const useAuth = (): UseAuthReturn => {
         isAuthenticated: false,
         username: null,
         status: null,
-        mustChangePassword: false
+        mustChangePassword: false,
+        isBlocked: false
       });
     } catch (err: any) {
       setError(err?.message || 'Fehler beim Abmelden');

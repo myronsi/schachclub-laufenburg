@@ -35,6 +35,7 @@ const GalerieComponent = () => {
   const [loadingImages, setLoadingImages] = useState(false);
   const [imageError, setImageError] = useState<string | null>(null);
   const [username, setUsername] = useState<string>('');
+  const [isBlocked, setIsBlocked] = useState(false);
 
   const sortedImages = isReversed ? [...images].reverse() : images;
 
@@ -70,9 +71,12 @@ const GalerieComponent = () => {
         const authState = await checkAuth();
         setAuthenticated(authState.isAuthenticated);
         setUsername(authState.username || '');
+        setIsBlocked(authState.isBlocked);
         
         if (!authState.isAuthenticated) {
           setAuthError('Nicht angemeldet oder Session abgelaufen');
+        } else if (authState.isBlocked) {
+          setAuthError('Zugriff gesperrt');
         }
       } catch (err: any) {
         setAuthenticated(false);
@@ -84,7 +88,7 @@ const GalerieComponent = () => {
   }, []);
 
   useEffect(() => {
-    if (!authenticated) return;
+    if (!authenticated || isBlocked) return;
 
     const fetchImages = async () => {
       setLoadingImages(true);
@@ -169,7 +173,26 @@ const GalerieComponent = () => {
             <p className="text-gray-600">Login-Status wird überprüft…</p>
           </div>
         </section>
-      ) : !authenticated ? (
+      ) : isBlocked ? (
+        <section className="py-16 animate-fadeIn">
+          <div className="container mx-auto px-4">
+            <div className="max-w-2xl mx-auto">
+                <div className="flex items-center justify-center mb-6">
+                  <div className="rounded-full bg-red-600/10 p-4">
+                    <Lock className="w-8 h-8 text-red-600" />
+                  </div>
+                </div>
+                <h2 className="text-xl font-semibold mb-3 text-center">Dein Account wurde gesperrt. Wenn du denkst, dass dies ein Fehler ist, kontaktiere bitte den Vorstand.</h2>
+                
+                <div className="mt-6 flex justify-center">
+                  <Link to="/kontakt" className="inline-flex px-6 py-3 bg-club-accent text-white rounded hover:bg-club-dark">
+                    Kontakt
+                  </Link>
+                </div>
+            </div>
+          </div>
+        </section>
+  ) : !authenticated ? (
         <section className="py-16 animate-fadeIn">
           <div className="container mx-auto px-4">
             <div className="max-w-2xl mx-auto">

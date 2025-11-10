@@ -3,6 +3,7 @@ import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useState, useEffect } from "react";
 import { Lock, Image as ImageIcon, LogOut } from "lucide-react";
 import { checkAuth, logout, startAutoRenewal, stopAutoRenewal } from "@/utils/authService";
+import { Button } from "./ui/button";
 
 
 const MitgliederbereichSection = () => {
@@ -13,6 +14,7 @@ const MitgliederbereichSection = () => {
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [authenticated, setAuthenticated] = useState(false);
   const [username, setUsername] = useState<string>('');
+  const [isBlocked, setIsBlocked] = useState(false);
 
   const capitalizeFirst = (s: string) => {
     if (!s) return s;
@@ -27,8 +29,9 @@ const MitgliederbereichSection = () => {
         const authState = await checkAuth();
         setAuthenticated(authState.isAuthenticated);
         setUsername(authState.username || '');
+        setIsBlocked(authState.isBlocked);
         
-        if (authState.isAuthenticated) {
+        if (authState.isAuthenticated && !authState.isBlocked) {
           startAutoRenewal();
         }
       } catch (err) {
@@ -70,7 +73,43 @@ const MitgliederbereichSection = () => {
               <div className="max-w-3xl mx-auto bg-white border rounded-lg shadow p-6 text-center">
                 <p className="text-gray-600">Login-Status wird überprüft…</p>
               </div>
-            ) : authenticated ? (
+            ) : isBlocked ? (
+            <section className="py-16 animate-fadeIn">
+              <div className="container mx-auto px-4">
+                <div className="max-w-2xl mx-auto bg-white border rounded-lg shadow p-6 text-center">
+                  <div className="flex items-center justify-center mb-4">
+                  <div className="rounded-full bg-red-50 p-4">
+                    <Lock className="w-8 h-8 text-red-600" />
+                  </div>
+                  </div>
+
+                  <h2 className="text-xl font-semibold text-red-700 mb-2">Dein Account wurde gesperrt</h2>
+                  <p className="text-sm text-gray-600 mb-6">
+                  Dein Account wurde gesperrt. Wenn du denkst, dass dies ein Fehler ist, kontaktiere bitte den Vorstand.
+                  </p>
+
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                  <Link
+                    to="/kontakt"
+                    className="inline-flex items-center justify-center px-5 py-2 bg-club-accent text-white rounded hover:bg-club-dark"
+                  >
+                    Kontakt
+                  </Link>
+
+                    <button
+                    onClick={handleLogout}
+                    className="group text-sm p-2 rounded-md border border-gray-200 hover:bg-gray-50 transition-all duration-300 ease-in-out whitespace-nowrap flex items-center overflow-hidden hover:px-4"
+                    >
+                    <LogOut className="w-4 h-4 flex-shrink-0" />
+                    <span className="hidden md:block max-w-0 opacity-0 translate-x-2 group-hover:max-w-xs group-hover:opacity-100 group-hover:translate-x-0 group-hover:ml-2 transition-all duration-300 ease-in-out overflow-hidden">
+                      Abmelden
+                    </span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </section>
+          ) : authenticated ? (
               <div className="max-w-3xl mx-auto bg-white border rounded-lg shadow p-6">
                 <div className="flex items-center justify-between mb-6">
                   <div>
