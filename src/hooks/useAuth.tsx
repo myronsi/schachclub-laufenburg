@@ -6,7 +6,7 @@ import {
   renewToken,
   AuthState 
 } from '@/utils/authService';
-import { authToken } from '@/lib/auth-utils';
+import { authToken, jwtUtils } from '@/lib/auth-utils';
 
 interface UseAuthReturn extends AuthState {
   loading: boolean;
@@ -109,13 +109,40 @@ export const useAuth = (): UseAuthReturn => {
   useEffect(() => {
     if (!authState.isAuthenticated) return;
 
-    const interval = setInterval(async () => {
-      const success = await authToken.autoRenew();
-      if (!success) {
-        console.log('Auto-renewal failed, logging out user');
+    const checkAndRenewToken = async () => {
+      const token = authToken.get();
+      if (!token) {
+        console.log('No token found, logging out');
         await logout();
+        return;
       }
-    }, 30 * 60 * 1000);
+
+      // Check if token needs renewal (within 24 hours of expiry)
+      if (authToken.needsRenewal()) {
+        console.log('Token needs renewal, attempting renewal...');
+        const success = await authToken.autoRenew();
+        if (!success) {
+          console.log('Auto-renewal failed, logging out user');
+          await logout();
+        } else {
+          console.log('Token renewed successfully');
+        }
+      } else {
+        // Even if not within 24h window, check if token is expired
+        const token = authToken.get();
+        if (token && jwtUtils.isExpired(token)) {
+          console.log('Token expired, logging out user');
+          await logout();
+        }
+      }
+    };
+
+    // Check immediately on mount
+    checkAndRenewToken();
+
+    // Then check every 5 minutes (more frequent checks to catch expiry sooner)
+    const interval = setInterval(checkAndRenewToken, 5 * 60 * 1000);
+    
     return () => clearInterval(interval);
   }, [authState.isAuthenticated, logout]);
 
