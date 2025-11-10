@@ -11,6 +11,7 @@ import {
   startAutoRenewal, 
   stopAutoRenewal 
 } from "@/utils/authService";
+import { Eye, EyeOff } from "lucide-react";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ const Login = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [settingPassword, setSettingPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -157,11 +159,37 @@ const Login = () => {
                 }}>
                   <div>
                     <label className="text-sm/5 font-medium pb-1 block">Neues Passwort</label>
-                    <Input name="new_password" type="password" placeholder="Neues Passwort" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
+                    <div className="relative">
+                      <Input 
+                        name="new_password" 
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder="Neues Passwort" 
+                        value={newPassword} 
+                        onChange={(e) => setNewPassword(e.target.value)} 
+                        required 
+                        className="pr-10"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute inset-y-0 right-2 flex items-center text-gray-500 hover:text-gray-700"
+                        aria-label={showPassword ? 'Passwort verbergen' : 'Passwort anzeigen'}
+                      >
+                        {showPassword ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                      </button>
+                    </div>
                   </div>
                   <div>
                     <label className="text-sm/5 font-medium pb-1 block">Passwort wiederholen</label>
-                    <Input name="confirm_new_password" type="password" placeholder="Passwort wiederholen" value={confirmNewPassword} onChange={(e) => setConfirmNewPassword(e.target.value)} required />
+                    <Input 
+                      name="confirm_new_password" 
+                      type="password"
+                      placeholder="Passwort wiederholen" 
+                      value={confirmNewPassword} 
+                      onChange={(e) => setConfirmNewPassword(e.target.value)} 
+                      required 
+                      className="pr-10"
+                    />
                   </div>
 
                   {message && (
@@ -182,11 +210,34 @@ const Login = () => {
               <form className="space-y-4" onSubmit={handleSubmit}>
                 <div>
                   <label className="text-sm/5 font-medium pb-1 block">Benutzername</label>
-                  <Input name="username" placeholder="Benutzername" value={username} onChange={(e) => setUsername(e.target.value)} required />
+                  <Input 
+                    name="username" 
+                    placeholder="Benutzername" 
+                    value={username} 
+                    onChange={(e) => setUsername(e.target.value)} 
+                    required />
                 </div>
                 <div>
                   <label className="text-sm/5 font-medium pb-1 block">Passwort</label>
-                  <Input name="password" type="password" placeholder="Passwort" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                  <div className="relative">
+                  <Input
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="Passwort"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-2 flex items-center text-gray-500 hover:text-gray-700"
+                    aria-label={showPassword ? 'Passwort verbergen' : 'Passwort anzeigen'}
+                  >
+                    {showPassword ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                  </button>
+                  </div>
                 </div>
 
                 {message && (
