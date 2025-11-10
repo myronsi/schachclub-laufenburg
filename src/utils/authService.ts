@@ -164,16 +164,27 @@ export const checkAuth = async (): Promise<AuthState> => {
 
   const username = jwtUtils.getUsername(token);
 
+  // Try to renew token if needed, but don't fail auth if renewal fails
   if (shouldRenewToken()) {
+    console.log('Token within 24h of expiry, attempting renewal...');
     const renewResult = await renewToken();
     if (renewResult.success && renewResult.token) {
       token = renewResult.token;
+      console.log('Token renewal successful in checkAuth');
     } else {
-      console.log('Token renewal failed:', renewResult.message);
+      console.log('Token renewal failed in checkAuth:', renewResult.message);
+      // Don't clear auth here - the token might still be valid
     }
   }
 
+  // Validate the token (either original or renewed)
   const validateResult = await validateToken();
+  
+  // If validation fails, clear auth
+  if (!validateResult.success) {
+    clearAuth();
+  }
+  
   const userStatus = validateResult.status || null;
   const isBlocked = userStatus === 'blocked';
   
@@ -258,21 +269,14 @@ export const setPassword = async (newPassword: string): Promise<AuthResponse> =>
   }
 };
 
-let renewalInterval: NodeJS.Timeout | null = null;
-
+// DEPRECATED: Auto-renewal is now handled by useAuth hook
+// These functions are kept for backward compatibility but do nothing
 export const startAutoRenewal = () => {
-  if (renewalInterval) return;
-  
-  renewalInterval = setInterval(async () => {
-    if (shouldRenewToken()) {
-      await renewToken();
-    }
-  }, 30 * 60 * 1000);
+  // No-op: Auto-renewal is now handled by useAuth hook
+  console.log('startAutoRenewal is deprecated - auto-renewal is handled by useAuth hook');
 };
 
 export const stopAutoRenewal = () => {
-  if (renewalInterval) {
-    clearInterval(renewalInterval);
-    renewalInterval = null;
-  }
+  // No-op: Auto-renewal is now handled by useAuth hook
+  console.log('stopAutoRenewal is deprecated - auto-renewal is handled by useAuth hook');
 };
