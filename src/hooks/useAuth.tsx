@@ -51,20 +51,6 @@ export const useAuth = (): UseAuthReturn => {
   }, []);
 
   useEffect(() => {
-    if (!authState.isAuthenticated) return;
-
-    const interval = setInterval(async () => {
-      const success = await authToken.autoRenew();
-      if (!success) {
-        console.log('Auto-renewal failed, logging out user');
-        await logout();
-      }
-    }, 30 * 60 * 1000);
-
-    return () => clearInterval(interval);
-  }, [authState.isAuthenticated]);
-
-  useEffect(() => {
     refreshAuth();
   }, [refreshAuth]);
 
@@ -116,6 +102,19 @@ export const useAuth = (): UseAuthReturn => {
       setLoading(false);
     }
   }, []);
+
+  useEffect(() => {
+    if (!authState.isAuthenticated) return;
+
+    const interval = setInterval(async () => {
+      const success = await authToken.autoRenew();
+      if (!success) {
+        console.log('Auto-renewal failed, logging out user');
+        await logout();
+      }
+    }, 30 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [authState.isAuthenticated, logout]);
 
   const handleRenewToken = useCallback(async (): Promise<{ success: boolean; message: string }> => {
     const result = await renewToken();
