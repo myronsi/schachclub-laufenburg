@@ -12,6 +12,7 @@ import {
   DialogTrigger,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { checkAuth } from "@/utils/authService";
 
 interface ImageItem {
   id?: number;
@@ -63,31 +64,15 @@ const GalerieComponent = () => {
   };
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('auth_username');
-    const storedSession = localStorage.getItem('auth_session_id');
-    if (!storedUser || !storedSession) {
-      setAuthenticated(false);
-      setCheckingAuth(false);
-      return;
-    }
-
     (async () => {
       setCheckingAuth(true);
       try {
-        const res = await fetch('https://sc-laufenburg.de/api/auth.php', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'check', username: storedUser, session_id: storedSession })
-        });
-        const data = await res.json();
-        if (res.ok && data.success) {
-          setAuthenticated(true);
-          setUsername(storedUser);
-        } else {
-          setAuthenticated(false);
-          setAuthError(data.message || 'Ungültige Session');
-          localStorage.removeItem('auth_username');
-          localStorage.removeItem('auth_session_id');
+        const authState = await checkAuth();
+        setAuthenticated(authState.isAuthenticated);
+        setUsername(authState.username || '');
+        
+        if (!authState.isAuthenticated) {
+          setAuthError('Nicht angemeldet oder Session abgelaufen');
         }
       } catch (err: any) {
         setAuthenticated(false);

@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import { checkAuth } from "@/utils/authService";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -11,31 +12,12 @@ const Header = () => {
   const mobileMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('auth_username');
-    const storedSession = localStorage.getItem('auth_session_id');
-    
-    if (!storedUser || !storedSession) {
-      setAuthenticated(false);
-      setCheckingAuth(false);
-      return;
-    }
-
     (async () => {
       try {
-        const res = await fetch('https://sc-laufenburg.de/api/auth.php', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'check', username: storedUser, session_id: storedSession })
-        });
-        const data = await res.json();
-        if (res.ok && data.success) {
-          setAuthenticated(true);
-        } else {
-          setAuthenticated(false);
-          localStorage.removeItem('auth_username');
-          localStorage.removeItem('auth_session_id');
-        }
+        const authState = await checkAuth();
+        setAuthenticated(authState.isAuthenticated);
       } catch (err) {
+        console.error('Auth check error:', err);
         setAuthenticated(false);
       } finally {
         setCheckingAuth(false);
