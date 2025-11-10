@@ -22,12 +22,12 @@ export const cookieUtils = {
     
     let cookieString = `${encodeURIComponent(name)}=${encodeURIComponent(value)}`;
     
-    if (finalOptions.expires) {
-      cookieString += `; expires=${finalOptions.expires.toUTCString()}`;
+    if (finalOptions.maxAge !== undefined) {
+      cookieString += `; max-age=${finalOptions.maxAge}`;
     }
     
-    if (finalOptions.maxAge) {
-      cookieString += `; max-age=${finalOptions.maxAge}`;
+    if (finalOptions.expires) {
+      cookieString += `; expires=${finalOptions.expires.toUTCString()}`;
     }
     
     if (finalOptions.path) {
@@ -145,7 +145,17 @@ export const authToken = {
   COOKIE_NAME: 'auth_token',
   
   set(token: string): void {
-    cookieUtils.set(this.COOKIE_NAME, token);
+    const payload = jwtUtils.decodePayload(token);
+    if (payload && payload.exp) {
+      const expiresDate = new Date(payload.exp * 1000);
+      const maxAge = payload.exp - Math.floor(Date.now() / 1000);
+      cookieUtils.set(this.COOKIE_NAME, token, {
+        expires: expiresDate,
+        maxAge: maxAge
+      });
+    } else {
+      cookieUtils.set(this.COOKIE_NAME, token);
+    }
   },
   
   get(): string | null {
