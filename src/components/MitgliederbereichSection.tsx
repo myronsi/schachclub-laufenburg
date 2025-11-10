@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useState, useEffect } from "react";
 import { Lock, Image as ImageIcon, LogOut } from "lucide-react";
+import { checkAuth, logout, startAutoRenewal, stopAutoRenewal } from "@/utils/authService";
 
 
 const MitgliederbereichSection = () => {
@@ -13,7 +14,6 @@ const MitgliederbereichSection = () => {
   const [authenticated, setAuthenticated] = useState(false);
   const [username, setUsername] = useState<string>('');
 
-  // Capitalize first letter of username for display
   const capitalizeFirst = (s: string) => {
     if (!s) return s;
     const trimmed = s.trim();
@@ -21,64 +21,39 @@ const MitgliederbereichSection = () => {
   };
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('auth_username');
-    const storedSession = localStorage.getItem('auth_session_id');
-    if (!storedUser || !storedSession) {
-      setAuthenticated(false);
-      setCheckingAuth(false);
-      return;
-    }
-
     (async () => {
       setCheckingAuth(true);
       try {
-        const res = await fetch('https://sc-laufenburg.de/api/auth.php', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'check', username: storedUser, session_id: storedSession })
-        });
-        const data = await res.json();
-        if (res.ok && data.success) {
-          setAuthenticated(true);
-          setUsername(storedUser);
-        } else {
-          setAuthenticated(false);
-          localStorage.removeItem('auth_username');
-          localStorage.removeItem('auth_session_id');
+        const authState = await checkAuth();
+        setAuthenticated(authState.isAuthenticated);
+        setUsername(authState.username || '');
+        
+        if (authState.isAuthenticated) {
+          startAutoRenewal();
         }
-      } catch (err: any) {
+      } catch (err) {
+        console.error('Auth check error:', err);
         setAuthenticated(false);
       } finally {
         setCheckingAuth(false);
       }
     })();
+
+    return () => {
+      stopAutoRenewal();
+    };
   }, []);
 
   const handleLogout = async () => {
-    const storedUser = localStorage.getItem('auth_username');
-    const storedSession = localStorage.getItem('auth_session_id');
-    
-    if (storedUser && storedSession) {
-      try {
-        await fetch('https://sc-laufenburg.de/api/auth.php', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            action: 'logout', 
-            username: storedUser, 
-            session_id: storedSession 
-          })
-        });
-      } catch (err) {
-        console.error('Logout error:', err);
-      }
+    try {
+      stopAutoRenewal();
+      await logout();
+      setAuthenticated(false);
+      setUsername('');
+      navigate('/login');
+    } catch (err) {
+      console.error('Logout error:', err);
     }
-    
-    localStorage.removeItem('auth_username');
-    localStorage.removeItem('auth_session_id');
-    setAuthenticated(false);
-    setUsername('');
-    navigate('/login');
   };
 
   return (

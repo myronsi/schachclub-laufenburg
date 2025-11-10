@@ -3,6 +3,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
+import { 
+  login, 
+  logout, 
+  checkAuth, 
+  setPassword as changePassword, 
+  startAutoRenewal, 
+  stopAutoRenewal 
+} from "@/utils/authService";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -12,43 +20,35 @@ const Login = () => {
   const [message, setMessage] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [needsPasswordChange, setNeedsPasswordChange] = useState(false);
-  const [tempSessionId, setTempSessionId] = useState<string | null>(null);
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [settingPassword, setSettingPassword] = useState(false);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('auth_username');
-    const storedSession = localStorage.getItem('auth_session_id');
-    if (storedUser && storedSession) {
-      (async () => {
-        setLoading(true);
-        try {
-          const res = await fetch('https://sc-laufenburg.de/api/auth.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'check', username: storedUser, session_id: storedSession })
-          });
-          const data = await res.json();
-          if (res.ok && data.success) {
-            if (data.must_change_password) {
-              setNeedsPasswordChange(true);
-              setTempSessionId(storedSession);
-              setUsername(storedUser);
-              setMessage('Bitte neues Passwort setzen');
-            } else {
-              navigate('/mitgliederbereich');
-            }
+    (async () => {
+      setLoading(true);
+      try {
+        const authState = await checkAuth();
+        if (authState.isAuthenticated) {
+          if (authState.mustChangePassword) {
+            setNeedsPasswordChange(true);
+            setUsername(authState.username || '');
+            setMessage('Bitte neues Passwort setzen');
           } else {
-            localStorage.removeItem('auth_username');
-            localStorage.removeItem('auth_session_id');
+            startAutoRenewal();
+            navigate('/mitgliederbereich');
           }
-        } catch (err) {
-        } finally {
-          setLoading(false);
         }
-      })();
-    }
+      } catch (err) {
+        console.error('Auth check error:', err);
+      } finally {
+        setLoading(false);
+      }
+    })();
+
+    return () => {
+      stopAutoRenewal();
+    };
   }, [navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -58,26 +58,14 @@ const Login = () => {
     setSuccess(false);
 
     try {
-      const res = await fetch('https://sc-laufenburg.de/api/auth.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password, action: 'login' })
-      });
-      const data = await res.json();
-      if (res.ok && data.success) {
+      const data = await login(username, password);
+      
+      if (data.success) {
         if (data.must_change_password) {
           setNeedsPasswordChange(true);
-          setTempSessionId(data.session_id || null);
           setMessage(data.message || 'Bitte neues Passwort setzen');
-          if (data.session_id) {
-            localStorage.setItem('auth_username', username);
-            localStorage.setItem('auth_session_id', data.session_id);
-          }
         } else {
-          if (data.session_id) {
-            localStorage.setItem('auth_username', username);
-            localStorage.setItem('auth_session_id', data.session_id);
-          }
+          startAutoRenewal();
           navigate('/mitgliederbereich');
         }
       } else {
@@ -91,31 +79,17 @@ const Login = () => {
   };
 
   const handleLogout = async () => {
-    const storedUser = localStorage.getItem('auth_username');
-    const storedSession = localStorage.getItem('auth_session_id');
-    
-    if (storedUser && storedSession) {
-      try {
-        await fetch('https://sc-laufenburg.de/api/auth.php', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            action: 'logout', 
-            username: storedUser, 
-            session_id: storedSession 
-          })
-        });
-      } catch (err) {
-        console.error('Logout error:', err);
-      }
+    try {
+      stopAutoRenewal();
+      await logout();
+      setSuccess(false);
+      setUsername('');
+      setPassword('');
+      setMessage('Abgemeldet');
+    } catch (err) {
+      console.error('Logout error:', err);
+      setMessage('Fehler beim Abmelden');
     }
-    
-    localStorage.removeItem('auth_username');
-    localStorage.removeItem('auth_session_id');
-    setSuccess(false);
-    setUsername('');
-    setPassword('');
-    setMessage('Abgemeldet');
   };
 
   return (
@@ -156,21 +130,22 @@ const Login = () => {
               <CardContent>
                 <form className="space-y-4" onSubmit={async (ev) => {
                   ev.preventDefault();
-                  if (newPassword.length < 6) { setMessage('Passwort muss mindestens 6 Zeichen lang sein'); return; }
-                  if (newPassword !== confirmNewPassword) { setMessage('Passwörter stimmen nicht überein'); return; }
-                  if (!tempSessionId) { setMessage('Session ungültig'); return; }
+                  if (newPassword.length < 6) { 
+                    setMessage('Passwort muss mindestens 6 Zeichen lang sein'); 
+                    return; 
+                  }
+                  if (newPassword !== confirmNewPassword) { 
+                    setMessage('Passwörter stimmen nicht überein'); 
+                    return; 
+                  }
+                  
                   setSettingPassword(true);
                   try {
-                    const res = await fetch('https://sc-laufenburg.de/api/auth.php', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ action: 'set_password', username, session_id: tempSessionId, new_password: newPassword })
-                    });
-                    const data = await res.json();
-                    if (res.ok && data.success) {
-                      localStorage.setItem('auth_username', username);
-                      if (tempSessionId) localStorage.setItem('auth_session_id', tempSessionId);
-                      navigate('/mitgliederbereich');
+                    const data = await changePassword(newPassword);
+                    if (data.success) {
+                      setMessage('Passwort erfolgreich geändert');
+                      startAutoRenewal();
+                      setTimeout(() => navigate('/mitgliederbereich'), 1000);
                     } else {
                       setMessage(data.message || 'Fehler beim Setzen des Passworts');
                     }
