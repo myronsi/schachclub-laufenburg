@@ -32,7 +32,10 @@ const Login = () => {
       try {
         const authState = await checkAuth();
         if (authState.isAuthenticated) {
-          if (authState.mustChangePassword) {
+          if (authState.isBlocked) {
+            setMessage('Dein Account wurde gesperrt. Bitte kontaktiere den Vereinsvorstand.');
+            setSuccess(false);
+          } else if (authState.mustChangePassword) {
             setNeedsPasswordChange(true);
             setUsername(authState.username || '');
             setMessage('Bitte neues Passwort setzen');
@@ -63,7 +66,12 @@ const Login = () => {
       const data = await login(username, password);
       
       if (data.success) {
-        if (data.must_change_password) {
+        const authState = await checkAuth();
+        
+        if (authState.isBlocked) {
+          setMessage('Dein Account wurde gesperrt. Bitte kontaktiere den Vereinsvorstand für weitere Informationen.');
+          setSuccess(false);
+        } else if (data.must_change_password) {
           setNeedsPasswordChange(true);
           setMessage(data.message || 'Bitte neues Passwort setzen');
         } else {

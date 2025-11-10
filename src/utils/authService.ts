@@ -1,8 +1,3 @@
-/**
- * Authentication Service
- * Handles JWT-based authentication with automatic token renewal using cookies
- */
-
 import { authToken, jwtUtils } from '@/lib/auth-utils';
 
 const AUTH_API_URL = 'https://sc-laufenburg.de/api/auth.php';
@@ -22,6 +17,7 @@ export interface AuthState {
   username: string | null;
   status: string | null;
   mustChangePassword: boolean;
+  isBlocked: boolean;
 }
 
 export const storeAuth = (token: string) => {
@@ -150,7 +146,8 @@ export const checkAuth = async (): Promise<AuthState> => {
       isAuthenticated: false,
       username: null,
       status: null,
-      mustChangePassword: false
+      mustChangePassword: false,
+      isBlocked: false
     };
   }
 
@@ -160,7 +157,8 @@ export const checkAuth = async (): Promise<AuthState> => {
       isAuthenticated: false,
       username: null,
       status: null,
-      mustChangePassword: false
+      mustChangePassword: false,
+      isBlocked: false
     };
   }
 
@@ -176,12 +174,15 @@ export const checkAuth = async (): Promise<AuthState> => {
   }
 
   const validateResult = await validateToken();
+  const userStatus = validateResult.status || null;
+  const isBlocked = userStatus === 'blocked';
   
   return {
     isAuthenticated: validateResult.success,
     username: validateResult.username || username,
-    status: validateResult.status || null,
-    mustChangePassword: false
+    status: userStatus,
+    mustChangePassword: false,
+    isBlocked: isBlocked
   };
 };
 
