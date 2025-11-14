@@ -71,7 +71,7 @@ export const login = async (username: string, password: string): Promise<AuthRes
   }
 };
 
-export const validateToken = async (): Promise<AuthResponse> => {
+export const validateToken = async (retryCount = 0): Promise<AuthResponse> => {
   const token = getToken();
   
   if (!token) {
@@ -81,6 +81,7 @@ export const validateToken = async (): Promise<AuthResponse> => {
     };
   }
 
+  // Check local token expiration first - this is the source of truth
   if (jwtUtils.isExpired(token)) {
     clearAuth();
     return {
@@ -104,16 +105,45 @@ export const validateToken = async (): Promise<AuthResponse> => {
 
     const data: AuthResponse = await response.json();
     
-    if (!response.ok || !data.success) {
-      clearAuth();
+    // Only clear auth if the backend explicitly says the token is invalid
+    // Don't clear on HTTP errors or network issues
+    if (response.ok && data.success) {
+      return data;
     }
     
-    return data;
-  } catch (error: any) {
-    clearAuth();
+    // If backend says token is invalid (not just a network error), clear auth
+    if (response.ok && !data.success) {
+      clearAuth();
+      return data;
+    }
+    
+    // For HTTP errors, retry once before giving up
+    if (!response.ok && retryCount < 1) {
+      console.log('Validation HTTP error, retrying...', response.status);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      return validateToken(retryCount + 1);
+    }
+    
+    // After retries, if still failing but token is locally valid, trust the local token
+    console.warn('Token validation failed but token is locally valid, continuing session');
     return {
-      success: false,
-      message: `Verbindungsfehler: ${error?.message || error}`
+      success: true,
+      message: 'Token ist lokal gültig'
+    };
+  } catch (error: any) {
+    // Network errors - retry once
+    if (retryCount < 1) {
+      console.log('Validation network error, retrying...', error?.message);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      return validateToken(retryCount + 1);
+    }
+    
+    // After retries, if token is still locally valid, don't clear auth
+    // The token might be fine, just having network issues
+    console.warn('Network error validating token, but token is locally valid, continuing session');
+    return {
+      success: true,
+      message: 'Token ist lokal gültig (Netzwerkfehler)'
     };
   }
 };
@@ -178,14 +208,17 @@ export const checkAuth = async (): Promise<AuthState> => {
   }
 
   // Validate the token (either original or renewed)
+  // The validateToken function now has built-in retry logic and will
+  // trust locally valid tokens even if backend validation fails
   const validateResult = await validateToken();
   
-  // If validation fails, clear auth
+  // Only clear auth if token is genuinely invalid (not just network issues)
+  // validateToken will only return false if token is expired or backend explicitly rejects it
   if (!validateResult.success) {
     clearAuth();
   }
   
-  const userStatus = validateResult.status || null;
+  const userStatus = validateResult.status || jwtUtils.getStatus(token) || null;
   const isBlocked = userStatus === 'blocked';
   
   return {

@@ -122,8 +122,16 @@ export const useAuth = (): UseAuthReturn => {
         console.log('Token needs renewal, attempting renewal...');
         const success = await authToken.autoRenew();
         if (!success) {
-          console.log('Auto-renewal failed, logging out user');
-          await logout();
+          // Don't logout immediately on renewal failure - could be network issue
+          // Only logout if token is actually expired
+          console.log('Auto-renewal failed, checking if token is expired');
+          const currentToken = authToken.get();
+          if (currentToken && jwtUtils.isExpired(currentToken)) {
+            console.log('Token is expired, logging out user');
+            await logout();
+          } else {
+            console.log('Token still valid despite renewal failure, continuing session');
+          }
         } else {
           console.log('Token renewed successfully');
         }
