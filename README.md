@@ -4,7 +4,7 @@ Official website for the Schachclub (Chess Club) Laufenburg e.V., a chess commun
 
 ## 🌐 Project Info
 
-**Live URL**: https://sc-laufenburg.de/
+**URL**: https://sc-laufenburg.de/
 
 **Repository**: https://github.com/myronsi/schachclub-laufenburg
 
@@ -26,30 +26,6 @@ This modern, responsive website includes:
 - **Documents** - Downloadable PDFs (club charter, history, application forms)
 - **Contact** - Contact form and club information
 - **Impressum & Datenschutz** - Legal information and privacy policy
-
-## 🚀 Getting Started
-
-Follow these steps to set up the project locally:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL
-git clone https://github.com/myronsi/schachclub-laufenburg.git
-
-# Step 2: Navigate to the project directory
-cd schachclub-laufenburg
-
-# Step 3: Install the necessary dependencies
-npm install --legacy-peer-deps
-
-# Step 4: Start the development server with auto-reloading and instant preview
-npm run dev
-
-# Step 5: Build for production
-npm run build
-
-# Step 6: Preview the production build locally
-npm run preview
-```
 
 ## 🛠️ Technologies
 
@@ -88,38 +64,6 @@ schachclub-laufenburg/
 ├── package.json
 └── vite.config.ts
 ```
-
-## 🔧 Available Scripts
-
-- `npm run dev` - Start development server (default port: 5173)
-- `npm run build` - Build for production
-- `npm run build:dev` - Build in development mode
-- `npm run preview` - Preview production build locally
-- `npm run lint` - Run ESLint to check code quality
-
-## 🌍 Deployment
-
-The website is deployed and accessible at https://sc-laufenburg.de/
-
-To build for production:
-
-```sh
-npm run build
-```
-
-The production-ready files will be in the `dist/` directory.
-
-## 🤝 Contributing
-
-Contributions are welcome! If you'd like to contribute to the SC Laufenburg website:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/your-feature`)
-3. Commit your changes (`git commit -m 'Add some your features'`)
-4. Push to the branch (`git push origin feature/your-feature`)
-5. Open a Pull Request
-
-Please ensure your code follows the existing style and passes linting.
 
 ## 📝 License
 
