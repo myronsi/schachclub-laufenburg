@@ -10,10 +10,11 @@
     "dev": "concurrently \"npm:lint:watch\" \"vite\"",
     "build": "vite build",
     "build:dev": "vite build --mode development",
-    "lint": "eslint .",
+    "lint": "eslint . --max-warnings 0",
     "lint:watch": "chokidar \"src/**/*.{ts,tsx}\" public -c \"npm run lint\" --initial",
     "preview": "vite preview",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "prepare": "husky"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
@@ -88,6 +89,7 @@
     "typescript-eslint": "^8.0.1",
     "concurrently": "^8.2.0",
     "chokidar-cli": "^3.0.0",
-    "vite": "^5.4.1"
+    "vite": "^5.4.1",
+    "husky": "^9.0.11"
   }
 }
