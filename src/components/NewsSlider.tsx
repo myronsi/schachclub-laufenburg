@@ -29,7 +29,7 @@ const NewsSlider = () => {
     }, 15000);
 
     return () => clearTimeout(timer);
-  }, [currentSlide, slides.length]);
+  }, [slides.length]);
 
   
 
@@ -100,7 +100,7 @@ const NewsSlider = () => {
     if (!Number.isFinite(currentSlide) || currentSlide >= slides.length) {
       setCurrentSlide(0);
     }
-  }, [slides.length]);
+  }, [slides.length, currentSlide]);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     setTouchEnd(null);

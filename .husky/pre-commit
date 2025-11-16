@@ -1,0 +1,13 @@
+#!/bin/sh
+
+# Run ESLint and prevent commit if there are any errors or warnings
+
+# Check if npm is available, if not try flatpak-spawn
+if command -v npm >/dev/null 2>&1; then
+  npm run lint
+elif command -v flatpak-spawn >/dev/null 2>&1; then
+  flatpak-spawn --host npm run lint
+else
+  echo "Error: npm not found"
+  exit 1
+fi

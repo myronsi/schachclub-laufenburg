@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Image, SortDesc, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ButtonToTop } from "@/components/ui/arrowToTop";
@@ -48,9 +48,9 @@ const GalerieComponent = () => {
       .replace(/^-+|-+$/g, '');
   };
 
-  const findImageBySlug = (slug: string): ImageItem | null => {
+  const findImageBySlug = useCallback((slug: string): ImageItem | null => {
     return images.find(img => createSlug(img.title) === slug) || null;
-  };
+  }, [images]);
 
   const handleDialogOpenChange = (open: boolean, image?: ImageItem) => {
     setOpenDialogsCount(prev => open ? prev + 1 : Math.max(prev - 1, 0));
@@ -123,7 +123,7 @@ const GalerieComponent = () => {
     };
 
     fetchImages();
-  }, [authenticated]);
+  }, [authenticated, isBlocked]);
 
   useEffect(() => {
     if (!authenticated || loadingImages || !title || images.length === 0) return;
@@ -135,7 +135,7 @@ const GalerieComponent = () => {
     } else if (!imageToOpen && title) {
       navigate('/archiv/galerie', { replace: true });
     }
-  }, [authenticated, loadingImages, title, images]);
+  }, [authenticated, loadingImages, title, images, findImageBySlug, navigate, selectedImage]);
 
   const renderImages = (items: ImageItem[]) => (
     <div className="space-y-4">
