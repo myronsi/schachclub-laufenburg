@@ -15,25 +15,26 @@ export const useScrollAnimation = (options: ScrollAnimationOptions = {}) => {
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsVisible(true);
-          // Sobald das Element sichtbar war, können wir den Observer entfernen
-          if (elementRef.current) {
-            observer.unobserve(elementRef.current);
+          const el = elementRef.current;
+          if (el) {
+            observer.unobserve(el);
           }
         }
       },
       {
-        threshold: options.threshold ?? 0.01, // Reduziert auf 1%, damit die Animation früher startet
-        rootMargin: options.rootMargin ?? "100px", // Erhöht den Beobachtungsbereich
+        threshold: options.threshold ?? 0.01,
+        rootMargin: options.rootMargin ?? "100px",
       }
     );
 
-    if (elementRef.current) {
-      observer.observe(elementRef.current);
+    const el = elementRef.current;
+    if (el) {
+      observer.observe(el);
     }
 
     return () => {
-      if (elementRef.current) {
-        observer.unobserve(elementRef.current);
+      if (el) {
+        observer.unobserve(el);
       }
     };
   }, [options.threshold, options.rootMargin]);

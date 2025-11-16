@@ -120,7 +120,7 @@ const CalendarSection = () => {
         }
       }
     }
-  }, [location.pathname, navigate]);
+  }, [location.pathname, navigate, currentMonth, selectedDate]);
 
   useEffect(() => {
     return () => {
@@ -435,7 +435,7 @@ const CalendarSection = () => {
                 <div className="space-y-3">
                   {eventsForSelected.map((ev, i) => {
                     const renderDescription = (text: string) => {
-                      const urlRegex = /(https?:\/\/[^\s]+|\/[A-Za-z0-9_\-\/\?=&%#\.\+~]+)/g;
+                      const urlRegex = /(https?:\/\/[^\s]+|\/[A-Za-z0-9_\/\-?=&%#.+~]+)/g;
                       const parts = text.split(urlRegex);
 
                       return parts.map((part, index) => {

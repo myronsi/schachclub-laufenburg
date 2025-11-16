@@ -40,6 +40,7 @@ const MitgliedwerdenSection = () => {
   const recaptchaRef = useRef<HTMLDivElement | null>(null);
   const [recaptchaToken, setRecaptchaToken] = useState<string>("");
   const [recaptchaWidgetId, setRecaptchaWidgetId] = useState<number | null>(null);
+  const recaptchaWidgetIdRef = useRef<number | null>(null);
 
   const RECAPTCHA_SITE_KEY = '6Lez6-YrAAAAAGry5l1Uvpt7GMD8u0AZJ0meBxQP';
 
@@ -150,7 +151,7 @@ const MitgliedwerdenSection = () => {
     if (!betreffValue && newcomerData.subject) {
       setBetreffValue(newcomerData.subject);
     }
-  }, []);
+  }, [betreffValue, newcomerData.subject]);
 
   useEffect(() => {
     const win = window as any;
@@ -172,8 +173,13 @@ const MitgliedwerdenSection = () => {
           });
           if (recaptchaRef.current) recaptchaRef.current.setAttribute('data-recaptcha-rendered', '1');
           setRecaptchaWidgetId(id);
+          recaptchaWidgetIdRef.current = id;
           return;
         } catch (err) {
+          // Log minor reCAPTCHA render errors for debugging
+          // Not fatal for page functionality
+           
+          console.debug('grecaptcha.render error', err);
         }
       }
 
@@ -183,13 +189,16 @@ const MitgliedwerdenSection = () => {
       }
     };
 
-    if (!win.grecaptcha) {
+      if (!win.grecaptcha) {
       const script = document.createElement('script');
       script.src = 'https://www.google.com/recaptcha/api.js?hl=de';
       script.async = true;
       script.defer = true;
       script.onload = () => tryRender();
       script.onerror = () => {
+        // Log failed reCAPTCHA script load
+         
+        console.debug('Failed to load reCAPTCHA script');
       };
       document.body.appendChild(script);
       setTimeout(tryRender, 500);
@@ -200,10 +209,13 @@ const MitgliedwerdenSection = () => {
     return () => {
       mounted = false;
       try {
-        if (win.grecaptcha && recaptchaWidgetId !== null && typeof win.grecaptcha.reset === 'function') {
-          win.grecaptcha.reset(recaptchaWidgetId);
+        const widgetId = recaptchaWidgetIdRef.current;
+        if (win.grecaptcha && widgetId !== null && typeof win.grecaptcha.reset === 'function') {
+          win.grecaptcha.reset(widgetId);
         }
       } catch (err) {
+         
+        console.debug('grecaptcha.reset error', err);
       }
     };
   }, []);

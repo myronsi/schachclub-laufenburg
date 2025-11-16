@@ -17,7 +17,7 @@ function stripKnownTld(hostname: string) {
 
 function titleCase(s: string) {
   return s
-    .split(/[-_\s\.\/]+/)
+    .split(/[-_\s./]+/)
     .filter(Boolean)
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
     .join(' ');
@@ -86,7 +86,7 @@ function AktuellesDetailSection() {
         setError(String(err?.message || err));
       })
       .finally(() => {
-        if (loading) setLoading(false);
+        setLoading(false);
       });
   }, [slug]);
 
