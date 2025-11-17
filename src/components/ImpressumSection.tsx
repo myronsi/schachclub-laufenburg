@@ -113,7 +113,7 @@ const ImpressumSection = () => {
           </div>
           <span className="text-center sm:text-right">Copyright © 2000 - {new Date().getFullYear()} SC Laufenburg e.V.</span>
           <span className="text-gray-600">
-            Letzte Änderung: 26.02.2025
+            Letzte Änderung: 18.09.2025
           </span>
         </div>
     </div>
