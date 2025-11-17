@@ -96,8 +96,8 @@ const ImpressumSection = () => {
       </div>
     </section>
     <div className="mt-auto py-4 bg-gray-100 shadow-[0_-2px_8px_rgba(0,0,0,0.1)] md:fixed md:bottom-0 md:left-0 md:right-0 md:z-40 md:mt-0">
-        <div className="container mx-auto px-4 flex justify-between items-center text-sm">
-          <div className="flex flex-col mr-6">
+        <div className="container mx-auto px-4 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 text-sm">
+          <div className="flex flex-col">
             <Link 
               to="/impressum" 
               className="hover:text-club-accent underline"
@@ -111,8 +111,8 @@ const ImpressumSection = () => {
               Datenschutz
             </Link>
           </div>
-          <span className="text-center sm:text-right">Copyright © 2000 - {new Date().getFullYear()} SC Laufenburg e.V.</span>
-          <span className="text-gray-600">
+          <span className="text-center sm:text-right break-words">Copyright © 2000 - {new Date().getFullYear()} SC Laufenburg e.V.</span>
+          <span className="text-gray-600 text-center sm:text-right">
             Letzte Änderung: 18.09.2025
           </span>
         </div>
