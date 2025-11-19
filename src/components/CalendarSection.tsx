@@ -146,9 +146,42 @@ const CalendarSection = () => {
   const eventsByDate = useMemo(() => {
     const map: Record<string, CalendarEvent[]> = {};
     for (const ev of filteredEvents) {
-      const key = ev.date.slice(0, 10);
-      if (!map[key]) map[key] = [];
-      map[key].push(ev);
+      if (ev.date.includes(':')) {
+        const [startStr, endStr] = ev.date.split(':');
+        const startDate = new Date(startStr);
+        const endDate = new Date(endStr);
+        
+        const currentDate = new Date(startDate);
+        let lastWeekStart: number | null = null;
+        
+        while (currentDate <= endDate) {
+          const key = toKey(currentDate);
+          if (!map[key]) map[key] = [];
+          
+          const dayOfWeek = (currentDate.getDay() + 6) % 7;
+          const isFirstDay = currentDate.getTime() === startDate.getTime();
+          const weekStart = currentDate.getTime() - (dayOfWeek * 24 * 60 * 60 * 1000);
+          const isFirstDayOfWeek = lastWeekStart !== weekStart;
+          
+          if (isFirstDayOfWeek) {
+            lastWeekStart = weekStart;
+          }
+          
+          map[key].push({ 
+            ...ev, 
+            isMultiDay: true, 
+            rangeStart: startStr, 
+            rangeEnd: endStr,
+            showTitle: isFirstDay || isFirstDayOfWeek
+          } as any);
+          
+          currentDate.setDate(currentDate.getDate() + 1);
+        }
+      } else {
+        const key = ev.date.slice(0, 10);
+        if (!map[key]) map[key] = [];
+        map[key].push(ev);
+      }
     }
     return map;
   }, [filteredEvents]);
@@ -345,6 +378,12 @@ const CalendarSection = () => {
             const evs = eventsByDate[key] || [];
             const isSelected = selectedDate === key;
             const isToday = toKey(d) === todayKey;
+            const maxMobileDots = 5;
+            const mobileDots = evs.slice(0, maxMobileDots);
+            const bottomDotCount = Math.min(2, mobileDots.length);
+            const bottomDots = mobileDots.slice(0, bottomDotCount);
+            const upperDots = mobileDots.slice(bottomDotCount);
+            const extraMobileDots = evs.length - mobileDots.length;
             const cellClass = isSelected
               ? 'bg-sky-100 ring-2 ring-sky-200 border-sky-200 shadow'
               : isToday
@@ -363,7 +402,7 @@ const CalendarSection = () => {
                   navigate(`/kalender/${y}-${m}-${day}`);
                 }}
                 aria-pressed={isSelected}
-                  className={`group p-3 h-28 text-left flex flex-col justify-between rounded-sm focus:outline-none transition-colors duration-150 border border-gray-200 bg-white ${cellClass}`}
+                  className={`group p-3 h-28 text-left flex flex-col justify-between rounded-sm overflow-hidden focus:outline-none transition-colors duration-150 border border-gray-200 bg-white ${cellClass}`}
               >
                 <div className="flex items-start justify-between">
                     <div className={`flex items-center gap-2`}> 
@@ -372,30 +411,56 @@ const CalendarSection = () => {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1 md:hidden">
-                    {evs.slice(0,3).map((ev, i) => (
+                  <div className={`flex flex-col ${upperDots.length === 1 ? 'items-start' : 'items-center'} md:hidden gap-0.5 max-w-full`}>
+                    {upperDots.slice().reverse().map((ev, i) => (
                       <span
-                        key={`${key}-${i}`}
-                        title={ev.title}
-                        className={`${getEventTypeColorForDots(ev.type)} w-3 h-3 rounded-md inline-block border ${isToday ? 'ring-2 ring-white/60' : ''}`}
-                        style={{flex: '0 0 auto'}}
+                        key={`${key}-upper-${i}`}
+                        title={`${ev.title}${(ev as any).isMultiDay ? ' (Mehrtägig)' : ''}`}
+                        className={`${getEventTypeColorForDots(ev.type)} ${(ev as any).isMultiDay ? 'w-4 h-3 rounded-sm' : 'w-3 h-3 rounded-md'} inline-block border ${isToday ? 'ring-2 ring-white/60' : ''}`}
                       />
                     ))}
-                    {evs.length > 3 && (
-                      <span className="text-xs text-gray-500">+{evs.length - 3}</span>
+                    {bottomDots.length > 0 && (
+                      <div className="flex justify-center gap-1">
+                        {bottomDots.map((ev, i) => (
+                          <span
+                            key={`${key}-bottom-${i}`}
+                            title={`${ev.title}${(ev as any).isMultiDay ? ' (Mehrtägig)' : ''}`}
+                            className={`${getEventTypeColorForDots(ev.type)} ${(ev as any).isMultiDay ? 'w-4 h-3 rounded-sm' : 'w-3 h-3 rounded-md'} inline-block border ${isToday ? 'ring-2 ring-white/60' : ''}`}
+                          />
+                        ))}
+                      </div>
+                    )}
+                    {extraMobileDots > 0 && (
+                      <span className="text-[10px] text-gray-500 leading-none">+{extraMobileDots}</span>
                     )}
                   </div>
 
                   <div className="hidden md:flex flex-col gap-1 w-full">
-                    {evs.slice(0,2).map((ev, i) => (
-                      <span
-                        key={`${key}-badge-${i}`}
-                        title={ev.title}
-                        className={`${(toKey(d) === todayKey) ? getEventTypeColorForToday(ev.type) : getEventTypeColor(ev.type)} text-xs px-2 py-0.5 rounded truncate max-w-full`}
-                      >
-                        {ev.title}
-                      </span>
-                    ))}
+                    {evs.slice(0,2).map((ev, i) => {
+                      const isMultiDay = (ev as any).isMultiDay;
+                      const showTitle = (ev as any).showTitle;
+                      
+                      // For multi-day events without title, show a visual indicator bar
+                      if (isMultiDay && !showTitle) {
+                        return (
+                          <span
+                            key={`${key}-badge-${i}`}
+                            title={`${ev.title} (Mehrtägig)`}
+                            className={`${(toKey(d) === todayKey) ? getEventTypeColorForToday(ev.type) : getEventTypeColor(ev.type)} h-2 rounded-full`}
+                          />
+                        );
+                      }
+                      
+                      return (
+                        <span
+                          key={`${key}-badge-${i}`}
+                          title={`${ev.title}${isMultiDay ? ' (Mehrtägig)' : ''}`}
+                          className={`${(toKey(d) === todayKey) ? getEventTypeColorForToday(ev.type) : getEventTypeColor(ev.type)} text-xs px-2 py-0.5 rounded truncate max-w-full ${isMultiDay ? 'italic border-l-2 border-gray-600' : ''}`}
+                        >
+                          {ev.title}
+                        </span>
+                      );
+                    })}
                     {evs.length > 2 && (
                       <span className="text-xs text-gray-500">+{evs.length - 2} weitere</span>
                     )}
@@ -464,19 +529,31 @@ const CalendarSection = () => {
                       });
                     };
 
+                    const isMultiDay = (ev as any).isMultiDay;
+                    const rangeStart = (ev as any).rangeStart;
+                    const rangeEnd = (ev as any).rangeEnd;
+
                     return (
                       <div key={`${selectedDate}-${i}`} className="p-3 border rounded flex flex-col sm:flex-row sm:items-center sm:justify-between">
                         <div>
                           <div className="font-medium text-gray-800">{ev.title}</div>
-                          <div className="text-sm text-gray-500">{ev.time ? `${ev.time} Uhr` : ''} {ev.location ? `• ${ev.location}` : ''}</div>
+                          {isMultiDay && rangeStart && rangeEnd && (
+                            <div className="text-xs text-gray-600 mt-0.5">
+                              {new Date(rangeStart).toLocaleDateString('de-DE', { day: 'numeric', month: 'short' })} - {new Date(rangeEnd).toLocaleDateString('de-DE', { day: 'numeric', month: 'short', year: 'numeric' })}
+                            </div>
+                          )}
+                          <div className="text-sm text-gray-500">{ev.time ? `${ev.time} Uhr •` : ''} {ev.location ? ` ${ev.location}` : ''}</div>
                           {ev.description && (
                             <div className="text-sm text-gray-600 mt-1">
                               {renderDescription(ev.description)}
                             </div>
                           )}
                         </div>
-                        <div className="mt-3 sm:mt-0">
+                        <div className="mt-3 sm:mt-0 flex flex-col gap-1 items-end">
                           <span className={`px-2 py-1 text-xs rounded ${(selectedDate === todayKey) ? getEventTypeColorForToday(ev.type) : getEventTypeColor(ev.type)}`}>{getEventTypeLabel(ev.type)}</span>
+                          {isMultiDay && (
+                            <span className="text-[10px] text-gray-500 italic">Mehrtägig</span>
+                          )}
                         </div>
                       </div>
                     );

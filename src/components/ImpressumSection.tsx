@@ -13,7 +13,7 @@ const ImpressumSection = () => {
 
   return (
   <>
-    <section id="impressum" className="py-16 container mx-auto px-4 md:pb-20 animate-fadeIn">
+    <section id="impressum" className="py-16 container mx-auto px-4 md:pb-20 animate-fadeIn overflow-x-hidden">
       <div className="container mx-auto px-4">
         <header className="text-center mb-10">
           <h2 className="text-3xl font-bold text-club-primary">Impressum</h2>
@@ -95,9 +95,9 @@ const ImpressumSection = () => {
         </div>
       </div>
     </section>
-    <div className="mt-auto py-4 bg-gray-100 shadow-[0_-2px_8px_rgba(0,0,0,0.1)] md:fixed md:bottom-0 md:left-0 md:right-0 md:z-40 md:mt-0">
-        <div className="container mx-auto px-4 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 text-sm">
-          <div className="flex flex-col">
+    <div className="mt-auto py-4 bg-gray-100 overflow-x-hidden shadow-[0_-2px_8px_rgba(0,0,0,0.1)] md:fixed md:bottom-0 md:left-0 md:right-0 md:z-40 md:mt-0">
+        <div className="container mx-auto px-4 flex justify-between items-center text-sm">
+          <div className="flex flex-col mr-6">
             <Link 
               to="/impressum" 
               className="hover:text-club-accent underline"
