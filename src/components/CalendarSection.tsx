@@ -146,13 +146,11 @@ const CalendarSection = () => {
   const eventsByDate = useMemo(() => {
     const map: Record<string, CalendarEvent[]> = {};
     for (const ev of filteredEvents) {
-      // Check if date is a range (yyyy-mm-dd:yyyy-mm-dd)
       if (ev.date.includes(':')) {
         const [startStr, endStr] = ev.date.split(':');
         const startDate = new Date(startStr);
         const endDate = new Date(endStr);
         
-        // Add event to all dates in the range
         const currentDate = new Date(startDate);
         let lastWeekStart: number | null = null;
         
@@ -160,8 +158,7 @@ const CalendarSection = () => {
           const key = toKey(currentDate);
           if (!map[key]) map[key] = [];
           
-          // Check if this is the first day or first day of a new week (Monday = 1)
-          const dayOfWeek = (currentDate.getDay() + 6) % 7; // Convert to Monday=0
+          const dayOfWeek = (currentDate.getDay() + 6) % 7;
           const isFirstDay = currentDate.getTime() === startDate.getTime();
           const weekStart = currentDate.getTime() - (dayOfWeek * 24 * 60 * 60 * 1000);
           const isFirstDayOfWeek = lastWeekStart !== weekStart;
@@ -170,7 +167,6 @@ const CalendarSection = () => {
             lastWeekStart = weekStart;
           }
           
-          // Mark as multi-day event with title visibility flag
           map[key].push({ 
             ...ev, 
             isMultiDay: true, 
@@ -182,7 +178,6 @@ const CalendarSection = () => {
           currentDate.setDate(currentDate.getDate() + 1);
         }
       } else {
-        // Single day event
         const key = ev.date.slice(0, 10);
         if (!map[key]) map[key] = [];
         map[key].push(ev);
