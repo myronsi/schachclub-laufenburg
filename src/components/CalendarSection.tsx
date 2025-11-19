@@ -345,6 +345,12 @@ const CalendarSection = () => {
             const evs = eventsByDate[key] || [];
             const isSelected = selectedDate === key;
             const isToday = toKey(d) === todayKey;
+            const maxMobileDots = 5;
+            const mobileDots = evs.slice(0, maxMobileDots);
+            const bottomDotCount = Math.min(2, mobileDots.length);
+            const bottomDots = mobileDots.slice(0, bottomDotCount);
+            const upperDots = mobileDots.slice(bottomDotCount);
+            const extraMobileDots = evs.length - mobileDots.length;
             const cellClass = isSelected
               ? 'bg-sky-100 ring-2 ring-sky-200 border-sky-200 shadow'
               : isToday
@@ -363,7 +369,7 @@ const CalendarSection = () => {
                   navigate(`/kalender/${y}-${m}-${day}`);
                 }}
                 aria-pressed={isSelected}
-                  className={`group p-3 h-28 text-left flex flex-col justify-between rounded-sm focus:outline-none transition-colors duration-150 border border-gray-200 bg-white ${cellClass}`}
+                  className={`group p-3 h-28 text-left flex flex-col justify-between rounded-sm overflow-hidden focus:outline-none transition-colors duration-150 border border-gray-200 bg-white ${cellClass}`}
               >
                 <div className="flex items-start justify-between">
                     <div className={`flex items-center gap-2`}> 
@@ -372,17 +378,27 @@ const CalendarSection = () => {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1 md:hidden">
-                    {evs.slice(0,3).map((ev, i) => (
+                  <div className={`flex flex-col ${upperDots.length === 1 ? 'items-start' : 'items-center'} md:hidden gap-0.5 max-w-full`}>
+                    {upperDots.slice().reverse().map((ev, i) => (
                       <span
-                        key={`${key}-${i}`}
+                        key={`${key}-upper-${i}`}
                         title={ev.title}
                         className={`${getEventTypeColorForDots(ev.type)} w-3 h-3 rounded-md inline-block border ${isToday ? 'ring-2 ring-white/60' : ''}`}
-                        style={{flex: '0 0 auto'}}
                       />
                     ))}
-                    {evs.length > 3 && (
-                      <span className="text-xs text-gray-500">+{evs.length - 3}</span>
+                    {bottomDots.length > 0 && (
+                      <div className="flex justify-center gap-1">
+                        {bottomDots.map((ev, i) => (
+                          <span
+                            key={`${key}-bottom-${i}`}
+                            title={ev.title}
+                            className={`${getEventTypeColorForDots(ev.type)} w-3 h-3 rounded-md inline-block border ${isToday ? 'ring-2 ring-white/60' : ''}`}
+                          />
+                        ))}
+                      </div>
+                    )}
+                    {extraMobileDots > 0 && (
+                      <span className="text-[10px] text-gray-500 leading-none">+{extraMobileDots}</span>
                     )}
                   </div>
 
