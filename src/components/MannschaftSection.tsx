@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
-import { ImageOff, Calendar, Users, Phone } from "lucide-react";
+import { ImageOff, Calendar, Users, Mail } from "lucide-react";
 import { useState, useEffect } from "react";
 
 interface Team {
@@ -241,7 +241,7 @@ const MannschaftSection = () => {
                       )}
                       {team.contact && (
                         <a href={`mailto:${team.contact}`} className="text-sm px-3 py-1 rounded bg-club-accent text-white hover:bg-club-dark transition-colors flex items-center gap-1">
-                          <Phone className="w-4 h-4" /> Kontakt
+                          <Mail className="w-4 h-4" /> Kontakt
                         </a>
                       )}
                     </div>
