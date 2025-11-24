@@ -202,7 +202,7 @@ const MannschaftSection = () => {
                     >
                       <h3 className="text-lg bp1230:text-xl font-semibold mb-1 flex items-center gap-1">
                         {team.name}
-                        <SquareArrowOutUpRight className="w-4 h-4" />
+                        <SquareArrowOutUpRight className="w-4 h-4" aria-hidden="true" />
                       </h3>
                     </a>
                     <a 
