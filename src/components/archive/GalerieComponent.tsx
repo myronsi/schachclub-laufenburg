@@ -216,7 +216,7 @@ const GalerieComponent = () => {
   <section id="media" className="py-16 animate-fadeIn relative">
         <div className="container mx-auto px-4">
           <header className="text-center mb-10">
-            <h2 className="text-3xl font-bold text-club-primary">Fotogalerie</h2>
+            <h2 className="text-3xl font-bold text-club-primary">Bildergalerie</h2>
             <p className="mt-3 text-gray-600 max-w-2xl mx-auto">
               Eindrücke aus dem Vereinsleben — Turniere, Training und Events.
             </p>
