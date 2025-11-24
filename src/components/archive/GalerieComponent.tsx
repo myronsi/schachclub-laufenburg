@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Image, SortDesc, Lock } from "lucide-react";
+import { Image, SortAsc, SortDesc, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ButtonToTop } from "@/components/ui/arrowToTop";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -238,7 +238,7 @@ const GalerieComponent = () => {
                   className="flex items-center gap-2"
                   disabled={loadingImages}
                 >
-                  <SortDesc className="h-4 w-4" />
+                  {isReversed ? <SortAsc className="h-4 w-4" /> : <SortDesc className="h-4 w-4" />}
                   {isReversed ? "Älteste ist zuerst" : "Neuste ist zuerst"}
                 </Button>
               </div>
