@@ -542,7 +542,15 @@ const CalendarSection = () => {
                               {new Date(rangeStart).toLocaleDateString('de-DE', { day: 'numeric', month: 'short' })} - {new Date(rangeEnd).toLocaleDateString('de-DE', { day: 'numeric', month: 'short', year: 'numeric' })}
                             </div>
                           )}
-                          <div className="text-sm text-gray-500">{ev.time ? `${ev.time} Uhr •` : ''} {ev.location ? ` ${ev.location}` : ''}</div>
+                          <div className="text-sm text-gray-500">
+                            {ev.time && ev.location
+                              ? `${ev.time} Uhr • ${ev.location}`
+                              : ev.time
+                              ? `${ev.time} Uhr`
+                              : ev.location
+                              ? ev.location
+                              : ''}
+                          </div>
                           {ev.description && (
                             <div className="text-sm text-gray-600 mt-1">
                               {renderDescription(ev.description)}

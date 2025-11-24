@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { ImageOff, Calendar, Users, Mail } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface Team {
   id: number;
@@ -94,6 +94,8 @@ const MannschaftSection = () => {
     setImageErrors(prev => ({...prev, [teamId]: true}));
   };
 
+  const detailsRefs = useRef<Record<number, HTMLDivElement | null>>({});
+
   return (
     <section id="teams" className="py-16 container mx-auto px-4 animate-fadeIn">
       <div className="container mx-auto px-4">
@@ -134,17 +136,17 @@ const MannschaftSection = () => {
 
         <div 
           ref={elementRef}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8"
+          className="grid grid-cols-1 bp1230:grid-cols-2 lg:grid-cols-2 gap-8"
         >
           {loading ? (
             <>
               {[0, 1].map((n) => (
                 <Card key={n} className="overflow-hidden">
-                  <div className="h-56 md:h-64 flex items-stretch">
-                    <div className="w-2/5 bg-gray-50 flex items-center justify-center">
+                  <div className="flex flex-col bp1230:flex-row h-auto bp1230:h-64">
+                    <div className="w-full bp1230:w-2/5 h-48 bp1230:h-full bg-gray-50 flex items-center justify-center overflow-hidden">
                       <Skeleton className="w-full h-full" />
                     </div>
-                    <div className="w-3/5 p-6 flex flex-col justify-between">
+                    <div className="w-full bp1230:w-3/5 p-4 bp1230:p-6 flex flex-col justify-between">
                       <div>
                         <Skeleton className="h-6 w-3/4 mb-2" />
                         <Skeleton className="h-4 w-1/2 mb-3" />
@@ -153,9 +155,9 @@ const MannschaftSection = () => {
                           <Skeleton className="h-4 w-28" />
                         </div>
                       </div>
-                      <div className="flex items-center justify-between">
+                      <div className="flex flex-col bp1230:flex-row items-stretch bp1230:items-center justify-between gap-3">
                         <Skeleton className="h-5 w-32" />
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 md:gap-3 ml-auto">
                           <Skeleton className="h-8 w-20" />
                           <Skeleton className="h-8 w-24" />
                         </div>
@@ -168,12 +170,12 @@ const MannschaftSection = () => {
           ) : (
             teams.map((team: any) => (
             <Card key={team.id} className="overflow-hidden group transform transition-all duration-300 hover:-translate-y-1 hover:shadow-xl cursor-pointer">
-              <div className="h-56 md:h-64 flex items-stretch">
+              <div className="flex flex-col bp1230:flex-row h-auto">
                 <a 
                   href={team.url} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="w-2/5 bg-gray-50 flex items-center justify-center overflow-hidden transition-transform duration-500 group-hover:scale-105"
+                  className="w-full bp1230:w-2/5 h-48 bp1230:h-64 bg-gray-50 flex items-center justify-center overflow-hidden transition-transform duration-500 group-hover:scale-105"
                 >
                   {imageErrors[team.id] || team.image === "nicht eingegeben" ? (
                     <div className="flex items-center justify-center w-full h-full bg-gray-100">
@@ -189,7 +191,7 @@ const MannschaftSection = () => {
                   )}
                 </a>
 
-                <div className="w-3/5 p-6 flex flex-col justify-between transition-colors duration-300 group-hover:bg-white/5">
+                <div className="w-full bp1230:w-3/5 p-4 bp1230:p-6 flex flex-col justify-between transition-colors duration-300 group-hover:bg-white/5">
                   <div>
                     <a 
                       href={team.url} 
@@ -197,7 +199,7 @@ const MannschaftSection = () => {
                       rel="noopener noreferrer"
                       className="hover:text-club-accent transition-colors"
                     >
-                      <h3 className="text-xl font-semibold mb-1">{team.name}</h3>
+                      <h3 className="text-lg bp1230:text-xl font-semibold mb-1">{team.name}</h3>
                     </a>
                     <a 
                       href={team.url} 
@@ -207,7 +209,7 @@ const MannschaftSection = () => {
                     >
                       <p className="text-gray-600 text-sm mb-3">{team.league}</p>
                     </a>
-                    <div className="flex items-center gap-3 text-xs text-gray-500 mb-2">
+                    <div className="flex items-center gap-3 text-xs text-gray-500 mb-2 flex-wrap">
                       {team.captain && (
                         <span className="flex items-center gap-1"><Users className="w-4 h-4" /> {team.captain}</span>
                       )}
@@ -217,7 +219,7 @@ const MannschaftSection = () => {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col bp1230:flex-row items-start bp1230:items-center gap-2 bp1230:gap-3">
                     {team.record && (team.record.w > 0 || team.record.d > 0 || team.record.l > 0) && (
                       <div className="flex items-center gap-2">
                         <div className="text-sm text-gray-700">
@@ -230,34 +232,37 @@ const MannschaftSection = () => {
                       </div>
                     )}
 
-                    <div className="flex items-center gap-2 ml-auto">
+                    <div className="flex flex-row items-center gap-2 ml-auto flex-nowrap">
                       {(team.venue || (team.squad && team.squad.length > 0) || team.notes) && (
                         <button
                           onClick={() => setOpenTeam(openTeam === team.id ? null : team.id)}
-                          className="text-sm px-3 py-1 rounded bg-white/10 hover:bg-white/20 transition-colors"
+                          className="text-sm px-3 py-2 rounded bg-white/10 hover:bg-white/20 transition-colors w-auto text-center"
+                          aria-expanded={openTeam === team.id}
                         >
                           {openTeam === team.id ? 'Schließen' : 'Details'}
                         </button>
                       )}
                       {team.contact && (
-                        <a href={`mailto:${team.contact}`} className="text-sm px-3 py-1 rounded bg-club-accent text-white hover:bg-club-dark transition-colors flex items-center gap-1">
-                          <Mail className="w-4 h-4" /> Kontakt
+                        <a href={`mailto:${team.contact}`} className="text-sm px-3 py-2 rounded bg-club-accent text-white hover:bg-club-dark transition-colors flex items-center gap-2 justify-center w-auto">
+                          <Mail className="w-4 h-4" /> <span>Kontakt</span>
                         </a>
                       )}
                     </div>
                   </div>
 
-                  <div className={`mt-3 overflow-hidden transition-all ${openTeam === team.id ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'}`}>
+                  <div
+                    ref={(el) => (detailsRefs.current[team.id] = el)}
+                    className={`mt-3 overflow-hidden transition-all duration-300 ease-in-out ${openTeam === team.id ? 'opacity-100' : 'opacity-0'}`}
+                    style={{ maxHeight: openTeam === team.id && detailsRefs.current[team.id] ? `${detailsRefs.current[team.id]!.scrollHeight}px` : '0px' }}
+                  >
                     <div className="text-sm text-gray-600 space-y-2">
                       {team.venue && <div><strong>Spielort:</strong> {team.venue}</div>}
                       {team.squad && team.squad.length > 0 && (
-                        <div>
-                          <strong>Kader:</strong>
-                          <div className="flex flex-wrap gap-2 mt-2">
-                            {team.squad.slice(0,6).map((m:any, i:number) => (
-                              <span key={i} className="px-2 py-1 bg-gray-100 rounded text-xs">{m}</span>
-                            ))}
-                          </div>
+                        <div className="flex items-center flex-wrap gap-2">
+                          <strong className="mr-2">Kader:</strong>
+                          {team.squad.slice(0,6).map((m:any, i:number) => (
+                            <span key={i} className="px-2 py-1 bg-gray-100 rounded text-xs">{m}</span>
+                          ))}
                         </div>
                       )}
                       {team.notes && <div><strong>Notiz:</strong> {team.notes}</div>}
