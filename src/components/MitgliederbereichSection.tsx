@@ -218,9 +218,9 @@ const MitgliederbereichSection = () => {
                         <ImageIcon className="h-6 w-6 text-club-accent" />
                       </div>
                       <div className="flex-1">
-                        <h4 className="font-semibold text-club-primary">Fotogalerie</h4>
+                        <h4 className="font-semibold text-club-primary">Bildergalerie</h4>
                         <p className="text-sm text-gray-600 mt-1">
-                          Exklusive Turnier- und Vereinsfotos aus unserer umfangreichen Sammlung
+                          Exklusive Turnier- und Vereinsbilder aus unserer umfangreichen Sammlung
                         </p>
                       </div>
                     </Link>
