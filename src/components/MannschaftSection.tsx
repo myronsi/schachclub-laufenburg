@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
-import { ImageOff, Calendar, Users, Mail, SquareArrowOutUpRight } from "lucide-react";
+import { ImageOff, Calendar, Users, Mail, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 
@@ -202,7 +202,7 @@ const MannschaftSection = () => {
                     >
                       <h3 className="text-lg bp1230:text-xl font-semibold mb-1 flex items-center gap-1">
                         {team.name}
-                        <SquareArrowOutUpRight className="w-4 h-4" aria-hidden="true" />
+                        <ExternalLink className="w-4 h-4" aria-hidden="true" />
                       </h3>
                     </a>
                     <a 
