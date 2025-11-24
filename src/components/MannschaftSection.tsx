@@ -2,6 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { ImageOff, Calendar, Users, Mail } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 
 interface Team {
@@ -169,13 +170,13 @@ const MannschaftSection = () => {
             </>
           ) : (
             teams.map((team: any) => (
-            <Card key={team.id} className="overflow-hidden group transform transition-all duration-300 hover:-translate-y-1 hover:shadow-xl cursor-pointer">
+            <Card key={team.id} className="overflow-hidden transform transition-all duration-300 hover:-translate-y-1 hover:shadow-xl cursor-pointer">
               <div className="flex flex-col bp1230:flex-row h-auto">
                 <a 
                   href={team.url} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="w-full bp1230:w-2/5 h-48 bp1230:h-64 bg-gray-50 flex items-center justify-center overflow-hidden transition-transform duration-500 group-hover:scale-105"
+                  className="w-full bp1230:w-2/5 h-48 bp1230:h-64 bg-gray-50 flex items-center justify-center overflow-hidden transition-transform duration-500 hover:scale-105"
                 >
                   {imageErrors[team.id] || team.image === "nicht eingegeben" ? (
                     <div className="flex items-center justify-center w-full h-full bg-gray-100">
@@ -236,16 +237,26 @@ const MannschaftSection = () => {
                       {(team.venue || (team.squad && team.squad.length > 0) || team.notes) && (
                         <button
                           onClick={() => setOpenTeam(openTeam === team.id ? null : team.id)}
-                          className="text-sm px-3 py-2 rounded bg-white/10 hover:bg-white/20 transition-colors w-auto text-center"
+                          className="text-sm px-3 py-2 rounded bg-white/10 hover:bg-white/20 transition-colors w-auto text-center hover:text-club-accent"
                           aria-expanded={openTeam === team.id}
                         >
                           {openTeam === team.id ? 'Schließen' : 'Details'}
                         </button>
                       )}
                       {team.contact && (
-                        <a href={`mailto:${team.contact}`} className="text-sm px-3 py-2 rounded bg-club-accent text-white hover:bg-club-dark transition-colors flex items-center gap-2 justify-center w-auto">
-                          <Mail className="w-4 h-4" /> <span>Kontakt</span>
-                        </a>
+                        <div className="mt-0">
+                          <Link
+                            to={`mailto:${team.contact}`}
+                            className="group text-sm p-2 rounded-md bg-club-accent text-white hover:bg-club-dark transition-all duration-300 ease-in-out whitespace-nowrap flex items-center overflow-hidden"
+                            aria-label={`Kontakt ${team.name}`}
+                          >
+                            <Mail className="w-4 h-4 flex-shrink-0" />
+                            <span className="bp1230:hidden ml-2">Kontakt</span>
+                            <span className="hidden bp1230:block max-w-0 opacity-0 translate-x-2 bp1230:group-hover:max-w-xs bp1230:group-hover:opacity-100 bp1230:group-hover:translate-x-0 bp1230:group-hover:ml-2 transition-all duration-300 ease-in-out overflow-hidden">
+                              Kontakt
+                            </span>
+                          </Link>
+                        </div>
                       )}
                     </div>
                   </div>
