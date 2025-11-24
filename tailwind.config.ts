@@ -103,6 +103,7 @@ export default {
       },
       screens: {
         "mdl": "1689px",
+        "bp1230": "1230px",
         "mds": "1170px",
       },
     },
