@@ -147,7 +147,7 @@ const MitgliederbereichSection = () => {
             <header className="text-center mb-8">
                 <h1 className="text-3xl font-bold text-club-primary">Mitgliederbereich</h1>
                 <p className="mt-3 text-gray-600 max-w-2xl mx-auto">
-                Der exklusive Bereich für Vereinsmitglieder: Hier findest du Protokolle, interne Termine, die geschützte Galerie und Funktionen zur Turnieranmeldung.
+                Der exklusive Bereich für Vereinsmitglieder
                 </p>
             </header>
 
@@ -195,7 +195,7 @@ const MitgliederbereichSection = () => {
               <div className="max-w-3xl mx-auto bg-white border rounded-lg shadow p-6">
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h2 className="text-xl font-semibold">Willkommen zurück, {capitalizeFirst(username)}!</h2>
+                    <h2 className="text-xl font-semibold">Willkommen zurück!</h2>
                     <p className="text-sm text-gray-600 mt-1">Du bist angemeldet und hast Zugriff auf alle Mitgliederbereiche.</p>
                   </div>
                   <button
@@ -211,14 +211,14 @@ const MitgliederbereichSection = () => {
                 <div className="grid gap-4">
                   <Card className="hover:shadow-md transition-shadow">
                     <Link 
-                      to="/archiv/galerie" 
+                      to="/archiv/galerie-private" 
                       className="flex items-start gap-4 p-4 border rounded-lg hover:bg-gray-50 transition-colors"
                     >
                       <div className="rounded-full bg-club-accent/10 p-3">
                         <ImageIcon className="h-6 w-6 text-club-accent" />
                       </div>
                       <div className="flex-1">
-                        <h4 className="font-semibold text-club-primary">Bildergalerie</h4>
+                        <h4 className="font-semibold text-club-primary">Erweiterte Bildergalerie</h4>
                         <p className="text-sm text-gray-600 mt-1">
                           Exklusive Turnier- und Vereinsbilder aus unserer umfangreichen Sammlung
                         </p>
@@ -241,75 +241,6 @@ const MitgliederbereichSection = () => {
                       </div>
                     </Link> */}
                   </Card>
-
-                  <Card>
-                    <CardHeader>
-                      <div className="flex items-center gap-2">
-                        <Bell className="h-5 w-5 text-club-accent" />
-                        <CardTitle className="text-base">Benachrichtigungen</CardTitle>
-                      </div>
-                      <CardDescription>
-                        Möchtest du E-Mail-Benachrichtigungen über zukünftige Ereignisse erhalten?
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="flex items-center space-x-2">
-                        <Checkbox
-                          id="notifyEvents"
-                          checked={notifyEvents}
-                          onCheckedChange={(checked) => setNotifyEvents(!!checked)}
-                        />
-                        <Label htmlFor="notifyEvents" className="text-sm font-normal cursor-pointer">
-                          E-Mail-Benachrichtigungen erhalten
-                        </Label>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="profileEmail" className="flex items-center gap-2">
-                          <MailIcon className="h-4 w-4" />
-                          E-Mail-Adresse
-                        </Label>
-                        <div className="relative">
-                          <Input
-                            id="profileEmail"
-                            type="email"
-                            value={profileEmail}
-                            onChange={(e) => setProfileEmail(e.target.value)}
-                            placeholder="deine@email.de"
-                            disabled={profileLoading}
-                            className="pr-10"
-                          />
-                          {profileEmail && (
-                            <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                              {isValidEmail(profileEmail) ? (
-                                <Check className="h-5 w-5 text-green-600" />
-                              ) : (
-                                <X className="h-5 w-5 text-red-600" />
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      {hasChanges && (
-                        <Button
-                          onClick={saveProfile}
-                          disabled={profileLoading || !canSave}
-                          className="w-full sm:w-auto bg-club-accent hover:bg-club-dark disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          {profileLoading ? 'Speichern...' : 'Änderungen speichern'}
-                        </Button>
-                      )}
-
-                      {profileMessage && (
-                        <Alert className={profileMessage.includes('gespeichert') ? 'border-green-200 bg-green-50' : 'border-yellow-200 bg-yellow-50'}>
-                          <AlertDescription className={profileMessage.includes('gespeichert') ? 'text-green-800' : 'text-yellow-800'}>
-                            {profileMessage}
-                          </AlertDescription>
-                        </Alert>
-                      )}
-                    </CardContent>
-                  </Card>
                 </div>
               </div>
             ) : (
@@ -327,16 +258,6 @@ const MitgliederbereichSection = () => {
                   </Link>
                 </div>
 
-                <hr className="my-8" />
-
-                <h2 className="text-xl font-semibold mb-3">Für Mitglieder des Schachclubs die keinen Account besitzen</h2>
-                <p className="text-gray-700">
-                  Falls du bereits Mitglied in unserem Schachclub bist, aber noch keinen Account besitzt, schreibe uns einfach über die Kontaktseite. Wir legen deinen Account schnell für dich an.
-                </p>
-
-                <div className="mt-6 flex items-center gap-3">
-                    <Link to="/kontakt" className="inline-flex px-4 py-2 border border-gray-200 rounded hover:bg-gray-50">Kontakt</Link>
-                </div>
               </div>
             )}
         </div>
