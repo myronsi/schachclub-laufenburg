@@ -161,7 +161,7 @@ const GalerieComponent = () => {
                   className="flex items-center gap-2"
                   disabled={loadingImages}
                 >
-                  {isReversed ? <SortAsc className="h-4 w-4" /> : <SortDesc className="h-4 w-4" />}
+                  {isReversed ? <SortDesc className="h-4 w-4" /> : <SortDesc className="h-4 w-4" />}
                   {isReversed ? "Älteste ist zuerst" : "Neuste ist zuerst"}
                 </Button>
               </div>
