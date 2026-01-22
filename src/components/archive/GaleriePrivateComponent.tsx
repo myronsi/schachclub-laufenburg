@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import { SortDesc } from "lucide-react";
+import { Image, SortAsc, SortDesc, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ButtonToTop } from "@/components/ui/arrowToTop";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   Dialog,
   DialogContent,
@@ -12,7 +12,9 @@ import {
   DialogTrigger,
   DialogDescription,
 } from "@/components/ui/dialog";
- 
+import { checkAuth } from "@/utils/authService";
+import { mediaImages } from "./mediaImages";
+
 interface ImageItem {
   id?: number;
   src: string;
@@ -27,9 +29,14 @@ const GalerieComponent = () => {
   const [selectedImage, setSelectedImage] = useState<ImageItem | null>(null);
   const [isReversed, setIsReversed] = useState(false);
   const [openDialogsCount, setOpenDialogsCount] = useState(0);
+  const [checkingAuth, setCheckingAuth] = useState(true);
+  const [authenticated, setAuthenticated] = useState(false);
+  const [authError, setAuthError] = useState<string | null>(null);
   const [images, setImages] = useState<ImageItem[]>([]);
   const [loadingImages, setLoadingImages] = useState(false);
   const [imageError, setImageError] = useState<string | null>(null);
+  const [username, setUsername] = useState<string>('');
+  const [isBlocked, setIsBlocked] = useState(false);
 
   const sortedImages = isReversed ? [...images].reverse() : images;
 
@@ -50,61 +57,64 @@ const GalerieComponent = () => {
     setOpenDialogsCount(prev => open ? prev + 1 : Math.max(prev - 1, 0));
     if (open && image) {
       const slug = createSlug(image.title);
-      navigate(`/archiv/galerie/${slug}`, { replace: false });
+      navigate(`/archiv/galerie-private/${slug}`, { replace: false });
       setSelectedImage(image);
     } else {
-      navigate('/archiv/galerie', { replace: false });
+      navigate('/archiv/galerie-private', { replace: false });
       setSelectedImage(null);
     }
   };
 
   useEffect(() => {
-    const fetchImages = async () => {
-      setLoadingImages(true);
+    (async () => {
+      setCheckingAuth(true);
       try {
-        const response = await fetch('https://sc-laufenburg.de/api/media.php');
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+        const authState = await checkAuth();
+        setAuthenticated(authState.isAuthenticated);
+        setUsername(authState.username || '');
+        setIsBlocked(authState.isBlocked);
+        
+        if (!authState.isAuthenticated) {
+          setAuthError('Nicht angemeldet oder Session abgelaufen');
+        } else if (authState.isBlocked) {
+          setAuthError('Zugriff gesperrt');
         }
-
-        const data = await response.json();
-
-        const transformedImages = data.map((item: any) => ({
-          id: item.id,
-          src: `https://sc-laufenburg.de/${item.src}`,
-          title: item.title,
-          description: item.description || undefined,
-          children: item.children ? JSON.parse(item.children).map((child: any) => ({
-            ...child,
-            src: `https://sc-laufenburg.de/${child.src}`
-          })) : undefined
-        }));
-
-        setImages(transformedImages);
-        setImageError(null);
-      } catch (err) {
-        console.error('Error fetching images:', err);
-        setImageError(err instanceof Error ? err.message : 'Failed to fetch images');
+      } catch (err: any) {
+        setAuthenticated(false);
+        setAuthError('Verbindungsfehler');
       } finally {
-        setLoadingImages(false);
+        setCheckingAuth(false);
       }
-    };
-
-    fetchImages();
+    })();
   }, []);
 
   useEffect(() => {
-    if (loadingImages || !title || images.length === 0) return;
+    if (isBlocked) return;
+
+    // Use static images from mediaImages.ts instead of fetching from API
+    setLoadingImages(true);
+    try {
+      setImages(mediaImages as ImageItem[]);
+      setImageError(null);
+    } catch (err) {
+      console.error('Error setting images from mediaImages:', err);
+      setImageError(err instanceof Error ? err.message : 'Failed to load images');
+    } finally {
+      setLoadingImages(false);
+    }
+  }, [authenticated]);
+
+  useEffect(() => {
+    if (!authenticated || loadingImages || !title || images.length === 0) return;
 
     const imageToOpen = findImageBySlug(title);
     if (imageToOpen && (!selectedImage || createSlug(selectedImage.title) !== title)) {
       setSelectedImage(imageToOpen);
       setOpenDialogsCount(1);
     } else if (!imageToOpen && title) {
-      navigate('/archiv/galerie', { replace: true });
+      navigate('/archiv/galerie-private', { replace: true });
     }
-  }, [loadingImages, title, images, selectedImage]);
+  }, [authenticated, loadingImages, title, images]);
 
   const renderImages = (items: ImageItem[]) => (
     <div className="space-y-4">
@@ -136,7 +146,53 @@ const GalerieComponent = () => {
 
   return (
     <>
-      <section id="media" className="py-16 animate-fadeIn relative">
+      {checkingAuth ? (
+        <section className="py-16 animate-fadeIn">
+          <div className="container mx-auto px-4 text-center">
+            <p className="text-gray-600">Login-Status wird überprüft…</p>
+          </div>
+        </section>
+      ) : isBlocked ? (
+        <section className="py-16 animate-fadeIn">
+          <div className="container mx-auto px-4">
+            <div className="max-w-2xl mx-auto">
+                <div className="flex items-center justify-center mb-6">
+                  <div className="rounded-full bg-red-600/10 p-4">
+                    <Lock className="w-8 h-8 text-red-600" />
+                  </div>
+                </div>
+                <h2 className="text-xl font-semibold mb-3 text-center">Dein Account wurde gesperrt. Wenn du denkst, dass dies ein Fehler ist, kontaktiere bitte den Vorstand.</h2>
+                
+                <div className="mt-6 flex justify-center">
+                  <Link to="/kontakt" className="inline-flex px-6 py-3 bg-club-accent text-white rounded hover:bg-club-dark">
+                    Kontakt
+                  </Link>
+                </div>
+            </div>
+          </div>
+        </section>
+  ) : !authenticated ? (
+        <section className="py-16 animate-fadeIn">
+          <div className="container mx-auto px-4">
+            <div className="max-w-2xl mx-auto">
+                <div className="flex items-center justify-center mb-6">
+                  <div className="rounded-full bg-club-accent/10 p-4">
+                    <Lock className="w-8 h-8 text-club-accent" />
+                  </div>
+                </div>
+                <h2 className="text-xl font-semibold mb-3 text-center">Tut uns leid, aber dieser Inhalt kann nur mit ausreichender Berechtigung angezeigt werden.</h2>
+                
+                <div className="mt-6 flex justify-center">
+                  <Link to="/login" className="inline-flex px-6 py-3 bg-club-accent text-white rounded hover:bg-club-dark">
+                    Einloggen
+                  </Link>
+                </div>
+            </div>
+          </div>
+        </section>
+  ) : (
+  <>
+  <section id="media" className="py-16 animate-fadeIn relative">
         <div className="container mx-auto px-4">
           <header className="text-center mb-10">
             <h2 className="text-3xl font-bold text-club-primary">Bildergalerie</h2>
@@ -161,7 +217,7 @@ const GalerieComponent = () => {
                   className="flex items-center gap-2"
                   disabled={loadingImages}
                 >
-                  {isReversed ? <SortDesc className="h-4 w-4" /> : <SortDesc className="h-4 w-4" />}
+                  {isReversed ? <SortAsc className="h-4 w-4" /> : <SortDesc className="h-4 w-4" />}
                   {isReversed ? "Älteste ist zuerst" : "Neuste ist zuerst"}
                 </Button>
               </div>
@@ -213,10 +269,12 @@ const GalerieComponent = () => {
             )}
           </div>
         </div>
-          </section>
+      </section>
 
-      <ButtonToTop forceHide={openDialogsCount > 0} />
-    </>
+  <ButtonToTop forceHide={openDialogsCount > 0} />
+  </>
+  )}
+  </>
   );
 };
 

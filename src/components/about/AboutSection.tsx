@@ -260,7 +260,7 @@ const AboutSection = () => {
             </CardHeader>
             <CardContent>
               <p className="text-sm text-gray-700 space-y-2">
-                Geschützter Bereich für Mitglieder: Termine, Protokolle und exklusive Informationen. Bitte melde dich an, um Zugriff zu erhalten.
+                Geschützter Bereich für Mitglieder: exklusive Informationen. Bitte melde dich an, um Zugriff zu erhalten.
               </p>
               <div className="mt-4 flex">
                   <Link

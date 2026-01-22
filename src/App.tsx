@@ -15,6 +15,7 @@ import Pokalsieger from "./pages/tournaments/Pokalsieger";
 import Nikolausblitz from "./pages/tournaments/Nikolausblitz";
 import Blitzsieger from "./pages/tournaments/Blitzsieger";
 import Media from "./pages/archive/Media";
+import MediaPrivate from "./pages/archive/MediaPrivate";
 import Chronik from "./pages/archive/Chronik";
 import Galerie from "./pages/archive/Galerie";
 import Documents from "./pages/archive/Documents";
@@ -66,6 +67,8 @@ const App = () => (
             <Route path="/archiv/chronik" element={<TitleRoute title={"Chronik"} element={<Chronik />} />} />
             <Route path="/archiv/galerie" element={<TitleRoute title={"Galerie"} element={<Galerie />} />} />
             <Route path="/archiv/galerie/:title" element={<TitleRoute title={"Galerie"} element={<Galerie />} />} />
+            <Route path="/archiv/galerie-private" element={<TitleRoute title={"Galerie"} element={<MediaPrivate />} />} />
+            <Route path="/archiv/galerie-private/:title" element={<TitleRoute title={"Galerie"} element={<MediaPrivate />} />} />
             <Route path="/archiv/dokumente" element={<TitleRoute title={"Dokumente"} element={<Documents />} />} />
             <Route path="/kontakt" element={<TitleRoute title={"Kontakt"} element={<Contact />} />} />
             <Route path="/kontakt-ok" element={<TitleRoute title={"Kontakt - Bestätigt"} element={<ContactOk />} />} />
