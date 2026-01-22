@@ -46,6 +46,25 @@ const GalerieComponent = () => {
     return images.find(img => createSlug(img.title) === slug) || null;
   };
 
+  const renderDescription = (text: string) => {
+    const parts = text.split(/(https?:\/\/[^\n+\s]+)/g);
+    return parts.map((part, i) =>
+      part.startsWith('http') ? (
+        <a
+          key={i}
+          href={part}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-club-accent underline"
+        >
+          {part}
+        </a>
+      ) : (
+        <span key={i}>{part}</span>
+      )
+    );
+  };
+
   const handleDialogOpenChange = (open: boolean, image?: ImageItem) => {
     setOpenDialogsCount(prev => open ? prev + 1 : Math.max(prev - 1, 0));
     if (open && image) {
@@ -122,7 +141,7 @@ const GalerieComponent = () => {
             />
           </div>
           {item.description && (
-            <p className="text-sm text-gray-600 text-center">{item.description}</p>
+            <p className="text-sm text-gray-600 text-center">{renderDescription(item.description)}</p>
           )}
           {selectedImage?.src === item.src && item.children && (
             <div className="pl-4 border-l-2 border-gray-200 w-full">
@@ -200,7 +219,7 @@ const GalerieComponent = () => {
                     <DialogHeader className="space-y-2">
                       <DialogTitle>{image.title}</DialogTitle>
                       {image.description && (
-                        <DialogDescription>{image.description}</DialogDescription>
+                        <DialogDescription>{renderDescription(image.description)}</DialogDescription>
                       )}
                     </DialogHeader>
                     <div className="flex flex-col items-center gap-4">
