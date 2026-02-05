@@ -246,7 +246,7 @@ const MitgliedwerdenSection = () => {
                 <li>Aufnahmeantrag ausfüllen — Vorstand entscheidet kurzfristig.</li>
               </ol>
               <p className="pt-8 text-sm text-gray-700">Wenn du die Aufnahme beschleunigen möchtest, schicke uns den ausgefüllten Aufnahmeantrag direkt über das Formular unten.</p>
-              <a href="/docs/aufnahmeantrag.pdf" target="_blank" rel="noopener noreferrer" className="mt-8 inline-flex items-center gap-2 text-sm px-3 py-1 rounded bg-club-accent hover:bg-club-dark text-white w-max">
+              <a href="/docs/statuten/aufnahmeantrag_neu_1770041370.pdf" target="_blank" rel="noopener noreferrer" className="mt-8 inline-flex items-center gap-2 text-sm px-3 py-1 rounded bg-club-accent hover:bg-club-dark text-white w-max">
                 Aufnahmeantrag (PDF)
               </a>
             </CardContent>
