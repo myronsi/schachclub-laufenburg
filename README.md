@@ -68,6 +68,7 @@ schachclub-laufenburg/
 ## 📝 License
 
 This project is maintained by SC Laufenburg e.V.
+
 Copyright © 2026 SC Laufenburg e.V. All rights reserved.
 
 ## 📧 Contact
