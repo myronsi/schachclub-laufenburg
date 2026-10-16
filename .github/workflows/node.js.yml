@@ -2,7 +2,7 @@ name: Deploy React Vite to Hostinger via FTP
 
 on:
   push:
-    branches: [main]
+    branches: [dev]
 
 jobs:
   build-and-deploy:
