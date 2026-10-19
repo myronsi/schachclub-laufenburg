@@ -23,7 +23,7 @@ declare global {
   }
 }
 
-const RECAPTCHA_SITE_KEY = '6Lez6-YrAAAAAGry5l1Uvpt7GMD8u0AZJ0meBxQP';
+const RECAPTCHA_SITE_KEY = '6Ld-XvYtAAAAAEIrkJf901szXLprXZ9AZ9LIQvln';
 
 const ContactSection = () => {
   const infoAnimation = useScrollAnimation();
