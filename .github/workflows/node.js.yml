@@ -28,7 +28,7 @@ jobs:
       - name: Verify build output
         run: ls -la dist
 
-      - name: Deploy to Strato via SFTP
+      - name: Deploy React build to /dev/
         uses: wlixcc/SFTP-Deploy-Action@v1.2.6
         with:
           username: ${{ secrets.SFTP_USERNAME }}
@@ -36,5 +36,16 @@ jobs:
           password: ${{ secrets.SFTP_PASSWORD }}
           sftp_only: true
           local_path: './dist/*'
+          remote_path: '/dev/'
+          sftpArgs: '-o ConnectTimeout=5'
+
+      - name: Deploy formmail endpoint to /dev/
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.6
+        with:
+          username: ${{ secrets.SFTP_USERNAME }}
+          server: ${{ secrets.SFTP_SERVER }}
+          password: ${{ secrets.SFTP_PASSWORD }}
+          sftp_only: true
+          local_path: './formmail-80.php'
           remote_path: '/dev/'
           sftpArgs: '-o ConnectTimeout=5'
