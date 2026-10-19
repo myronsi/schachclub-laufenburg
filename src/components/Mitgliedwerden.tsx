@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { FormEvent, useRef, useState } from "react";
-import { ArrowRight, Calendar, Check, Clock, Eraser, FileText, Heart, LockKeyhole, Mail, Send } from "lucide-react";
+import { ArrowRight, Calendar, Check, Clock, Eraser, FileText, Heart, Mail, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
