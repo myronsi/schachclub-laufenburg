@@ -1,7 +1,7 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { FormEvent, useEffect, useRef, useState } from "react";
-import { Mail, Heart, Calendar, Clock, Eraser, Check, ChevronDown } from "lucide-react";
+import { Mail, Heart, Calendar, Clock, Eraser, ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -297,7 +297,6 @@ const MitgliedwerdenSection = () => {
           </CardHeader>
           <CardContent>
             <form ref={contactFormRef} onSubmit={handleContactSubmit} className="space-y-4">
-              <input type="hidden" name="subject" value={contactData.subject} />
               <div><p className="text-sm/5 font-medium pb-1">Name <span className="text-red-500">*</span></p><Input name="name" placeholder="Ihr Name" value={contactData.name} onChange={(e) => setContactData({ ...contactData, name: e.target.value })} required /></div>
               <div><p className="text-sm/5 font-medium pb-1">E-Mail <span className="text-red-500">*</span></p><Input type="email" name="email" placeholder="Ihre E-Mailadresse" value={contactData.email} onChange={(e) => setContactData({ ...contactData, email: e.target.value })} required /></div>
               <div><p className="text-sm/5 font-medium pb-1">Telefonnummer (optional)</p><Input name="phone" placeholder="Ihre Telefonnummer" value={contactData.phone} onChange={(e) => setContactData({ ...contactData, phone: e.target.value })} /></div>
