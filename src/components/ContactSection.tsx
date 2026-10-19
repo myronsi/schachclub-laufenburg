@@ -1,4 +1,4 @@
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,10 +7,31 @@ import { Mail, MapPin } from "lucide-react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { Link, useNavigate } from "react-router-dom";
 
+type RecaptchaApi = {
+  render: (element: HTMLElement, parameters: {
+    sitekey: string;
+    callback: (token: string) => void;
+    'expired-callback': () => void;
+    'error-callback': () => void;
+  }) => number;
+  reset: (widgetId?: number) => void;
+};
+
+declare global {
+  interface Window {
+    grecaptcha?: RecaptchaApi;
+  }
+}
+
+const RECAPTCHA_SITE_KEY = '6Lez6-YrAAAAAGry5l1Uvpt7GMD8u0AZJ0meBxQP';
+
 const ContactSection = () => {
   const infoAnimation = useScrollAnimation();
   const formAnimation = useScrollAnimation();
   const navigate = useNavigate();
+  const recaptchaRef = useRef<HTMLDivElement | null>(null);
+  const [recaptchaToken, setRecaptchaToken] = useState('');
+  const [recaptchaWidgetId, setRecaptchaWidgetId] = useState<number | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -20,26 +41,90 @@ const ContactSection = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
+  useEffect(() => {
+    let cancelled = false;
+    let attempts = 0;
+    const maxAttempts = 30;
+
+    const renderRecaptcha = () => {
+      if (cancelled || !recaptchaRef.current || !window.grecaptcha) return;
+      if (recaptchaWidgetId !== null) return;
+
+      try {
+        const widgetId = window.grecaptcha.render(recaptchaRef.current, {
+          sitekey: RECAPTCHA_SITE_KEY,
+          callback: (token: string) => setRecaptchaToken(token),
+          'expired-callback': () => setRecaptchaToken(''),
+          'error-callback': () => setRecaptchaToken(''),
+        });
+        if (!cancelled) setRecaptchaWidgetId(widgetId);
+      } catch (renderError) {
+        console.error('reCAPTCHA render error:', renderError);
+      }
+    };
+
+    const existingScript = document.querySelector<HTMLScriptElement>('script[src*="google.com/recaptcha/api.js"]');
+
+    if (!existingScript) {
+      const script = document.createElement('script');
+      script.src = 'https://www.google.com/recaptcha/api.js?hl=de';
+      script.async = true;
+      script.defer = true;
+      script.onload = renderRecaptcha;
+      document.head.appendChild(script);
+    }
+
+    const interval = window.setInterval(() => {
+      if (window.grecaptcha) {
+        renderRecaptcha();
+        window.clearInterval(interval);
+      } else if (++attempts >= maxAttempts) {
+        window.clearInterval(interval);
+      }
+    }, 300);
+
+    renderRecaptcha();
+
+    return () => {
+      cancelled = true;
+      window.clearInterval(interval);
+    };
+  }, [recaptchaWidgetId]);
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
     setError('');
 
+    if (!recaptchaToken) {
+      setError('Bitte bestätigen Sie, dass Sie kein Roboter sind.');
+      setSubmitting(false);
+      return;
+    }
+
     try {
+      const body = new URLSearchParams({
+        ...formData,
+        'g-recaptcha-response': recaptchaToken,
+      });
+
       const response = await fetch('/formmail-80.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: new URLSearchParams(formData),
+        body,
       });
 
-      if (response.ok) {
+      if (response.redirected || response.ok) {
         navigate('/kontakt-ok');
       } else {
+        const responseText = await response.text();
+        console.error('Contact form error:', response.status, responseText);
         setError('Fehler beim Senden der Nachricht. Bitte versuchen Sie es später erneut.');
       }
     } catch (err) {
+      console.error('Contact form network error:', err);
       setError('Ein Verbindungsfehler ist aufgetreten. Bitte überprüfen Sie Ihre Internetverbindung.');
     } finally {
       setSubmitting(false);
@@ -115,11 +200,16 @@ const ContactSection = () => {
                   required
                 />
               </div>
+
+              <div>
+                <div ref={recaptchaRef} />
+              </div>
+
               {error && <div className="text-red-500 text-sm">{error}</div>}
               <Button
                 type="submit"
                 className="w-full bg-club-accent hover:bg-club-accent/90"
-                disabled={submitting}
+                disabled={submitting || !recaptchaToken}
               >
                 {submitting ? 'Wird gesendet...' : 'Nachricht senden'}
               </Button>
