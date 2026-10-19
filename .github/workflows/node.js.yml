@@ -25,6 +25,18 @@ jobs:
       - name: Verify build output
         run: ls -la dist
 
+      - name: Prepare PHPMailer
+        run: |
+          curl --fail --location --silent --show-error \
+            https://github.com/PHPMailer/PHPMailer/archive/refs/tags/v7.1.1.zip \
+            --output /tmp/phpmailer.zip
+          rm -rf phpmailer
+          unzip -q /tmp/phpmailer.zip
+          mv PHPMailer-7.1.1 phpmailer
+          test -f phpmailer/src/PHPMailer.php
+          test -f phpmailer/src/SMTP.php
+          test -f phpmailer/src/Exception.php
+
       - name: Deploy React build to /dev/
         uses: wlixcc/SFTP-Deploy-Action@v1.2.6
         with:
@@ -45,4 +57,15 @@ jobs:
           sftp_only: true
           local_path: './formmail-80.php'
           remote_path: '/dev/'
+          sftpArgs: '-o ConnectTimeout=5'
+
+      - name: Deploy PHPMailer to /dev/phpmailer/
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.6
+        with:
+          username: ${{ secrets.SFTP_USERNAME }}
+          server: ${{ secrets.SFTP_SERVER }}
+          password: ${{ secrets.SFTP_PASSWORD }}
+          sftp_only: true
+          local_path: './phpmailer/*'
+          remote_path: '/dev/phpmailer/'
           sftpArgs: '-o ConnectTimeout=5'
