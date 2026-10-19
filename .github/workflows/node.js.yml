@@ -20,6 +20,9 @@ jobs:
         run: npm i --legacy-peer-deps
 
       - name: Build project
+        env:
+          VITE_MEMBERSHIP_PGP_PUBLIC_KEY: ${{ secrets.MEMBERSHIP_PGP_PUBLIC_KEY }}
+          VITE_MEMBERSHIP_PGP_FINGERPRINT: ${{ secrets.MEMBERSHIP_PGP_FINGERPRINT }}
         run: npm run build
 
       - name: Verify build output
