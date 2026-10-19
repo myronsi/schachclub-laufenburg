@@ -37,6 +37,18 @@ jobs:
           test -f phpmailer/src/SMTP.php
           test -f phpmailer/src/Exception.php
 
+      - name: Prepare DEV formmail endpoint
+        run: |
+          cp formmail-80.php /tmp/formmail-80.php
+          sed -i \
+            -e "s#require_once __DIR__ . '/phpmailer/src/PHPMailer.php';#require_once __DIR__ . '/PHPMailer.php';#" \
+            -e "s#require_once __DIR__ . '/phpmailer/src/SMTP.php';#require_once __DIR__ . '/SMTP.php';#" \
+            -e "s#require_once __DIR__ . '/phpmailer/src/Exception.php';#require_once __DIR__ . '/Exception.php';#" \
+            /tmp/formmail-80.php
+          grep -F "require_once __DIR__ . '/PHPMailer.php';" /tmp/formmail-80.php
+          grep -F "require_once __DIR__ . '/SMTP.php';" /tmp/formmail-80.php
+          grep -F "require_once __DIR__ . '/Exception.php';" /tmp/formmail-80.php
+
       - name: Deploy React build to /dev/
         uses: wlixcc/SFTP-Deploy-Action@v1.2.6
         with:
@@ -48,24 +60,46 @@ jobs:
           remote_path: '/dev/'
           sftpArgs: '-o ConnectTimeout=5'
 
-      - name: Deploy formmail endpoint to /dev/
+      - name: Deploy DEV formmail endpoint to /dev/
         uses: wlixcc/SFTP-Deploy-Action@v1.2.6
         with:
           username: ${{ secrets.SFTP_USERNAME }}
           server: ${{ secrets.SFTP_SERVER }}
           password: ${{ secrets.SFTP_PASSWORD }}
           sftp_only: true
-          local_path: './formmail-80.php'
+          local_path: '/tmp/formmail-80.php'
           remote_path: '/dev/'
           sftpArgs: '-o ConnectTimeout=5'
 
-      - name: Deploy PHPMailer to /dev/phpmailer/
+      - name: Deploy PHPMailer files to /dev/
         uses: wlixcc/SFTP-Deploy-Action@v1.2.6
         with:
           username: ${{ secrets.SFTP_USERNAME }}
           server: ${{ secrets.SFTP_SERVER }}
           password: ${{ secrets.SFTP_PASSWORD }}
           sftp_only: true
-          local_path: './phpmailer/*'
-          remote_path: '/dev/phpmailer/'
+          local_path: './phpmailer/src/PHPMailer.php'
+          remote_path: '/dev/'
+          sftpArgs: '-o ConnectTimeout=5'
+
+      - name: Deploy PHPMailer SMTP file to /dev/
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.6
+        with:
+          username: ${{ secrets.SFTP_USERNAME }}
+          server: ${{ secrets.SFTP_SERVER }}
+          password: ${{ secrets.SFTP_PASSWORD }}
+          sftp_only: true
+          local_path: './phpmailer/src/SMTP.php'
+          remote_path: '/dev/'
+          sftpArgs: '-o ConnectTimeout=5'
+
+      - name: Deploy PHPMailer exception file to /dev/
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.6
+        with:
+          username: ${{ secrets.SFTP_USERNAME }}
+          server: ${{ secrets.SFTP_SERVER }}
+          password: ${{ secrets.SFTP_PASSWORD }}
+          sftp_only: true
+          local_path: './phpmailer/src/Exception.php'
+          remote_path: '/dev/'
           sftpArgs: '-o ConnectTimeout=5'
