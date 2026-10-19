@@ -34,12 +34,15 @@ const ContactSection = () => {
         body: new URLSearchParams(formData),
       });
 
-      if (response.ok) {
+      if (response.ok || response.redirected) {
         navigate('/kontakt-ok');
       } else {
+        const responseText = await response.text();
+        console.error('Contact form error:', response.status, responseText);
         setError('Fehler beim Senden der Nachricht. Bitte versuchen Sie es später erneut.');
       }
     } catch (err) {
+      console.error('Contact form network error:', err);
       setError('Ein Verbindungsfehler ist aufgetreten. Bitte überprüfen Sie Ihre Internetverbindung.');
     } finally {
       setSubmitting(false);
