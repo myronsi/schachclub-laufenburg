@@ -32,13 +32,6 @@
   }
 
   * {
-   /* outline: 2px solid rgba(255, 0, 0, 0.5) !important;
-    box-shadow: 0 0 0 2px rgba(0, 255, 0, 0.5) !important; */
-  /* &::selection {
-  background: #F59E0B;
-  color: #1F2937;
-  } */
-
     @apply border-border;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -54,13 +47,15 @@
   }
 }
 
+html {
+  scrollbar-width: none;
+  scroll-behavior: smooth;
+  scroll-padding-top: 72px;
+}
+
 ::-webkit-scrollbar {
   width: 0;
   height: 0;
-}
-
-html {
-  scrollbar-width: none;
 }
 
 body {
