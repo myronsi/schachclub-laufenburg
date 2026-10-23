@@ -1,4 +1,4 @@
-import { useState, FormEvent } from 'react';
+import { useEffect, useRef, useState, FormEvent } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,10 +7,29 @@ import { Mail, MapPin } from "lucide-react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { Link, useNavigate } from "react-router-dom";
 
+declare global {
+  interface Window {
+    grecaptcha?: {
+      render?: (container: HTMLElement, parameters: {
+        sitekey: string;
+        callback?: (token: string) => void;
+        'expired-callback'?: () => void;
+        'error-callback'?: () => void;
+      }) => number;
+      reset?: (widgetId?: number) => void;
+    };
+  }
+}
+
+const RECAPTCHA_SITE_KEY = '6Lez6-YrAAAAAGry5l1Uvpt7GMD8u0AZJ0meBxQP';
+
 const ContactSection = () => {
   const infoAnimation = useScrollAnimation();
   const formAnimation = useScrollAnimation();
   const navigate = useNavigate();
+  const recaptchaRef = useRef<HTMLDivElement | null>(null);
+  const recaptchaWidgetId = useRef<number | null>(null);
+  const [recaptchaToken, setRecaptchaToken] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -20,27 +39,115 @@ const ContactSection = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
+  useEffect(() => {
+    let mounted = true;
+    let attempts = 0;
+    const maxAttempts = 30;
+    const intervalMs = 300;
+
+    const renderRecaptcha = () => {
+      if (!mounted || !recaptchaRef.current || recaptchaWidgetId.current !== null) {
+        return;
+      }
+
+      const grecaptcha = window.grecaptcha;
+
+      if (grecaptcha && typeof grecaptcha.render === 'function') {
+        try {
+          recaptchaWidgetId.current = grecaptcha.render(recaptchaRef.current, {
+            sitekey: RECAPTCHA_SITE_KEY,
+            callback: (token: string) => {
+              setRecaptchaToken(token);
+              setError('');
+            },
+            'expired-callback': () => setRecaptchaToken(''),
+            'error-callback': () => setRecaptchaToken(''),
+          });
+          return;
+        } catch (err) {
+          // Google may expose grecaptcha before the v2 render API is ready.
+        }
+      }
+
+      attempts += 1;
+      if (attempts < maxAttempts) {
+        window.setTimeout(renderRecaptcha, intervalMs);
+      }
+    };
+
+    const existingScript = document.querySelector<HTMLScriptElement>(
+      'script[src^="https://www.google.com/recaptcha/api.js"]'
+    );
+
+    if (existingScript) {
+      existingScript.addEventListener('load', renderRecaptcha);
+      renderRecaptcha();
+      const retryTimer = window.setTimeout(renderRecaptcha, 500);
+      return () => {
+        mounted = false;
+        existingScript.removeEventListener('load', renderRecaptcha);
+        window.clearTimeout(retryTimer);
+      };
+    }
+
+    const script = document.createElement('script');
+    script.src = 'https://www.google.com/recaptcha/api.js?hl=de';
+    script.async = true;
+    script.defer = true;
+    script.addEventListener('load', renderRecaptcha);
+    script.addEventListener('error', () => {
+      if (mounted) setError('Die Sicherheitsprüfung konnte nicht geladen werden. Bitte laden Sie die Seite neu.');
+    });
+    document.head.appendChild(script);
+
+    renderRecaptcha();
+
+    return () => {
+      mounted = false;
+      script.removeEventListener('load', renderRecaptcha);
+    };
+  }, []);
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
     setError('');
 
+    if (!recaptchaToken) {
+      setError('Bitte bestätigen Sie, dass Sie kein Roboter sind.');
+      setSubmitting(false);
+      return;
+    }
+
     try {
+      const body = new URLSearchParams({
+        ...formData,
+        'g-recaptcha-response': recaptchaToken,
+      });
+
       const response = await fetch('/formmail-80.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: new URLSearchParams(formData),
+        body,
       });
 
       if (response.ok) {
         navigate('/kontakt-ok');
       } else {
         setError('Fehler beim Senden der Nachricht. Bitte versuchen Sie es später erneut.');
+        if (recaptchaWidgetId.current !== null && typeof window.grecaptcha?.reset === 'function') {
+          window.grecaptcha.reset(recaptchaWidgetId.current);
+        }
+        setRecaptchaToken('');
       }
     } catch (err) {
       setError('Ein Verbindungsfehler ist aufgetreten. Bitte überprüfen Sie Ihre Internetverbindung.');
+      if (recaptchaWidgetId.current !== null && typeof window.grecaptcha?.reset === 'function') {
+        window.grecaptcha.reset(recaptchaWidgetId.current);
+      }
+      setRecaptchaToken('');
     } finally {
       setSubmitting(false);
     }
@@ -58,13 +165,12 @@ const ContactSection = () => {
       <div className="container mx-auto px-4">
         <header className="text-center mb-8">
           <h2 className="text-3xl font-bold text-club-primary">Kontakt</h2>
-            <p className="mt-3 text-gray-600 max-w-2xl mx-auto">
-              Wir freuen uns auf Ihre Nachricht — ob Frage, Anregung oder Hinweis. Nutzen Sie dafür einfach das Formular. Wir melden uns in der Regel innerhalb von zwei Werktagen.
-            </p>
+          <p className="mt-3 text-gray-600 max-w-2xl mx-auto">
+            Wir freuen uns auf Ihre Nachricht — ob Frage, Anregung oder Hinweis. Nutzen Sie dafür einfach das Formular. Wir melden uns in der Regel innerhalb von zwei Werktagen.
+          </p>
         </header>
 
         <div className="grid grid-cols-1 gap-8 items-start">
-
           <Card
             ref={formAnimation.elementRef}
             className={`p-6 opacity-0 max-w-2xl mx-auto w-full ${formAnimation.isVisible ? 'animate-fadeIn' : ''}`}
@@ -75,61 +181,32 @@ const ContactSection = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <p className='text-sm/5 font-medium pb-1'>Name <span className="text-red-500">*</span></p>
-                <Input
-                  name="name"
-                  placeholder="Ihr Name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                />
+                <Input name="name" placeholder="Ihr Name" value={formData.name} onChange={handleChange} required />
               </div>
               <div>
                 <p className='text-sm/5 font-medium pb-1'>E-Mail <span className="text-red-500">*</span></p>
-                <Input
-                  type="email"
-                  name="email"
-                  placeholder="Ihre E-Mailadresse"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                />
+                <Input type="email" name="email" placeholder="Ihre E-Mailadresse" value={formData.email} onChange={handleChange} required />
               </div>
               <div>
                 <p className='text-sm/5 font-medium pb-1'>Betreff <span className="text-red-500">*</span></p>
-                <Input
-                  name="subject"
-                  placeholder="Ihr Betreff"
-                  value={formData.subject}
-                  onChange={handleChange}
-                  required
-                />
+                <Input name="subject" placeholder="Ihr Betreff" value={formData.subject} onChange={handleChange} required />
               </div>
               <div>
-               <p className='text-sm/5 font-medium pb-1'>Ihre Nachricht <span className="text-red-500">*</span></p>
-                <Textarea
-                  name="message"
-                  placeholder="Ihre Nachricht"
-                  className="min-h-[120px]"
-                  value={formData.message}
-                  onChange={handleChange}
-                  required
-                />
+                <p className='text-sm/5 font-medium pb-1'>Ihre Nachricht <span className="text-red-500">*</span></p>
+                <Textarea name="message" placeholder="Ihre Nachricht" className="min-h-[120px]" value={formData.message} onChange={handleChange} required />
+              </div>
+              <div className="pt-1" aria-label="Sicherheitsprüfung">
+                <div ref={recaptchaRef} />
               </div>
               {error && <div className="text-red-500 text-sm">{error}</div>}
-              <Button
-                type="submit"
-                className="w-full bg-club-accent hover:bg-club-accent/90"
-                disabled={submitting}
-              >
+              <Button type="submit" className="w-full bg-club-accent hover:bg-club-accent/90" disabled={submitting}>
                 {submitting ? 'Wird gesendet...' : 'Nachricht senden'}
               </Button>
             </form>
 
             <p className="text-sm mt-4 text-center">
               Mit dem Absenden akzeptieren Sie unsere{' '}
-              <Link to="/datenschutz" className="underline hover:text-club-accent">
-                Datenschutzerklärung
-              </Link>
+              <Link to="/datenschutz" className="underline hover:text-club-accent">Datenschutzerklärung</Link>
             </p>
           </Card>
         </div>
