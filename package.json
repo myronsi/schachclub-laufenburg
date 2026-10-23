@@ -3,8 +3,17 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "engines": {"node": ">=20.0.0"},
-  "scripts": {"dev": "vite", "build": "vite build", "build:dev": "vite build --mode development", "lint": "eslint .", "preview": "vite preview", "postinstall": "patch-package"},
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "build:dev": "vite build --mode development",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "postinstall": "patch-package"
+  },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
     "@radix-ui/react-accordion": "^1.2.0",
