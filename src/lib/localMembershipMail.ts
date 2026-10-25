@@ -1,4 +1,5 @@
-import { createMembershipPdf, MembershipPdfData } from "@/lib/membershipApplication";
+import { createMembershipPdf } from "@/lib/membershipApplication";
+import type { MembershipPdfData } from "@/lib/membershipApplication";
 
 export const MEMBERSHIP_RECIPIENTS = [
   "jochen@bahner.de",
