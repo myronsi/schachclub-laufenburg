@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - fix/winansi-checkbox-v2
+  pull_request:
+    branches:
+      - dev
 
 permissions:
   contents: write
@@ -48,6 +51,7 @@ jobs:
 
           p.write_text(s)
       - name: Commit and push
+        if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
