@@ -15,8 +15,17 @@ function localToken(length = 8) {
   return Math.random().toString(36).slice(2, 2 + length).padEnd(length, "0");
 }
 
+function sanitizePdfText(data: MembershipPdfData): MembershipPdfData {
+  const sanitized = JSON.parse(
+    JSON.stringify(data, (_, value) =>
+      typeof value === "string" ? value.replace(/\u25A1/g, "") : value,
+    ),
+  ) as MembershipPdfData;
+  return sanitized;
+}
+
 export async function prepareLocalMembershipApplication(data: MembershipPdfData) {
-  const { file } = await createMembershipPdf(data);
+  const { file } = await createMembershipPdf(sanitizePdfText(data));
   const name = `SC-Aufnahmeantrag-${localToken()}.pdf`;
   return { file: new File([file], name, { type: "application/pdf" }), name };
 }
