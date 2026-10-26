@@ -6,10 +6,18 @@ export const MEMBERSHIP_RECIPIENTS = [
   "daniel@bahner.de",
 ] as const;
 
+function localToken(length = 8) {
+  if (typeof crypto !== "undefined" && typeof crypto.getRandomValues === "function") {
+    const bytes = new Uint8Array(length);
+    crypto.getRandomValues(bytes);
+    return Array.from(bytes, byte => byte.toString(16).padStart(2, "0")).slice(0, length).join("");
+  }
+  return Math.random().toString(36).slice(2, 2 + length).padEnd(length, "0");
+}
+
 export async function prepareLocalMembershipApplication(data: MembershipPdfData) {
   const { file } = await createMembershipPdf(data);
-  const token = crypto.randomUUID().slice(0, 8);
-  const name = `SC-Aufnahmeantrag-${token}.pdf`;
+  const name = `SC-Aufnahmeantrag-${localToken()}.pdf`;
   return { file: new File([file], name, { type: "application/pdf" }), name };
 }
 
@@ -28,7 +36,7 @@ function base64Lines(bytes: Uint8Array) {
 }
 
 export async function createMembershipEml(file: File, recipientList: readonly string[]) {
-  const boundary = `SC-${crypto.randomUUID()}`;
+  const boundary = `SC-${localToken(16)}`;
   const data = new Uint8Array(await file.arrayBuffer());
   const body = "Anbei mein Aufnahmeantrag.";
   return [
