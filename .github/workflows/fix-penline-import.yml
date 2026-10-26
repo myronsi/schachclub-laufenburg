@@ -1,0 +1,35 @@
+name: Fix membership icon imports
+
+on:
+  push:
+    branches:
+      - fix/membership-penline-import
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add missing icon imports
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('src/components/Mitgliedwerden.tsx')
+          s = p.read_text()
+          old = '  Mail,\n  Send,'
+          new = '  Mail,\n  PenLine,\n  Send,\n  Upload,'
+          if 'PenLine,' not in s:
+              if old not in s:
+                  raise SystemExit('Expected lucide import block not found')
+              s = s.replace(old, new, 1)
+              p.write_text(s)
+          PY
+          git config user.name github-actions
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add src/components/Mitgliedwerden.tsx
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Fix missing membership signature icon imports'
+          git push
