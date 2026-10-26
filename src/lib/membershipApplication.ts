@@ -2,239 +2,30 @@ import { PDFDocument } from "pdf-lib";
 
 type SignatureKey = "applicant" | "representative" | "mandate";
 export type MembershipPdfData = {
-  first_name: string;
-  last_name: string;
-  address: string;
-  postal_city: string;
-  birth_date: string;
-  birth_place: string;
-  phone: string;
-  email: string;
-  nationality: string;
-  gender: string;
-  sport_gender?: string;
-  previous_club: string;
-  membership_type: string;
-  application_place: string;
-  application_date: string;
-  direct_debit: boolean;
-  bank_name: string;
-  bic: string;
-  iban: string;
-  account_holder: string;
-  representative_name?: string;
-  signatures: Partial<Record<SignatureKey, string>>;
-  created: string;
-  text_version: string;
+  first_name: string; last_name: string; address: string; postal_city: string; birth_date: string; birth_place: string; phone: string; email: string; nationality: string; gender: string; sport_gender?: string; previous_club: string; membership_type: string; application_place: string; application_date: string; direct_debit: boolean; bank_name: string; bic: string; iban: string; account_holder: string; representative_name?: string; signatures: Partial<Record<SignatureKey, string>>; created: string; text_version: string;
 };
 
-// Same PDF technology as the standalone SC-Laufenburg HTML application:
-// load the official blank PDF, render all entered values/signatures to a
-// browser canvas at 3x resolution, then composite that canvas onto the PDF.
-// No form data is uploaded to the server.
-const TEMPLATE_URL = "/docs/aufnahmeantrag.pdf";
+// Exact client-side PDF engine used by SC-Laufenburg-Antrag-Mitgliedschaft.html.
+// The blank PDF is embedded in the application; no template request is made.
+const PDF_BASE = 'JVBERi0xLjQKJZOMi54gUmVwb3J0TGFiIEdlbmVyYXRlZCBQREYgZG9jdW1lbnQgKG9wZW5zb3VyY2UpCjEgMCBvYmoKPDwKL0YxIDIgMCBSIC9GMiAzIDAgUgo+PgplbmRvYmoKMiAwIG9iago8PAovQmFzZUZvbnQgL0hlbHZldGljYSAvRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZyAvTmFtZSAvRjEgL1N1YnR5cGUgL1R5cGUxIC9UeXBlIC9Gb250Cj4+CmVuZG9iagozIDAgb2JqCjw8Ci9CYXNlRm9udCAvSGVsdmV0aWNhLUJvbGQgL0VuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcgL05hbWUgL0YyIC9TdWJ0eXBlIC9UeXBlMSAvVHlwZSAvRm9udAo+PgplbmRvYmoKNCAwIG9iago8PAovQ29udGVudHMgOSAwIFIgL01lZGlhQm94IFsgMCAwIDU5NS4yNzU2IDg0MS44ODk4IF0gL1BhcmVudCA4IDAgUiAvUmVzb3VyY2VzIDw8Ci9Gb250IDEgMCBSIC9Qcm9jU2V0IFsgL1BERiAvVGV4dCAvSW1hZ2VCIC9JbWFnZUMgL0ltYWdlSSBdCj4+IC9Sb3RhdGUgMCAvVHJhbnMgPDwKCj4+IAogIC9UeXBlIC9QYWdlCj4+CmVuZG9iago1IDAgb2JqCjw8Ci9Db250ZW50cyAxMCAwIFIgL01lZGlhQm94IFsgMCAwIDU5NS4yNzU2IDg0MS44ODk4IF0gL1BhcmVudCA4IDAgUiAvUmVzb3VyY2VzIDw8Ci9Gb250IDEgMCBSIC9Qcm9jU2V0IFsgL1BERiAvVGV4dCAvSW1hZ2VCIC9JbWFnZUMgL0ltYWdlSSBdCj4+IC9Sb3RhdGUgMCAvVHJhbnMgPDwKCj4+IAogIC9UeXBlIC9QYWdlCj4+CmVuZG9iago2IDAgb2JqCjw8Ci9QYWdlTW9kZSAvVXNlTm9uZSAvUGFnZXMgOCAwIFIgL1R5cGUgL0NhdGFsb2cKPj4KZW5kb2JqCjcgMCBvYmoKPDwKL0F1dGhvciAoYW5vbnltb3VzKSAvQ3JlYXRpb25EYXRlIChEOjIwMjYxMDE5MDIxODI5KzAyJzAwJykgL0NyZWF0b3IgKGFub255bW91cykgL0tleXdvcmRzICgpIC9Nb2REYXRlIChEOjIwMjYxMDE5MDIxODI5KzAyJzAwJykgL1Byb2R1Y2VyIChSZXBvcnRMYWIgUERGIExpYnJhcnkgLSBcKG9wZW5zb3VyY2VcKSkgCiAgL1N1YmplY3QgKHVuc3BlY2lmaWVkKSAvVGl0bGUgKHVudGl0bGVkKSAvVHJhcHBlZCAvRmFsc2UKPj4KZW5kb2JqCjggMCBvYmoKPDwKL0NvdW50IDIgL0tpZHMgWyA0IDAgUiA1IDAgUiBdIC9UeXBlIC9QYWdlcwo+PgplbmRvYmoKOSAwIG9iago8PAovRmlsdGVyIFsgL0FTQ0lJODVEZWNvZGUgL0ZsYXRlRGVjb2RlIF0gL0xlbmd0aCAxNDk0Cj4+CnN0cmVhbQpHYXUwRGdNV2NXJjpNbCtlNzBpUllrLyk7cCs/I3QyVFxFJS1TKT1zSmthdVJKVGZPLjdgcz1ZRl5tTWtFQC1FSj1nQSx0PFRmbDU/LkJBYihJLGllOk5NJk0mYz9jO0o1QCotSjhnOl1rU2hgOiNFQmAtL2RvTGhwZTw0Ok1MW0phSE4qPy1uIT03ZFVDKiZCNW5GN1lLY1dHS0hqQmYjJm5YVz1RajdGNVMhPSRdOU5GYipKIWgmP1A5aUteIWJRR15NKTxCNm5HYChGcSIza0RxVl9SW051cCIiRGJoRmc/YydBRmteN3MvJWk/PGllLGYvU2FNQTBMOiwnNm07TkhWIU4wcC88VCQzbTQxQz1eVG1PSTc6MixkQThiPUltWlJRJVIrNy8xInBGSF9aTj9VKyVKZWBORG08WkMxUitFVCVCQVtPTF4wPyphPmlbX1FFJFtzJTolS14yTTxtWStSRSRvY19CImtJU0ZJR2BbPHFCdUs8S2tFLSNtbzhUS15WbVwmKls7QCpaJiFLXFYtX2lJJVImSypdU1U2UkUqKVRbNU90O2oqQywtJ2VzLU0+Tj0iWyM1JTo8S0RTRmZBN1BmJUQpPXVgQCdrTEE1XklbJTBUXyUoZj4pV2w6KWJ1OSxaSDdKWC9JTElRMDInPmQ/VWdXRjE2L2JCdW5lPkElb1NTXkdAdGNLPSohRyRtMEw5JT0lbiknIi0odCVnQllOamltRForTzRkaV1UZVVQUVVNbVo8U2tjZSVBNjI1XzEzRjVgOiNbNFdwLXFBb0VKOiRMJTcsT2R0TltiWmxDbUk0JSRGR11YRkojQDVUZ0UjMVc3SjJjNiNsNGNacCRNRV07NixBZzwiT0o0WHFOYXNKTCRhbz1qajI4aVcvYjhbMCVzOkhKaCVvNVJVUXRfbVNqazRIVStvaCNeZUoiWFpXK3JgMWw1aEBtRkNzV1dRWl1wZT5cdSkwT3AoZnJpMWpHMEI4TjQsMlQ7QiVddWNKbkQ+c0lMbWEjLlZsUUI0O2prQVw5QDA2Vjs2Z0ZPUF0jRWtNaSs1Ql5gPTQxVm5ualYwRChWPFNrK2hGXjtuKWJQOEYtWTxUclJKUFt0JDIvOUROKD1LOE8kMk9SZ2JsMDdtJi9kbWdAUjAzbkxBZF8pU0FURjVVb1gudEBgYDxJWDVhc0xgJCpEQzxSdGUhMUlePk5jZ2NeMV9BLTpYYFI4LGUxQHAmUUNUZVIuZlR1QUhhWjA6LUNPIkEzSWBdVT1aOU9uS1FQLyFdIVRwXSRxKVVTJldybWZEIjxbNW9hVFRQcjw9YGErXVRdO08qW1tGMnIuJjNLZ2RqU18sYGFoUlciJCJuLlI4SSFkQzV0MitVWzE6M0JVITUqZG9qNjFKWyphOlcjMHVOOzotM3Joa2dfVlxOWjZORj5ZK1ZRTnFaS0FvPjp1XURGRmMtPyd1KjFUPj9KM1g9bjMzWnFGKjREUWRnNyV1RDJKayVtKU1CWE5XOyQhUk4+QXM7LjhxIjFuPHBEJzM8Nl9oMWZASi4jVCQlT1gnaF5OS1c9XT1ubCozI0QmPzUpZj0/JkRqOj5SdCQrbEtbNG5ZNC4qbmhpdVIvZyZtS2JqL186WmMnU1dmZz1rRjQtKkJpWF9iQmwzMjI9OUIhR2QyNmtjWF84bjkiQkstSFIxL1Bsa2BeallLQ2JdaGk2ZCxvV0A/WDwtcmNNQU81MEduTEcvQk50WWI4L0gvbz1BRWEkWCgzcDA3Y3M3O1RtS1oyYTAmY2k/aCJCa1Q/WihpLU0jPmh0cmUyVWpgNF5OL3MrRE42KWcqQW4tRyghPk1CUzEyRDovXG5lIWM8JFNVZjs+QT1MWD1uY2IwLSFqTFZxWnFDVz5QdVFOUFlUJWUiQzpbZSE2QEYoLSgnZyshMEVcYFM0TExmI0R1SywzTEMtNzhWV2ppUHJVWTFASDhLa2RQTyMkWD9zcjdmfj5lbmRzdHJlYW0KZW5kb2JqCjEwIDAgb2JqCjw8Ci9GaWx0ZXIgWyAvQVNDSUk4NURlY29kZSAvRmxhdGVEZWNvZGUgXSAvTGVuZ3RoIDE1NDUKPj4Kc3RyZWFtCkdhdTBDPnVUSz0nUl0oRlM0P3RjQ09LPE5taS1mbGtZNWNoS1FgKmxNaiNRTDA9SztrRDQmR0ttdWBjQC1PbWFcMFUlbi1maVZtMltGU0ltbkY4bSRwRiQ6MW9cbmdYIWVgbWkhZWJuP3FFPSc5TyQjWGk1KVs0T3BlPDQ6TDY9PW8tQCw6OHBUI051WlxBTVBVbDZRJTsxUStXIUUrTUgwS0Q7NTNvSGxTPEBKSm5YJkByNkFRP0I8UTJuSCs9TjA8RFZMQiNxRzhKbG8oWTlKOnFbVzhEbWx0cjU0ODdYOVReMlJHOjglVi9vTTZLQmFUPEIjbjc5SERjTCsrWGk2YjFkWEEwYTJrMF46R19fQ1paPFEyL1ZiJmpOQDlHTU51ckhBMTYnLFBBRmBDM3BnVkMlanVIKiMmK2ZyUTZXOyIsJHM9cUpYTyQ3VkBrbSQxZE0xRj00aUY9QSw+JGRnQTBNWTxDJT1OVGJnO1ZOVT4jWjRwPVU/JEF0RTlZbjBSS1FyKD1eN1w2S1NnWlMpKGQyQissIm41XkJiLTpjaFJxampGO2FpMy9FQjhTMVsqVk5tQWdnOWQoVDQrXCdwWV8vbFdyYXVsXSc7MG8+JTkzTllbPzdMW1ovXjhmY1NnYUIxYlRHPkIqYCJTZ110R2tQR0cjZDIuLEx0JzAxW1FrV1xkWkRMZllBZV5Hb0hiSyI0YSs7MHIrVCxlMHBfVVdaVU9XMV4xZydXQFgoZjhOIXMjI0ooaU0ySy11OVopRFdyLFh1blBYLmVTLHNHXmZfQU0wYkYnWTRvLkQwaSowRHRSTV4qJC85I0NzVVJHYzNJQ1gxWUVTSFZ0KVc2Z0IvNlx0I1VDTUMkTTs+aSFrQCpRL19OISdERFIkUSstSTY2cD9hK0JcRm4jZk08W05kaDkrMFxhajdJbXFNM2BubFU9M0ZGQzs7IUJdPmEmU2g2NE5BOFxZJy0hdUU8bGxmZWp1bHMvV2VtJlhcIXArNFdLITRMXS5XJCNvZ2RrVSpFTz4lZSRHSWhfKGdyWzc1ISpDXm1XYUsxP0NKKUR0OjU8IzkrTDxbQTA3Qj9QYGAzOCVZTSlRa2JtOGFHPj4wZi0qOVxvVnFEODEvREMndENZSEFkOC0lTEFVPk9SLCxcPEJJQG4rVFdLOUxXJW0xT2M+TzU0L3NFcFNtcSgsUTQ9MXVfbFJLNF1bTWwkIjEqOkJkU1ZfaEVLRGhoJisjPjk9KzFyJDpuQS0lLEFWMmRSSms5P2RtMV1pLTpoXjIubVghTlEzTlR1c0w/V0hALm5yZC5yMVteOiowZ2JKZmRiMldSRj5LKjNSKE9VNy0pPW5qZSRWYz8+Qi9HVDxkbnMtVFRiZ2NEVjIoPS01W2hNb2dKISwuUXI0Sk40dT43VVEzSVJBMCNRYltjbWlDPVxhP1s3Ni1VYFBiPk1vVCoiaTVwYmM/I2hWTzBhMFRoNyhPQSlGVWIwbyE2J0NYJ0FvZj5cWDthL08qJlhdOSklNXNUMmkpZmMjalFhaiw7T0pxc2BbNzdQQ2ZjIUFAPiVVXVpaITU8KyIhMjpiSSU+I1FmMDxZa28sKTZQV1JmM2NqKSFxRik+LEg7a0E1ZWFUNCpPTWxzOTY9WHBiKFVhN3NFJCI3OSFaamY8YlBEOmAwbS9hWlFJVGFmaVgtdExqXCVGUyhgVU1PYmRAXnUpQVokITVUaCNjLU9YSS8mI2BidTcwaWErV2hoJXJrKWxQZGRfNTElLE0zY1QpU2g/UCNFN0koMHUsJVoyPFxTMyUjYFxDQV9VIyxKYChwPURrMEglKlZScEY8Xy9ZN1pQbkNKblFoPU4+JS9JcSFbS1pSZ2JIUHM5PmMuN0QnR0BjJFpaLDA4TT1UKSZJcXEnIzEyck1RMi85TE46Z2paV0dTUjB0NVtcWDUwcEcrbk1IOj1mKGxgNigmNFw6altgJjtGWFloQClWZ1xBRVJlP188ZVkuWHNXb0djXFhWPXN+PmVuZHN0cmVhbQplbmRvYmoKeHJlZgowIDExCjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAwMDA2MSAwMDAwMCBuIAowMDAwMDAwMTAyIDAwMDAwIG4gCjAwMDAwMDIwOSAwMDAwMCBuIAowMDAwMDAwMzIxIDAwMDAwIG4gCjAwMDAwMDA1MjQgMDAwMDAgbiAKMDAwMDAwMDcyOCAwMDAwMCBuIAowMDAwMDAwNzk2IDAwMDAwIG4gCjAwMDAwMDEwNTcgMDAwMDAgbiAKMDAwMDAwMTEyMiAwMDAwMCBuIAowMDAwMDAwMjcwNyAwMDAwMCBuIAp0cmFpbGVyCjw8Ci9JRCAKWzw5YjU2YTgyMzk2N2E5ZDFiNmU0YjY1NzNlZDQ4Mjg4Zj48OWI1NmE4MjM5NjdhOWQxYjZlNGI2NTczZWQ0ODI4OGY+XQolIFJlcG9ydExhYiBnZW5lcmF0ZWQgUERGIGRvY3VtZW50IC0tIGRpZ2VzdCAob3BlbnNvdXJjZSkKCi9JbmZvIDcgMCBSCi9Sb290IDYgMCBSCi9TaXplIDExCj4+CnN0YXJ0eHJlZgo0MzQ0CiUlRU9GCg==';
 
-const LAYOUT = {
-  width: 595.2755905511812,
-  height: 841.8897637795277,
-  fields: [
-    {
-      first: [40, 156, 242, 13], last: [310, 156, 245, 13],
-      street: [40, 196, 360, 13], zip: [425, 196, 130, 13],
-      city: [40, 236, 242, 13], birth: [310, 236, 245, 13],
-      birthplace: [40, 276, 242, 13], nationality: [310, 276, 245, 13],
-      email: [40, 316, 242, 13], phone: [310, 316, 245, 13],
-      previousClub: [40, 420, 515, 13],
-      applicationPlaceDate: [40, 636, 242, 13],
-      representativeName: [310, 636, 245, 13],
-    },
-    {
-      owner: [40, 270, 515, 13], accountStreet: [40, 313, 515, 13],
-      accountZip: [40, 356, 130, 13], accountCity: [195, 356, 360, 13],
-      bank: [40, 399, 242, 13], bic: [310, 399, 245, 13],
-      iban: [40, 442, 515, 13], creditorID: [40, 485, 242, 13],
-      mandateReference: [310, 485, 245, 13],
-      bankPlaceDate: [40, 688, 242, 13],
-    },
-  ],
-  checks: [
-    {
-      active: [40, 386], passive: [210, 386],
-      m: [40, 465], w: [200, 465], divers: [365, 465],
-      sportM: [365, 489], sportW: [465, 489],
-      apply: [40, 556], terms: [40, 575], privacy: [40, 594],
-    },
-    { debit: [40, 144], mandateConsent: [40, 647] },
-  ],
-  signatures: {
-    applicant: [0, 40, 681, 242, 68],
-    representative: [0, 310, 681, 245, 68],
-    mandate: [1, 310, 691, 245, 58],
-  },
-} as const;
+const LAYOUT = {"width": 595.2755905511812, "height": 841.8897637795277, "fields": [{"first": [40, 156, 242, 13], "last": [310, 156, 245, 13], "street": [40, 196, 360, 13], "zip": [425, 196, 130, 13], "city": [40, 236, 242, 13], "birth": [310, 236, 245, 13], "birthplace": [40, 276, 242, 13], "nationality": [310, 276, 245, 13], "email": [40, 316, 242, 13], "phone": [310, 316, 245, 13], "previousClub": [40, 420, 515, 13], "applicationPlaceDate": [40, 636, 242, 13], "representativeName": [310, 636, 245, 13]}, {"owner": [40, 270, 515, 13], "accountStreet": [40, 313, 515, 13], "accountZip": [40, 356, 130, 13], "accountCity": [195, 356, 360, 13], "bank": [40, 399, 242, 13], "bic": [310, 399, 245, 13], "iban": [40, 442, 515, 13], "creditorID": [40, 485, 242, 13], "mandateReference": [310, 485, 245, 13], "bankPlaceDate": [40, 688, 242, 13]}, {"debit": [40, 144], "mandateConsent": [40, 647]}]};
+const CHECKS = [
+  { active:[40,386], passive:[210,386], m:[40,465], w:[200,465], divers:[365,465], sportM:[365,489], sportW:[465,489], apply:[40,556], terms:[40,575], privacy:[40,594] },
+  { debit:[40,144], mandateConsent:[40,647] },
+] as const;
+const SIGNATURES = { applicant:[0,40,681,242,68], representative:[0,310,681,245,68], mandate:[1,310,691,245,58] } as const;
 
-const dateDE = (value: string) =>
-  /^\d{4}-\d{2}-\d{2}$/.test(value)
-    ? `${value.slice(8, 10)}.${value.slice(5, 7)}.${value.slice(0, 4)}`
-    : value;
+const dateDE = (value:string) => /^\d{4}-\d{2}-\d{2}$/.test(value) ? `${value.slice(8,10)}.${value.slice(5,7)}.${value.slice(0,4)}` : value;
+export function isMinor(birth:string,on=new Date().toISOString().slice(0,10)) { if(!/^\d{4}-\d{2}-\d{2}$/.test(birth)||birth>on)return false; const [by,bm,bd]=birth.split("-").map(Number),[y,m,d]=on.split("-").map(Number); return y-by-(m<bm||(m===bm&&d<bd)?1:0)<18; }
 
-export function isMinor(birth: string, on = new Date().toISOString().slice(0, 10)) {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(birth) || birth > on) return false;
-  const [by, bm, bd] = birth.split("-").map(Number);
-  const [y, m, d] = on.split("-").map(Number);
-  return y - by - (m < bm || (m === bm && d < bd) ? 1 : 0) < 18;
-}
+function loadImage(dataUrl:string) { return new Promise<HTMLImageElement>((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=()=>reject(new Error("Ein Unterschriftsbild ist nicht lesbar."));image.src=dataUrl;}); }
+function splitPostalCity(value:string) { const m=value.trim().match(/^(\d{5})\s+(.+)$/); return m?{zip:m[1],city:m[2]}:{zip:value.trim(),city:""}; }
+function snapshot(data:MembershipPdfData) { const {zip,city}=splitPostalCity(data.postal_city); const minor=isMinor(data.birth_date); return { first:data.first_name.trim(),last:data.last_name.trim(),street:data.address.trim(),zip,city,birth:data.birth_date,birthplace:data.birth_place.trim(),nationality:data.nationality.trim(),phone:data.phone.trim(),email:data.email.trim(),gender:data.gender,sportGender:data.sport_gender,membership:data.membership_type==="passive"||data.membership_type==="Passivmitglied"?"passive":"active",previousClub:data.previous_club.trim(),apply:true,terms:true,privacy:true,applicationPlace:data.application_place.trim(),applicationDate:data.application_date,minor,debit:Boolean(data.direct_debit),paperSign:false,owner:data.account_holder.trim(),accountStreet:data.address.trim(),accountZip:zip,accountCity:city,iban:data.iban.trim(),bank:data.bank_name.trim(),bic:data.bic.trim(),bankPlace:data.application_place.trim(),bankDate:data.application_date,creditorID:"",mandateReference:"Wird vom Verein vergeben",representativeName:minor?(data.representative_name||"").trim():"",mandateConsent:Boolean(data.direct_debit),signatures:{applicant:data.signatures.applicant||null,representative:data.signatures.representative||null,mandate:data.signatures.mandate||null},signedAt:{applicant:data.signatures.applicant?data.created:null,representative:data.signatures.representative?data.created:null,mandate:data.signatures.mandate?data.created:null},created:data.created,textVersion:data.text_version }; }
+function displayValues(s:ReturnType<typeof snapshot>) { return {...s,birth:dateDE(s.birth),applicationPlaceDate:[s.applicationPlace,dateDE(s.applicationDate)].filter(Boolean).join(", "),bankPlaceDate:s.debit?[s.bankPlace,dateDE(s.bankDate)].filter(Boolean).join(", "):"",creditorID:s.debit?(s.creditorID||"IM TEST NICHT HINTERLEGT"):"",mandateReference:s.debit?s.mandateReference:""}; }
+function tickKeys(s:ReturnType<typeof snapshot>,i:number) { if(i===0)return [s.membership,s.gender,s.gender==="divers"?(s.sportGender==="m"?"sportM":s.sportGender==="w"?"sportW":""):"",...(s.apply?["apply"]:[]),...(s.terms?["terms"]:[]),...(s.privacy?["privacy"]:[])].filter(Boolean); return s.debit?["debit",...(s.mandateConsent?["mandateConsent"]:[])]:[]; }
+function drawText(ctx:CanvasRenderingContext2D,text:unknown,x:number,y:number,width:number,maxSize=11.1,color="#193e68") { if(text===undefined||text===null||text==="")return; const value=String(text); let size=maxSize; ctx.font=`${size}px "Segoe UI", Arial, sans-serif`; const measured=ctx.measureText(value).width; if(measured>width){size=Math.max(3.5,size*width/measured);ctx.font=`${size}px "Segoe UI", Arial, sans-serif`;} ctx.fillStyle=color;ctx.textBaseline="top";ctx.fillText(value,x,y,width); }
 
-function splitPostalCity(value: string) {
-  const match = value.trim().match(/^(\d{5})\s+(.+)$/);
-  return match ? { zip: match[1], city: match[2] } : { zip: value.trim(), city: "" };
-}
+async function paintPage(s:ReturnType<typeof snapshot>,i:number,images:Partial<Record<SignatureKey,HTMLImageElement>>) { const scale=3; const canvas=document.createElement("canvas");canvas.width=Math.ceil(LAYOUT.width*scale);canvas.height=Math.ceil(LAYOUT.height*scale);const ctx=canvas.getContext("2d");if(!ctx)throw new Error("Canvas wird von diesem Browser nicht unterstützt.");ctx.scale(scale,scale);const vals=displayValues(s) as Record<string,unknown>;for(const [key,[x,y,w,h]] of Object.entries(LAYOUT.fields[i]) as Array<[string,readonly[number,number,number,number]]>)drawText(ctx,vals[key],x,y,w,Math.min(11.1,h-1));if(i===0&&!s.minor){const [x,y,w]=LAYOUT.fields[0].representativeName;drawText(ctx,"entfällt – volljährig",x,y,w,10.5,"#6a747a");const [,sx,sy,sw,sh]=SIGNATURES.representative;drawText(ctx,"entfällt – volljährig",sx,sy+sh-12,sw,10.5,"#6a747a");}for(const key of tickKeys(s,i)){const pos=(CHECKS[i] as Record<string,readonly[number,number]>)[key];if(!pos)continue;const [x,y]=pos;ctx.strokeStyle="#184d68";ctx.lineWidth=1.15;ctx.beginPath();ctx.moveTo(x+1.2,y+1.2);ctx.lineTo(x+6.8,y+6.8);ctx.moveTo(x+6.8,y+1.2);ctx.lineTo(x+1.2,y+6.8);ctx.stroke();}for(const [key,[page,x,y,w,h]] of Object.entries(SIGNATURES) as Array<[SignatureKey,readonly[number,number,number,number,number]]>){if(page!==i||(key==="representative"&&!s.minor)||(key==="mandate"&&!s.debit))continue;const image=images[key];if(image){const f=Math.min(w/image.naturalWidth,h/image.naturalHeight);ctx.drawImage(image,x,y+h-image.naturalHeight*f,image.naturalWidth*f,image.naturalHeight*f);}else if(s.paperSign)drawText(ctx,"Nach Ausdruck von Hand unterschreiben",x,y+h-12,w,7.4,"#6a747a");}return canvas; }
 
-function loadImage(dataUrl: string) {
-  return new Promise<HTMLImageElement>((resolve, reject) => {
-    const image = new Image();
-    image.onload = () => resolve(image);
-    image.onerror = () => reject(new Error("Ein Unterschriftsbild ist nicht lesbar."));
-    image.src = dataUrl;
-  });
-}
-
-function drawText(ctx: CanvasRenderingContext2D, value: unknown, x: number, y: number, width: number, maxSize = 11.1, color = "#193e68") {
-  if (value === undefined || value === null || value === "") return;
-  let size = maxSize;
-  const text = String(value);
-  ctx.font = `${size}px "Segoe UI", Arial, sans-serif`;
-  const measured = ctx.measureText(text).width;
-  if (measured > width) {
-    size = Math.max(3.5, size * width / measured);
-    ctx.font = `${size}px "Segoe UI", Arial, sans-serif`;
-  }
-  ctx.fillStyle = color;
-  ctx.textBaseline = "top";
-  ctx.fillText(text, x, y, width);
-}
-
-function snapshot(data: MembershipPdfData) {
-  const { zip, city } = splitPostalCity(data.postal_city);
-  const minor = isMinor(data.birth_date);
-  return {
-    first: data.first_name.trim(), last: data.last_name.trim(), street: data.address.trim(), zip, city,
-    birth: data.birth_date, birthplace: data.birth_place.trim(), nationality: data.nationality.trim(),
-    phone: data.phone.trim(), email: data.email.trim(), gender: data.gender, sportGender: data.sport_gender,
-    membership: data.membership_type === "passive" || data.membership_type === "Passivmitglied" ? "passive" : "active",
-    previousClub: data.previous_club.trim(), apply: true, terms: true, privacy: true,
-    applicationPlace: data.application_place.trim(), applicationDate: data.application_date,
-    minor, debit: Boolean(data.direct_debit), paperSign: false,
-    owner: data.account_holder.trim(), accountStreet: data.address.trim(), accountZip: zip, accountCity: city,
-    iban: data.iban.trim(), bank: data.bank_name.trim(), bic: data.bic.trim(),
-    bankPlace: data.application_place.trim(), bankDate: data.application_date,
-    creditorID: "", mandateReference: "Wird vom Verein vergeben",
-    representativeName: minor ? (data.representative_name || "").trim() : "",
-    mandateConsent: Boolean(data.direct_debit),
-    signatures: {
-      applicant: data.signatures.applicant || null,
-      representative: data.signatures.representative || null,
-      mandate: data.signatures.mandate || null,
-    },
-    signedAt: {
-      applicant: data.signatures.applicant ? data.created : null,
-      representative: data.signatures.representative ? data.created : null,
-      mandate: data.signatures.mandate ? data.created : null,
-    },
-    created: data.created, textVersion: data.text_version,
-  };
-}
-
-function displayValues(s: ReturnType<typeof snapshot>) {
-  return {
-    ...s,
-    birth: dateDE(s.birth),
-    applicationPlaceDate: [s.applicationPlace, dateDE(s.applicationDate)].filter(Boolean).join(", "),
-    bankPlaceDate: s.debit ? [s.bankPlace, dateDE(s.bankDate)].filter(Boolean).join(", ") : "",
-    creditorID: s.debit ? (s.creditorID || "IM TEST NICHT HINTERLEGT") : "",
-    mandateReference: s.debit ? s.mandateReference : "",
-  };
-}
-
-function tickKeys(s: ReturnType<typeof snapshot>, page: number) {
-  if (page === 0) return [
-    s.membership,
-    s.gender,
-    s.gender === "divers" ? (s.sportGender === "m" ? "sportM" : s.sportGender === "w" ? "sportW" : "") : "",
-    ...(s.apply ? ["apply"] : []), ...(s.terms ? ["terms"] : []), ...(s.privacy ? ["privacy"] : []),
-  ].filter(Boolean);
-  return s.debit ? ["debit", ...(s.mandateConsent ? ["mandateConsent"] : [])] : [];
-}
-
-async function paintPage(s: ReturnType<typeof snapshot>, page: number, images: Partial<Record<SignatureKey, HTMLImageElement>>) {
-  const scale = 3;
-  const canvas = document.createElement("canvas");
-  canvas.width = Math.ceil(LAYOUT.width * scale);
-  canvas.height = Math.ceil(LAYOUT.height * scale);
-  const ctx = canvas.getContext("2d");
-  if (!ctx) throw new Error("Canvas wird von diesem Browser nicht unterstützt.");
-  ctx.scale(scale, scale);
-
-  const values = displayValues(s) as Record<string, unknown>;
-  for (const [key, [x, y, w, h]] of Object.entries(LAYOUT.fields[page]) as Array<[string, readonly [number, number, number, number]]>) {
-    drawText(ctx, values[key], x, y, w, Math.min(11.1, h - 1));
-  }
-
-  if (page === 0 && !s.minor) {
-    const [x, y, w] = LAYOUT.fields[0].representativeName;
-    drawText(ctx, "entfällt – volljährig", x, y, w, 10.5, "#6a747a");
-    const [, sx, sy, sw, sh] = LAYOUT.signatures.representative;
-    drawText(ctx, "entfällt – volljährig", sx, sy + sh - 12, sw, 10.5, "#6a747a");
-  }
-
-  for (const key of tickKeys(s, page)) {
-    const pos = (LAYOUT.checks[page] as Record<string, readonly [number, number]>)[key];
-    if (!pos) continue;
-    const [x, y] = pos;
-    ctx.strokeStyle = "#184d68";
-    ctx.lineWidth = 1.15;
-    ctx.beginPath();
-    ctx.moveTo(x + 1.2, y + 1.2); ctx.lineTo(x + 6.8, y + 6.8);
-    ctx.moveTo(x + 6.8, y + 1.2); ctx.lineTo(x + 1.2, y + 6.8);
-    ctx.stroke();
-  }
-
-  for (const [key, [targetPage, x, y, w, h]] of Object.entries(LAYOUT.signatures) as Array<[SignatureKey, readonly [number, number, number, number, number]]>) {
-    if (targetPage !== page || (key === "representative" && !s.minor) || (key === "mandate" && !s.debit)) continue;
-    const image = images[key];
-    if (!image) continue;
-    const factor = Math.min(w / image.naturalWidth, h / image.naturalHeight);
-    ctx.drawImage(image, x, y + h - image.naturalHeight * factor, image.naturalWidth * factor, image.naturalHeight * factor);
-  }
-
-  return canvas;
-}
-
-export async function createMembershipPdf(data: MembershipPdfData) {
-  const s = snapshot(data);
-  const images: Partial<Record<SignatureKey, HTMLImageElement>> = {};
-  for (const [key, value] of Object.entries(s.signatures) as Array<[SignatureKey, string | null]>) {
-    if (value) images[key] = await loadImage(value);
-  }
-
-  // This is the same PDFDocument.load + canvas overlay sequence used by the
-  // supplied HTML application. The template is static; no form values are sent.
-  const response = await fetch(TEMPLATE_URL, { cache: "no-store" });
-  if (!response.ok) throw new Error(`Das offizielle Antragsformular konnte nicht geladen werden (${response.status}).`);
-  const template = await response.arrayBuffer();
-  const pdf = await PDFDocument.load(template);
-  if (!s.debit && pdf.getPageCount() > 1) pdf.removePage(1);
-
-  for (let i = 0; i < pdf.getPageCount(); i++) {
-    const canvas = await paintPage(s, i, images);
-    const overlay = await pdf.embedPng(canvas.toDataURL("image/png"));
-    pdf.getPages()[i].drawImage(overlay, { x: 0, y: 0, width: LAYOUT.width, height: LAYOUT.height });
-  }
-
-  pdf.setTitle("Aufnahmeantrag Schachclub Laufenburg");
-  pdf.setAuthor("");
-  pdf.setSubject(`Fassung ${data.text_version}; lokale Erstellung`);
-  pdf.setProducer("SC Laufenburg lokale Formularanwendung");
-  const output = await pdf.save();
-  return { file: new File([output], "SC-Laufenburg-Aufnahmeantrag.pdf", { type: "application/pdf" }) };
-}
+export async function createMembershipPdf(data:MembershipPdfData) { const s=snapshot(data);const images:Partial<Record<SignatureKey,HTMLImageElement>>={};for(const [key,value] of Object.entries(s.signatures) as Array<[SignatureKey,string|null]>)if(value)images[key]=await loadImage(value);const bytes=Uint8Array.from(atob(PDF_BASE),c=>c.charCodeAt(0));const pdf=await PDFDocument.load(bytes);if(!s.debit&&pdf.getPageCount()>1)pdf.removePage(1);for(let i=0;i<pdf.getPageCount();i++){const canvas=await paintPage(s,i,images);const overlay=await pdf.embedPng(canvas.toDataURL("image/png"));pdf.getPages()[i].drawImage(overlay,{x:0,y:0,width:LAYOUT.width,height:LAYOUT.height});}pdf.setTitle("Aufnahmeantrag Schachclub Laufenburg");pdf.setAuthor("");pdf.setSubject(`Fassung ${data.text_version}; lokale Erstellung`);pdf.setProducer("SC Laufenburg lokale Formularanwendung");const output=await pdf.save();return {file:new File([output],"SC-Laufenburg-Aufnahmeantrag.pdf",{type:"application/pdf"})}; }
