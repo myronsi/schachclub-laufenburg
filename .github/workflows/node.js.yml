@@ -1,76 +1,81 @@
-# temporary restoration workflow
 name: Deploy React Vite to Strato via SFTP
 
 on:
   push:
     branches:
       - dev
-      - fix/restore-membership-page-21be
-
-permissions:
-  contents: write
 
 jobs:
-  restore-membership-page:
-    if: github.ref == 'refs/heads/fix/restore-membership-page-21be'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Restore membership page from 21be
-        run: |
-          git checkout 21be0cbfd9397dfb0af930775cb246335389c693 -- src/components/Mitgliedwerden.tsx
-          if git diff --quiet HEAD -- src/components/Mitgliedwerden.tsx; then
-            echo "Membership page already restored"
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/components/Mitgliedwerden.tsx
-          git commit -m "Restore membership page from 21be"
-          git push
-
   build-and-deploy:
-    if: github.ref == 'refs/heads/dev'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+
       - name: Install dependencies
         run: npm i --legacy-peer-deps
+
       - name: Build project
         run: npm run build
+
       - name: Adapt dev API endpoints
         run: |
           find dist/assets -type f -name '*.js' -print0 | xargs -0 sed -i 's#/formmail-80\.php#/dev/formmail-80.php#g'
-          if grep -R '"/formmail-80.php"' dist/assets; then exit 1; fi
+          if grep -R '"/formmail-80.php"' dist/assets; then
+            echo "Production form endpoint leaked into dev build"
+            exit 1
+          fi
+
       - name: Verify build output
         run: |
           test -f dist/index.html
           test -f dist/.htaccess
           test -f dist/private-gallery.php
-          if grep -R "sc-laufenburg.de/api/auth.php" dist; then exit 1; fi
-          if grep -R "mediaImages" dist; then exit 1; fi
+          if grep -R "sc-laufenburg.de/api/auth.php" dist; then
+            echo "Production auth URL leaked into build"
+            exit 1
+          fi
+          if grep -R "mediaImages" dist; then
+            echo "Private gallery metadata leaked into build"
+            exit 1
+          fi
+          ls -la dist
+
       - name: Prepare PHPMailer
         run: |
-          curl --fail --location --silent --show-error https://github.com/PHPMailer/PHPMailer/archive/refs/tags/v7.1.1.zip --output /tmp/phpmailer.zip
+          curl --fail --location --silent --show-error \
+            https://github.com/PHPMailer/PHPMailer/archive/refs/tags/v7.1.1.zip \
+            --output /tmp/phpmailer.zip
           rm -rf phpmailer
           unzip -q /tmp/phpmailer.zip
           mv PHPMailer-7.1.1 phpmailer
+          test -f phpmailer/src/PHPMailer.php
+          test -f phpmailer/src/SMTP.php
+          test -f phpmailer/src/Exception.php
+
       - name: Prepare formmail endpoint
         run: |
           mkdir -p deploy
           cp formmail-80.php deploy/formmail-80.php
-          sed -i -e "s#require_once __DIR__ . '/phpmailer/src/PHPMailer.php';#require_once __DIR__ . '/PHPMailer.php';#" -e "s#require_once __DIR__ . '/phpmailer/src/SMTP.php';#require_once __DIR__ . '/SMTP.php';#" -e "s#require_once __DIR__ . '/phpmailer/src/Exception.php';#require_once __DIR__ . '/Exception.php';#" deploy/formmail-80.php
+          sed -i \
+            -e "s#require_once __DIR__ . '/phpmailer/src/PHPMailer.php';#require_once __DIR__ . '/PHPMailer.php';#" \
+            -e "s#require_once __DIR__ . '/phpmailer/src/SMTP.php';#require_once __DIR__ . '/SMTP.php';#" \
+            -e "s#require_once __DIR__ . '/phpmailer/src/Exception.php';#require_once __DIR__ . '/Exception.php';#" \
+            deploy/formmail-80.php
+          grep -F "require_once __DIR__ . '/PHPMailer.php';" deploy/formmail-80.php
+          grep -F "require_once __DIR__ . '/SMTP.php';" deploy/formmail-80.php
+          grep -F "require_once __DIR__ . '/Exception.php';" deploy/formmail-80.php
+          grep -F "dirname(__DIR__) . '/config.ini'" deploy/formmail-80.php
+
       - name: Set deployment path
         id: deploy-path
         run: echo "remote_path=/dev/" >> "$GITHUB_OUTPUT"
+
       - name: Deploy React build
         uses: wlixcc/SFTP-Deploy-Action@v1.2.6
         with:
@@ -81,6 +86,7 @@ jobs:
           local_path: './dist/*'
           remote_path: ${{ steps.deploy-path.outputs.remote_path }}
           sftpArgs: '-o ConnectTimeout=5'
+
       - name: Deploy formmail endpoint
         uses: wlixcc/SFTP-Deploy-Action@v1.2.6
         with:
@@ -91,6 +97,7 @@ jobs:
           local_path: './deploy/formmail-80.php'
           remote_path: ${{ steps.deploy-path.outputs.remote_path }}
           sftpArgs: '-o ConnectTimeout=5'
+
       - name: Deploy PHPMailer
         uses: wlixcc/SFTP-Deploy-Action@v1.2.6
         with:
@@ -101,6 +108,7 @@ jobs:
           local_path: './phpmailer/src/PHPMailer.php'
           remote_path: ${{ steps.deploy-path.outputs.remote_path }}
           sftpArgs: '-o ConnectTimeout=5'
+
       - name: Deploy PHPMailer SMTP
         uses: wlixcc/SFTP-Deploy-Action@v1.2.6
         with:
@@ -111,6 +119,7 @@ jobs:
           local_path: './phpmailer/src/SMTP.php'
           remote_path: ${{ steps.deploy-path.outputs.remote_path }}
           sftpArgs: '-o ConnectTimeout=5'
+
       - name: Deploy PHPMailer exception
         uses: wlixcc/SFTP-Deploy-Action@v1.2.6
         with:
