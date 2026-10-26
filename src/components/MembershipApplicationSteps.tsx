@@ -74,3 +74,5 @@ export function MembershipApplicationSteps() {
     target,
   );
 }
+
+export default MembershipApplicationSteps;
