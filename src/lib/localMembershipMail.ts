@@ -1,4 +1,3 @@
-// restoration workflow trigger 2
 import { createMembershipPdf } from "@/lib/membershipApplication";
 import type { MembershipPdfData } from "@/lib/membershipApplication";
 
@@ -17,7 +16,11 @@ function localToken(length = 8) {
 }
 
 function sanitizePdfText(data: MembershipPdfData): MembershipPdfData {
-  const sanitized = JSON.parse(JSON.stringify(data, (_, value) => typeof value === "string" ? value.replace(/\u25A1/g, "") : value)) as MembershipPdfData;
+  const sanitized = JSON.parse(
+    JSON.stringify(data, (_, value) =>
+      typeof value === "string" ? value.replace(/\u25A1/g, "") : value,
+    ),
+  ) as MembershipPdfData;
   return sanitized;
 }
 
@@ -33,9 +36,37 @@ export function openMembershipMail(recipientList: readonly string[], fileName: s
   window.location.href = `mailto:${recipientList.join(",")}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 
-function base64Lines(bytes: Uint8Array) { let binary = ""; for (let i=0;i<bytes.length;i+=32768) binary += String.fromCharCode(...bytes.subarray(i,i+32768)); return btoa(binary).match(/.{1,76}/g)?.join("\r\n") ?? ""; }
+function base64Lines(bytes: Uint8Array) {
+  let binary = "";
+  for (let i = 0; i < bytes.length; i += 32768) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + 32768));
+  }
+  return btoa(binary).match(/.{1,76}/g)?.join("\r\n") ?? "";
+}
 
 export async function createMembershipEml(file: File, recipientList: readonly string[]) {
-  const boundary = `SC-${localToken(16)}`; const data = new Uint8Array(await file.arrayBuffer()); const body = "Anbei mein Aufnahmeantrag.";
-  return [`To: ${recipientList.join(", ")}`,"Subject: SC Laufenburg - Aufnahmeantrag","X-Unsent: 1","MIME-Version: 1.0",`Content-Type: multipart/mixed; boundary="${boundary}"`,"",`--${boundary}`,"Content-Type: text/plain; charset=UTF-8","Content-Transfer-Encoding: base64","",base64Lines(new TextEncoder().encode(body)),`--${boundary}`,`Content-Type: ${file.type}; name="${file.name}"`,`Content-Disposition: attachment; filename="${file.name}"`,"Content-Transfer-Encoding: base64","",base64Lines(data),`--${boundary}--`,""].join("\r\n");
+  const boundary = `SC-${localToken(16)}`;
+  const data = new Uint8Array(await file.arrayBuffer());
+  const body = "Anbei mein Aufnahmeantrag.";
+  return [
+    `To: ${recipientList.join(", ")}`,
+    "Subject: SC Laufenburg - Aufnahmeantrag",
+    "X-Unsent: 1",
+    "MIME-Version: 1.0",
+    `Content-Type: multipart/mixed; boundary="${boundary}"`,
+    "",
+    `--${boundary}`,
+    "Content-Type: text/plain; charset=UTF-8",
+    "Content-Transfer-Encoding: base64",
+    "",
+    base64Lines(new TextEncoder().encode(body)),
+    `--${boundary}`,
+    `Content-Type: ${file.type}; name="${file.name}"`,
+    `Content-Disposition: attachment; filename="${file.name}"`,
+    "Content-Transfer-Encoding: base64",
+    "",
+    base64Lines(data),
+    `--${boundary}--`,
+    "",
+  ].join("\r\n");
 }
