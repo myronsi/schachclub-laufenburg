@@ -23,6 +23,14 @@ jobs:
       - name: Build project
         run: npm run build
 
+      - name: Adapt dev API endpoints
+        run: |
+          find dist/assets -type f -name '*.js' -print0 | xargs -0 sed -i 's#/formmail-80\.php#/dev/formmail-80.php#g'
+          if grep -R '"/formmail-80.php"' dist/assets; then
+            echo "Production form endpoint leaked into dev build"
+            exit 1
+          fi
+
       - name: Verify build output
         run: |
           test -f dist/index.html
@@ -30,6 +38,10 @@ jobs:
           test -f dist/private-gallery.php
           if grep -R "sc-laufenburg.de/api/auth.php" dist; then
             echo "Production auth URL leaked into build"
+            exit 1
+          fi
+          if grep -R "mediaImages" dist; then
+            echo "Private gallery metadata leaked into build"
             exit 1
           fi
           ls -la dist
