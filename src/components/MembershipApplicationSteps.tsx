@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { FileText, Mail, UserRound } from "lucide-react";
 
 const steps = [
@@ -22,8 +24,59 @@ const steps = [
 ];
 
 export function MembershipApplicationSteps() {
-  return (
-    <div className="mx-auto mb-10 max-w-5xl rounded-lg border bg-white p-5 shadow-sm md:p-6">
+  const [target, setTarget] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    const section = document.getElementById("mitgliedwerden");
+    const container = section?.firstElementChild as HTMLElement | null;
+    const header = container?.firstElementChild as HTMLElement | null;
+
+    if (!container || !header) return;
+
+    const originalDisplay = container.style.display;
+    const originalFlexDirection = container.style.flexDirection;
+    const originalOrders = Array.from(container.children).map((child) => ({
+      child: child as HTMLElement,
+      order: (child as HTMLElement).style.order,
+    }));
+
+    container.style.display = "flex";
+    container.style.flexDirection = "column";
+
+    const children = Array.from(container.children) as HTMLElement[];
+    children.forEach((child, index) => {
+      child.style.order = String(index + 1);
+    });
+
+    // Current order in the membership section is:
+    // header, CTA cards, information cards, application form, contact.
+    // Keep the existing markup and only change their visual order.
+    if (children[1]) children[1].style.order = "4";
+    if (children[2]) children[2].style.order = "3";
+    if (children[3]) children[3].style.order = "5";
+    if (children[4]) children[4].style.order = "6";
+
+    const slot = document.createElement("div");
+    slot.setAttribute("data-membership-steps-slot", "true");
+    slot.style.order = "2";
+    header.insertAdjacentElement("afterend", slot);
+    setTarget(slot);
+
+    return () => {
+      setTarget(null);
+      slot.remove();
+      container.style.display = originalDisplay;
+      container.style.flexDirection = originalFlexDirection;
+      originalOrders.forEach(({ child, order }) => {
+        child.style.order = order;
+      });
+    };
+  }, []);
+
+  if (!target) return null;
+
+  return createPortal(
+    <div className="mx-auto mb-10 w-full max-w-5xl rounded-lg border bg-white p-5 shadow-sm md:p-6">
       <div className="mb-6 text-center">
         <p className="text-xs font-semibold uppercase tracking-wider text-club-accent">
           Dein Weg in den Verein
@@ -46,6 +99,7 @@ export function MembershipApplicationSteps() {
           </div>
         ))}
       </div>
-    </div>
+    </div>,
+    target,
   );
 }
