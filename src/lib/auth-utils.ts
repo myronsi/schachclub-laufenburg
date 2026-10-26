@@ -8,19 +8,14 @@ interface CookieOptions {
   httpOnly?: boolean;
 }
 
-const getAppCookiePath = (): string => {
+const getAppBasePath = (): string => {
   if (typeof window === 'undefined') return '/';
   return window.location.pathname.startsWith('/dev/') ? '/dev/' : '/';
 };
 
 export const cookieUtils = {
   set(name: string, value: string, options: CookieOptions = {}): void {
-    const defaults: CookieOptions = {
-      path: getAppCookiePath(),
-      secure: window.location.protocol === 'https:',
-      sameSite: 'lax',
-      maxAge: 8 * 24 * 60 * 60
-    };
+    const defaults: CookieOptions = { path: getAppBasePath(), secure: window.location.protocol === 'https:', sameSite: 'lax', maxAge: 8 * 24 * 60 * 60 };
     const finalOptions = { ...defaults, ...options };
     let cookieString = `${encodeURIComponent(name)}=${encodeURIComponent(value)}`;
     if (finalOptions.maxAge !== undefined) cookieString += `; max-age=${finalOptions.maxAge}`;
@@ -31,7 +26,6 @@ export const cookieUtils = {
     if (finalOptions.sameSite) cookieString += `; samesite=${finalOptions.sameSite}`;
     document.cookie = cookieString;
   },
-
   get(name: string): string | null {
     const nameEQ = encodeURIComponent(name) + '=';
     for (const cookie of document.cookie.split(';')) {
@@ -40,14 +34,8 @@ export const cookieUtils = {
     }
     return null;
   },
-
-  remove(name: string, options: Partial<CookieOptions> = {}): void {
-    this.set(name, '', { ...options, expires: new Date(0), maxAge: -1 });
-  },
-
-  exists(name: string): boolean {
-    return this.get(name) !== null;
-  }
+  remove(name: string, options: Partial<CookieOptions> = {}): void { this.set(name, '', { ...options, expires: new Date(0), maxAge: -1 }); },
+  exists(name: string): boolean { return this.get(name) !== null; }
 };
 
 export const jwtUtils = {
@@ -63,10 +51,7 @@ export const jwtUtils = {
       return null;
     }
   },
-  isExpired(token: string): boolean {
-    const payload = this.decodePayload(token);
-    return !payload?.exp || payload.exp * 1000 < Date.now();
-  },
+  isExpired(token: string): boolean { const payload = this.decodePayload(token); return !payload?.exp || payload.exp * 1000 < Date.now(); },
   getUsername(token: string): string | null { return this.decodePayload(token)?.username || null; },
   getStatus(token: string): string | null { return this.decodePayload(token)?.status || null; },
   getExpiry(token: string): number | null { return this.decodePayload(token)?.exp || null; },
@@ -92,37 +77,20 @@ export const authToken = {
       const expiresDate = new Date(payload.exp * 1000);
       const maxAge = payload.exp - Math.floor(Date.now() / 1000);
       cookieUtils.set(this.COOKIE_NAME, token, { expires: expiresDate, maxAge });
-    } else {
-      cookieUtils.set(this.COOKIE_NAME, token);
-    }
+    } else cookieUtils.set(this.COOKIE_NAME, token);
   },
   get(): string | null { return cookieUtils.get(this.COOKIE_NAME); },
   remove(): void { cookieUtils.remove(this.COOKIE_NAME); },
-  exists(): boolean {
-    const token = this.get();
-    return token !== null && !jwtUtils.isExpired(token);
-  },
-  getUsername(): string | null {
-    const token = this.get();
-    return token ? jwtUtils.getUsername(token) : null;
-  },
-  getStatus(): string | null {
-    const token = this.get();
-    return token ? jwtUtils.getStatus(token) : null;
-  },
-  getExpiry(): number | null {
-    const token = this.get();
-    return token ? jwtUtils.getExpiry(token) : null;
-  },
-  needsRenewal(): boolean {
-    const token = this.get();
-    return token ? jwtUtils.needsRenewal(token) : false;
-  },
+  exists(): boolean { const token = this.get(); return token !== null && !jwtUtils.isExpired(token); },
+  getUsername(): string | null { const token = this.get(); return token ? jwtUtils.getUsername(token) : null; },
+  getStatus(): string | null { const token = this.get(); return token ? jwtUtils.getStatus(token) : null; },
+  getExpiry(): number | null { const token = this.get(); return token ? jwtUtils.getExpiry(token) : null; },
+  needsRenewal(): boolean { const token = this.get(); return token ? jwtUtils.needsRenewal(token) : false; },
   async renewToken(): Promise<{ success: boolean; message: string; token?: string }> {
     const currentToken = this.get();
     if (!currentToken) return { success: false, message: 'No token to renew' };
     try {
-      const response = await fetch('api/auth.php', {
+      const response = await fetch(`${getAppBasePath()}api/auth.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${currentToken}` },
         body: JSON.stringify({ action: 'renew', token: currentToken })
@@ -138,10 +106,7 @@ export const authToken = {
       return { success: false, message: 'Network error during token renewal' };
     }
   },
-  async autoRenew(): Promise<boolean> {
-    if (this.needsRenewal()) return (await this.renewToken()).success;
-    return true;
-  }
+  async autoRenew(): Promise<boolean> { if (this.needsRenewal()) return (await this.renewToken()).success; return true; }
 };
 
 export const httpUtils = {
@@ -158,18 +123,8 @@ export const httpUtils = {
     if (token) headers.Authorization = `Bearer ${token}`;
     return fetch(url, { ...options, headers });
   },
-  async post(url: string, data: any, options: RequestInit = {}): Promise<Response> {
-    return this.authenticatedFetch(url, { method: 'POST', body: JSON.stringify(data), ...options });
-  },
-  async delete(url: string, data?: any, options: RequestInit = {}): Promise<Response> {
-    const requestOptions: RequestInit = { method: 'DELETE', ...options };
-    if (data) requestOptions.body = JSON.stringify(data);
-    return this.authenticatedFetch(url, requestOptions);
-  },
-  async put(url: string, data: any, options: RequestInit = {}): Promise<Response> {
-    return this.authenticatedFetch(url, { method: 'PUT', body: JSON.stringify(data), ...options });
-  },
-  async patch(url: string, data: any, options: RequestInit = {}): Promise<Response> {
-    return this.authenticatedFetch(url, { method: 'PATCH', body: JSON.stringify(data), ...options });
-  }
+  async post(url: string, data: any, options: RequestInit = {}): Promise<Response> { return this.authenticatedFetch(url, { method: 'POST', body: JSON.stringify(data), ...options }); },
+  async delete(url: string, data?: any, options: RequestInit = {}): Promise<Response> { const requestOptions: RequestInit = { method: 'DELETE', ...options }; if (data) requestOptions.body = JSON.stringify(data); return this.authenticatedFetch(url, requestOptions); },
+  async put(url: string, data: any, options: RequestInit = {}): Promise<Response> { return this.authenticatedFetch(url, { method: 'PUT', body: JSON.stringify(data), ...options }); },
+  async patch(url: string, data: any, options: RequestInit = {}): Promise<Response> { return this.authenticatedFetch(url, { method: 'PATCH', body: JSON.stringify(data), ...options }); }
 };
