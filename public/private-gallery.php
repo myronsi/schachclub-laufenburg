@@ -16,10 +16,7 @@ function failResponse(string $message, int $status): never
 function getBearerToken(): ?string
 {
     $header = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
-    if (preg_match('/^Bearer\s+(.+)$/i', $header, $matches)) {
-        return trim($matches[1]);
-    }
-
+    if (preg_match('/^Bearer\s+(.+)$/i', $header, $matches)) return trim($matches[1]);
     $cookie = $_COOKIE['auth_token'] ?? '';
     return $cookie !== '' ? $cookie : null;
 }
@@ -27,9 +24,7 @@ function getBearerToken(): ?string
 function getAuthEndpoint(): string
 {
     $host = $_SERVER['HTTP_HOST'] ?? '';
-    if (!preg_match('/^[a-z0-9.-]+(?::\d+)?$/i', $host)) {
-        failResponse('Ungültiger Host.', 400);
-    }
+    if (!preg_match('/^[a-z0-9.-]+(?::\d+)?$/i', $host)) failResponse('Ungültiger Host.', 400);
 
     $scriptPath = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/private-gallery.php'));
     $scriptPath = $scriptPath === '/' ? '' : rtrim($scriptPath, '/');
@@ -39,11 +34,8 @@ function getAuthEndpoint(): string
 
 function validateSession(string $token): array
 {
-    $payload = http_build_query([
-        'action' => 'validate',
-        'token' => $token,
-    ], '', '&');
-
+    // auth.php consumes JSON just like the browser-side auth service.
+    $payload = json_encode(['action' => 'validate', 'token' => $token], JSON_THROW_ON_ERROR);
     $endpoint = getAuthEndpoint();
     $response = false;
 
@@ -53,10 +45,7 @@ function validateSession(string $token): array
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POST => true,
             CURLOPT_POSTFIELDS => $payload,
-            CURLOPT_HTTPHEADER => [
-                'Content-Type: application/x-www-form-urlencoded',
-                'Authorization: Bearer ' . $token,
-            ],
+            CURLOPT_HTTPHEADER => ['Content-Type: application/json', 'Authorization: Bearer ' . $token],
             CURLOPT_TIMEOUT => 10,
             CURLOPT_CONNECTTIMEOUT => 5,
         ]);
@@ -66,7 +55,7 @@ function validateSession(string $token): array
         $context = stream_context_create([
             'http' => [
                 'method' => 'POST',
-                'header' => "Content-Type: application/x-www-form-urlencoded\r\nAuthorization: Bearer {$token}\r\n",
+                'header' => "Content-Type: application/json\r\nAuthorization: Bearer {$token}\r\n",
                 'content' => $payload,
                 'timeout' => 10,
             ],
@@ -74,15 +63,10 @@ function validateSession(string $token): array
         $response = @file_get_contents($endpoint, false, $context);
     }
 
-    if ($response === false || $response === '') {
-        failResponse('Anmeldung konnte nicht überprüft werden.', 503);
-    }
+    if ($response === false || $response === '') failResponse('Anmeldung konnte nicht überprüft werden.', 503);
 
     $decoded = json_decode($response, true);
-    if (!is_array($decoded) || ($decoded['success'] ?? false) !== true) {
-        failResponse('Nicht autorisiert.', 401);
-    }
-
+    if (!is_array($decoded) || ($decoded['success'] ?? false) !== true) failResponse('Nicht autorisiert.', 401);
     return $decoded;
 }
 
@@ -98,15 +82,13 @@ function galleryRoot(): string
         $real = realpath($candidate);
         if ($real !== false && is_dir($real)) return $real;
     }
-
     failResponse('Galerie ist nicht konfiguriert.', 500);
 }
 
 function relativePath(string $root, string $absolute): string
 {
     $prefix = rtrim(str_replace('\\', '/', $root), '/') . '/';
-    $absolute = str_replace('\\', '/', $absolute);
-    return ltrim(substr($absolute, strlen($prefix)), '/');
+    return ltrim(substr(str_replace('\\', '/', $absolute), strlen($prefix)), '/');
 }
 
 function imageTitle(string $path): string
@@ -125,7 +107,7 @@ $requestedFile = trim((string)($_GET['file'] ?? ''));
 
 if ($requestedFile !== '') {
     $requestedFile = str_replace('\\', '/', $requestedFile);
-    if ($requestedFile === '' || str_contains($requestedFile, "\0") || str_starts_with($requestedFile, '/') || str_contains($requestedFile, '../') || str_contains($requestedFile, '/..')) {
+    if (str_contains($requestedFile, "\0") || str_starts_with($requestedFile, '/') || str_contains($requestedFile, '../') || str_contains($requestedFile, '/..')) {
         failResponse('Ungültiger Dateipfad.', 400);
     }
 
@@ -138,13 +120,7 @@ if ($requestedFile !== '') {
     }
 
     $mime = (new finfo(FILEINFO_MIME_TYPE))->file($file);
-    $allowed = [
-        'image/jpeg' => 'image/jpeg',
-        'image/png' => 'image/png',
-        'image/gif' => 'image/gif',
-        'image/webp' => 'image/webp',
-    ];
-
+    $allowed = ['image/jpeg' => 'image/jpeg', 'image/png' => 'image/png', 'image/gif' => 'image/gif', 'image/webp' => 'image/webp'];
     if (!isset($allowed[$mime])) failResponse('Dateityp nicht erlaubt.', 403);
 
     header('Content-Type: ' . $allowed[$mime]);
@@ -158,25 +134,18 @@ if (($_GET['action'] ?? 'list') !== 'list') failResponse('Ungültige Aktion.', 4
 
 $images = [];
 $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-
 $iterator = new RecursiveIteratorIterator(
     new RecursiveDirectoryIterator($root, FilesystemIterator::SKIP_DOTS | FilesystemIterator::CURRENT_AS_FILEINFO)
 );
 
 foreach ($iterator as $fileInfo) {
     if (!$fileInfo->isFile()) continue;
-
-    $extension = strtolower($fileInfo->getExtension());
-    if (!in_array($extension, $allowedExtensions, true)) continue;
-
+    if (!in_array(strtolower($fileInfo->getExtension()), $allowedExtensions, true)) continue;
     $absolute = realpath($fileInfo->getPathname());
     if ($absolute === false) continue;
 
     $path = relativePath($root, $absolute);
-    $images[] = [
-        'path' => $path,
-        'title' => imageTitle($path),
-    ];
+    $images[] = ['path' => $path, 'title' => imageTitle($path)];
 }
 
 usort($images, static fn(array $a, array $b): int => strnatcasecmp($a['path'], $b['path']));
