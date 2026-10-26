@@ -1,0 +1,93 @@
+name: Apply final membership layout
+
+on:
+  push:
+    branches:
+      - fix/membership-layout-final
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Move membership steps and CTA cards
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          page = Path('src/pages/Mitgliedweden.tsx')
+          comp = Path('src/components/Mitgliedwerden.tsx')
+          p = page.read_text()
+          c = comp.read_text()
+
+          if '// MEMBERSHIP_LAYOUT_FINALIZED' in c:
+              print('Already finalized')
+              raise SystemExit(0)
+
+          # Remove the page-level steps. They will live inside the membership section.
+          p = p.replace('import MembershipApplicationSteps from "@/components/MembershipApplicationSteps";\n', '')
+          p = p.replace('      <MembershipApplicationSteps />\n', '')
+          page.write_text(p)
+
+          # Add the steps component import beside the other component imports.
+          c = c.replace(
+              'import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";\n',
+              'import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";\nimport { MembershipApplicationSteps } from "@/components/MembershipApplicationSteps";\n',
+              1,
+          )
+
+          def block_end(text, start):
+              depth = 0
+              token = re.compile(r'<div\\b|</div\\s*>')
+              for m in token.finditer(text, start):
+                  if m.group().startswith('</'):
+                      depth -= 1
+                      if depth == 0:
+                          return m.end()
+                  else:
+                      depth += 1
+              raise RuntimeError('Could not find matching div')
+
+          # CTA block currently immediately follows the heading.
+          cta_start = c.find('        <div className="mx-auto mb-10 grid max-w-4xl gap-4 md:grid-cols-2">')
+          if cta_start < 0:
+              raise RuntimeError('CTA block not found')
+          cta_end = block_end(c, cta_start)
+          cta = c[cta_start:cta_end]
+          c = c[:cta_start] + cta_end * 0 * '' + c[cta_end:]
+
+          # Insert MembershipApplicationSteps immediately after the intro/header.
+          header_end = c.find('        </header>')
+          if header_end < 0:
+              raise RuntimeError('Membership header not found')
+          header_end += len('        </header>')
+          steps = '\n        <MembershipApplicationSteps />'
+          c = c[:header_end] + steps + c[header_end:]
+
+          # Put the CTA cards after the three information cards and before the form.
+          form_start = c.find('        <div ref={formAnim.elementRef}')
+          if form_start < 0:
+              raise RuntimeError('Form block not found')
+          c = c[:form_start] + cta + '\n' + c[form_start:]
+
+          c += '\n// MEMBERSHIP_LAYOUT_FINALIZED\n'
+          comp.write_text(c)
+
+          print('Applied final order: heading -> steps -> info -> CTA -> form')
+
+      - name: Commit changes
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/pages/Mitgliedweden.tsx src/components/Mitgliedwerden.tsx
+          git rm .github/workflows/fix-membership-layout.yml
+          git commit -m "fix: restore requested membership page order"
+          git push
