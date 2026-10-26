@@ -22,12 +22,14 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
     fail('Ungültige Request Methode', 405);
 }
 
-$configPath = __DIR__ . '/config.ini';
+// Keep credentials outside the public web root. On the Strato layout this is
+// the parent of the deployed site directory. Do not add a public fallback.
+$configPath = dirname(__DIR__) . '/config.ini';
 $config = parse_ini_file($configPath, true);
 
 if ($config === false || !isset($config['mail']) || !is_array($config['mail'])) {
-    error_log('FormMail: config.ini konnte nicht geladen werden.');
-    fail('Fehler: Konfigurationsdatei nicht gefunden oder fehlerhaft.', 500);
+    error_log('FormMail: private config.ini konnte nicht geladen werden.');
+    fail('Fehler: Mail-Konfiguration nicht gefunden oder fehlerhaft.', 500);
 }
 
 $mailConfig = $config['mail'];
@@ -51,19 +53,11 @@ if (str_contains($name, "\r") || str_contains($name, "\n") || str_contains($subj
     fail('Fehler: Ungültige Eingabe.');
 }
 
-/*
- * reCAPTCHA
- *
- * The secret must be stored in config.ini:
- *
- * [recaptcha]
- * secret = "YOUR_SECRET"
- */
 $recaptchaResponse = trim((string)($_POST['g-recaptcha-response'] ?? ''));
 $recaptchaSecret = (string)($config['recaptcha']['secret'] ?? '');
 
 if ($recaptchaSecret === '') {
-    error_log('FormMail: reCAPTCHA secret fehlt in config.ini.');
+    error_log('FormMail: reCAPTCHA secret fehlt in privater config.ini.');
     fail('Fehler: reCAPTCHA ist nicht konfiguriert.', 500);
 }
 
@@ -72,7 +66,6 @@ if ($recaptchaResponse === '') {
 }
 
 $verifyUrl = 'https://www.google.com/recaptcha/api/siteverify';
-
 $postData = http_build_query([
     'secret' => $recaptchaSecret,
     'response' => $recaptchaResponse,
@@ -83,7 +76,6 @@ $verifyResponse = false;
 
 if (function_exists('curl_init')) {
     $ch = curl_init($verifyUrl);
-
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_POST => true,
@@ -92,14 +84,10 @@ if (function_exists('curl_init')) {
         CURLOPT_TIMEOUT => 10,
         CURLOPT_CONNECTTIMEOUT => 5,
     ]);
-
     $verifyResponse = curl_exec($ch);
     $curlError = curl_error($ch);
     curl_close($ch);
-
-    if ($verifyResponse === false) {
-        error_log('FormMail: reCAPTCHA cURL error: ' . $curlError);
-    }
+    if ($verifyResponse === false) error_log('FormMail: reCAPTCHA cURL error: ' . $curlError);
 } else {
     $context = stream_context_create([
         'http' => [
@@ -109,7 +97,6 @@ if (function_exists('curl_init')) {
             'timeout' => 10,
         ],
     ]);
-
     $verifyResponse = @file_get_contents($verifyUrl, false, $context);
 }
 
@@ -118,7 +105,6 @@ if ($verifyResponse === false || $verifyResponse === '') {
 }
 
 $decoded = json_decode($verifyResponse, true);
-
 if (!is_array($decoded) || ($decoded['success'] ?? false) !== true) {
     error_log('FormMail: reCAPTCHA nicht bestanden: ' . ($decoded['error-codes'][0] ?? 'unknown'));
     fail('Fehler: reCAPTCHA-Überprüfung nicht bestanden.');
@@ -154,10 +140,7 @@ try {
     $mail->Username = $smtpUsername;
     $mail->Password = $smtpPassword;
     $mail->Port = $smtpPort;
-
-    if ($encryption !== '') {
-        $mail->SMTPSecure = $encryption;
-    }
+    if ($encryption !== '') $mail->SMTPSecure = $encryption;
 
     $mail->CharSet = 'UTF-8';
     $mail->Timeout = 20;
@@ -168,15 +151,8 @@ try {
     $mail->Subject = $subject;
 
     $body = "Von: {$name} <{$email}>\n";
-
-    if ($phone !== '') {
-        $body .= "Telefon: {$phone}\n";
-    }
-
-    if ($age !== '') {
-        $body .= "Alter: {$age}\n";
-    }
-
+    if ($phone !== '') $body .= "Telefon: {$phone}\n";
+    if ($age !== '') $body .= "Alter: {$age}\n";
     $body .= "\n{$message}";
     $mail->isHTML(false);
     $mail->Body = $body;
@@ -188,54 +164,31 @@ try {
         $maxFiles = 2;
         $maxTotal = 5 * 1024 * 1024;
         $finfo = new finfo(FILEINFO_MIME_TYPE);
-        $allowed = [
-            'application/pdf',
-            'image/jpeg',
-            'image/png',
-            'image/gif',
-            'image/webp',
-        ];
-
+        $allowed = ['application/pdf', 'image/jpeg', 'image/png', 'image/gif', 'image/webp'];
         $count = count($files['name']);
 
         for ($i = 0; $i < $count; $i++) {
-            if (($files['error'][$i] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
-                continue;
-            }
-
+            if (($files['error'][$i] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) continue;
             $fileCount++;
             $fileSize = (int)($files['size'][$i] ?? 0);
             $totalSize += $fileSize;
-
-            if ($fileCount > $maxFiles) {
-                throw new Exception('Maximale Anzahl an Dateien überschritten.');
-            }
-
-            if ($totalSize > $maxTotal) {
-                throw new Exception('Die Gesamtgröße der Dateien darf 5 MB nicht überschreiten.');
-            }
+            if ($fileCount > $maxFiles) throw new Exception('Maximale Anzahl an Dateien überschritten.');
+            if ($totalSize > $maxTotal) throw new Exception('Die Gesamtgröße der Dateien darf 5 MB nicht überschreiten.');
 
             $tmpName = (string)($files['tmp_name'][$i] ?? '');
             $origName = basename((string)($files['name'][$i] ?? ''));
-
-            if ($tmpName === '' || !is_uploaded_file($tmpName)) {
-                continue;
-            }
-
+            if ($tmpName === '' || !is_uploaded_file($tmpName)) continue;
             $mime = $finfo->file($tmpName);
-
-            if (!in_array($mime, $allowed, true)) {
-                throw new Exception('Dateityp nicht erlaubt: ' . $origName);
-            }
-
+            if (!in_array($mime, $allowed, true)) throw new Exception('Dateityp nicht erlaubt: ' . $origName);
             $mail->addAttachment($tmpName, $origName);
         }
     }
 
     $mail->send();
-
     error_log(sprintf('FormMail: SMTP send successful; recipient=%s subject=%s', $to, $subject));
-    header('Location: kontakt-ok.html', true, 303);
+
+    // The SPA route is /kontakt-ok, not a static .html file.
+    header('Location: kontakt-ok', true, 303);
     exit;
 } catch (Exception $e) {
     error_log('FormMail: PHPMailer send failed: ' . $mail->ErrorInfo);
