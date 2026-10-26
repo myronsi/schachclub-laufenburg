@@ -1,5 +1,4 @@
 import MitgliedwerdenSection from "@/components/Mitgliedwerden";
-import { MembershipApplicationSteps } from "@/components/MembershipApplicationSteps";
 
 const Mitgliedwerden = () => {
   return (
@@ -115,7 +114,6 @@ const Mitgliedwerden = () => {
           }
         }
       `}</style>
-      <MembershipApplicationSteps />
       <MitgliedwerdenSection />
     </main>
   );
