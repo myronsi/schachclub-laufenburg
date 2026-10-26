@@ -35,6 +35,20 @@ export function MembershipApplicationSteps() {
     if (children[3]) children[3].style.order = "5";
     if (children[4]) children[4].style.order = "6";
 
+    // The dedicated "Probetag oder Fragen" card is no longer shown here.
+    const trialCard = Array.from(container.querySelectorAll("a")).find((link) =>
+      link.querySelector("h3")?.textContent?.trim() === "Probetag oder Fragen",
+    );
+    trialCard?.remove();
+
+    // Any remaining "Erst ausprobieren" CTA goes directly to the contact page.
+    Array.from(container.querySelectorAll("a")).forEach((link) => {
+      const label = link.textContent?.replace(/\s+/g, " ").trim().toLowerCase();
+      if (label?.includes("erst ausprobieren")) {
+        link.setAttribute("href", "/kontakt");
+      }
+    });
+
     const slot = document.createElement("div");
     slot.setAttribute("data-membership-steps-slot", "true");
     slot.style.order = "2";
