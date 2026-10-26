@@ -22,6 +22,7 @@ export function isMinor(birth: string) { if (!/^\d{4}-\d{2}-\d{2}$/.test(birth))
 function text(page:any,font:any,s:string|undefined,x:number,y:number,size=10,max=200){s=String(s??"").trim();if(!s)return;let z=size;while(z>6&&font.widthOfTextAtSize(s,z)>max)z-=.25;page.drawText(s,{x,y,size:z,font,color:ink});}
 function line(page:any,x1:number,y:number,x2:number){page.drawLine({start:{x:x1,y},end:{x:x2,y},thickness:.6,color:ink});}
 function check(page:any,x:number,y:number){page.drawLine({start:{x,y},end:{x:x+6,y:y+6},thickness:1,color:ink});page.drawLine({start:{x:x+6,y},end:{x,y:y+6},thickness:1,color:ink});}
+function box(page:any,x:number,y:number){page.drawRectangle({x,y,width:7,height:7,borderWidth:.7,color:ink});}
 async function signature(page:any,pdf:PDFDocument,src:string|undefined,x:number,y:number,w:number,h:number){if(!src)return;const i=src.indexOf(","),b=src.slice(i>=0?i+1:0),bytes=Uint8Array.from(atob(b),c=>c.charCodeAt(0));const img=src.startsWith("data:image/jpeg")?await pdf.embedJpg(bytes):await pdf.embedPng(bytes);const k=Math.min(w/img.width,h/img.height),iw=img.width*k,ih=img.height*k;page.drawImage(img,{x:x+(w-iw)/2,y:y+(h-ih)/2,width:iw,height:ih});}
 
 async function createPdf(data: MembershipPdfData) {
@@ -40,10 +41,10 @@ async function createPdf(data: MembershipPdfData) {
   text(page,bold,"PLZ, Wohnort:",35,588,9,110); line(page,145,583,292); text(page,bold,"Strasse",320,588,9,70); line(page,382,583,560);
   text(page,bold,"geboren am:",35,561,9,110); line(page,145,556,292); text(page,bold,"Geburtsort:",320,561,9,90); line(page,415,556,560);
   text(page,bold,"Telefon:",35,534,9,90); line(page,125,529,292); text(page,bold,"Email:",320,534,9,60); line(page,382,529,560);
-  text(page,bold,"Staatsangehörigkeit:",35,507,9,115); text(page,helv,"□ Deutsch",153,507,9); text(page,helv,"□ EU-Angehöriger",225,507,9); text(page,helv,"□ Sonstige:",350,507,9); line(page,414,502,560);
-  text(page,bold,"Geschlecht:",35,480,9,90); text(page,helv,"□ männlich",153,480,9); text(page,helv,"□ weiblich",225,480,9); text(page,bold,"früherer Verein:",320,480,9,100); line(page,415,475,560);
-  text(page,bold,"Art der Mitgliedschaft:",35,453,9,125); text(page,helv,"□ Aktivmitglied",153,453,9); text(page,helv,"□ Passivmitglied",265,453,9);
-  text(page,helv,"□ Ich habe die Datenschutzerklärung des badischen Schachverbandes zur Kenntnis genommen.",35,426,9,525);
+  text(page,bold,"Staatsangehörigkeit:",35,507,9,115); box(page,151,504);text(page,helv,"Deutsch",162,507,9); box(page,223,504);text(page,helv,"EU-Angehöriger",234,507,9); box(page,348,504);text(page,helv,"Sonstige:",359,507,9); line(page,414,502,560);
+  text(page,bold,"Geschlecht:",35,480,9,90); box(page,151,477);text(page,helv,"männlich",162,480,9); box(page,223,477);text(page,helv,"weiblich",234,480,9); text(page,bold,"früherer Verein:",320,480,9,100); line(page,415,475,560);
+  text(page,bold,"Art der Mitgliedschaft:",35,453,9,125); box(page,151,450);text(page,helv,"Aktivmitglied",162,453,9); box(page,263,450);text(page,helv,"Passivmitglied",274,453,9);
+  box(page,35,423);text(page,helv,"Ich habe die Datenschutzerklärung des badischen Schachverbandes zur Kenntnis genommen.",47,426,9,513);
   text(page,helv,"Laufenburg, den",35,395,9); line(page,120,390,292);
 
   line(page,35,307,292); line(page,320,307,560); text(page,helv,"(bei Jugendlichen gesetzlicher Vertreter)",55,292,8,220); text(page,helv,"Der Antragsteller",415,292,8,120);
