@@ -3,7 +3,6 @@ import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { FormEvent, useRef, useState } from "react";
 import {
   ArrowRight,
-  Calendar,
   Check,
   Clock,
   Eraser,
@@ -11,7 +10,6 @@ import {
   Heart,
   Mail,
   PenLine,
-  Send,
   Upload,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -123,7 +121,6 @@ function ibanOkay(value: string) {
 const MitgliedwerdenSection = () => {
   const intro = useScrollAnimation(),
     info = useScrollAnimation(),
-    steps = useScrollAnimation(),
     formAnim = useScrollAnimation();
   const applicant = useRef<HTMLCanvasElement | null>(null),
     guardian = useRef<HTMLCanvasElement | null>(null),
@@ -304,56 +301,6 @@ const MitgliedwerdenSection = () => {
                 <strong>17:00 und 19:00 Uhr</strong> zu einer passenden Zeit
                 vorbeikommen.
               </p>
-            </div>
-          </div>
-        </div>
-        <div
-          ref={steps.elementRef}
-          className={`mx-auto mb-10 max-w-5xl rounded-lg border bg-white p-5 shadow-sm md:p-6 ${steps.isVisible ? "animate-slideInUp" : "opacity-0"}`}
-        >
-          <div className="mb-6 text-center">
-            <p className="text-xs font-semibold uppercase tracking-wider text-club-accent">
-              Dein Weg in den Verein
-            </p>
-            <h3 className="mt-1 text-xl font-bold text-club-primary">
-              Einfach Schritt für Schritt
-            </h3>
-          </div>
-          <div className="grid gap-5 md:grid-cols-3">
-            <div className="flex gap-3 md:block md:text-center">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-club-accent text-sm font-bold text-white">
-                1
-              </span>
-              <div>
-                <h4 className="font-semibold text-gray-900 md:mt-3">Kontakt</h4>
-                <p className="mt-1 text-sm text-gray-600">
-                  Schreib uns und sag uns, was du suchst.
-                </p>
-              </div>
-            </div>
-            <div className="flex gap-3 md:block md:text-center">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-club-accent text-sm font-bold text-white">
-                2
-              </span>
-              <div>
-                <h4 className="font-semibold text-gray-900 md:mt-3">
-                  Probetag
-                </h4>
-                <p className="mt-1 text-sm text-gray-600">
-                  Kostenlos vorbeikommen, spielen und den Verein kennenlernen.
-                </p>
-              </div>
-            </div>
-            <div className="flex gap-3 md:block md:text-center">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-club-accent text-sm font-bold text-white">
-                3
-              </span>
-              <div>
-                <h4 className="font-semibold text-gray-900 md:mt-3">Antrag</h4>
-                <p className="mt-1 text-sm text-gray-600">
-                  Antrag ausfüllen, unterschreiben und verschlüsselt senden.
-                </p>
-              </div>
             </div>
           </div>
         </div>
