@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - fix/winansi-checkbox
+  pull_request:
+    branches:
+      - dev
 
 permissions:
   contents: write
