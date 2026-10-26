@@ -22,18 +22,24 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
     fail('Ungültige Request Methode', 405);
 }
 
-// Keep credentials outside the public web root. On the Strato layout this is
-// the parent of the deployed site directory. Do not add a public fallback.
+// Keep credentials outside the public web root. If the old public location
+// still exists, migrate it once before reading it. .htaccess blocks HTTP access.
 $configPath = dirname(__DIR__) . '/config.ini';
-$config = parse_ini_file($configPath, true);
+$legacyConfigPath = __DIR__ . '/config.ini';
+if (!is_file($configPath) && is_file($legacyConfigPath)) {
+    if (!@rename($legacyConfigPath, $configPath)) {
+        error_log('FormMail: konnte die alte config.ini nicht in den privaten Bereich verschieben.');
+        fail('Fehler: Mail-Konfiguration konnte nicht sicher bereitgestellt werden.', 500);
+    }
+}
 
+$config = parse_ini_file($configPath, true);
 if ($config === false || !isset($config['mail']) || !is_array($config['mail'])) {
     error_log('FormMail: private config.ini konnte nicht geladen werden.');
     fail('Fehler: Mail-Konfiguration nicht gefunden oder fehlerhaft.', 500);
 }
 
 $mailConfig = $config['mail'];
-
 $email = filter_var(trim((string)($_POST['email'] ?? '')), FILTER_VALIDATE_EMAIL);
 $name = trim((string)($_POST['name'] ?? ''));
 $subject = trim((string)($_POST['subject'] ?? ''));
@@ -44,26 +50,20 @@ $age = trim((string)($_POST['age'] ?? ''));
 if ($email === false || $name === '' || $subject === '' || $message === '') {
     fail('Fehler: Ungültige Eingabe. Bitte füllen Sie alle Felder korrekt aus.');
 }
-
 if (mb_strlen($name) > 200 || mb_strlen($subject) > 200 || mb_strlen($message) > 10000 || mb_strlen($phone) > 100 || mb_strlen($age) > 20) {
     fail('Fehler: Eingabe zu lang.');
 }
-
 if (str_contains($name, "\r") || str_contains($name, "\n") || str_contains($subject, "\r") || str_contains($subject, "\n") || str_contains($email, "\r") || str_contains($email, "\n")) {
     fail('Fehler: Ungültige Eingabe.');
 }
 
 $recaptchaResponse = trim((string)($_POST['g-recaptcha-response'] ?? ''));
 $recaptchaSecret = (string)($config['recaptcha']['secret'] ?? '');
-
 if ($recaptchaSecret === '') {
     error_log('FormMail: reCAPTCHA secret fehlt in privater config.ini.');
     fail('Fehler: reCAPTCHA ist nicht konfiguriert.', 500);
 }
-
-if ($recaptchaResponse === '') {
-    fail('Fehler: reCAPTCHA erforderlich.');
-}
+if ($recaptchaResponse === '') fail('Fehler: reCAPTCHA erforderlich.');
 
 $verifyUrl = 'https://www.google.com/recaptcha/api/siteverify';
 $postData = http_build_query([
@@ -71,7 +71,6 @@ $postData = http_build_query([
     'response' => $recaptchaResponse,
     'remoteip' => $_SERVER['REMOTE_ADDR'] ?? '',
 ], '', '&');
-
 $verifyResponse = false;
 
 if (function_exists('curl_init')) {
@@ -100,10 +99,7 @@ if (function_exists('curl_init')) {
     $verifyResponse = @file_get_contents($verifyUrl, false, $context);
 }
 
-if ($verifyResponse === false || $verifyResponse === '') {
-    fail('Fehler: reCAPTCHA-Überprüfung fehlgeschlagen. Bitte versuchen Sie es erneut.', 502);
-}
-
+if ($verifyResponse === false || $verifyResponse === '') fail('Fehler: reCAPTCHA-Überprüfung fehlgeschlagen. Bitte versuchen Sie es erneut.', 502);
 $decoded = json_decode($verifyResponse, true);
 if (!is_array($decoded) || ($decoded['success'] ?? false) !== true) {
     error_log('FormMail: reCAPTCHA nicht bestanden: ' . ($decoded['error-codes'][0] ?? 'unknown'));
@@ -132,7 +128,6 @@ $encryption = match (strtolower($smtpEncryption)) {
 };
 
 $mail = new PHPMailer(true);
-
 try {
     $mail->isSMTP();
     $mail->Host = $smtpHost;
@@ -141,7 +136,6 @@ try {
     $mail->Password = $smtpPassword;
     $mail->Port = $smtpPort;
     if ($encryption !== '') $mail->SMTPSecure = $encryption;
-
     $mail->CharSet = 'UTF-8';
     $mail->Timeout = 20;
     $mail->SMTPKeepAlive = false;
@@ -166,7 +160,6 @@ try {
         $finfo = new finfo(FILEINFO_MIME_TYPE);
         $allowed = ['application/pdf', 'image/jpeg', 'image/png', 'image/gif', 'image/webp'];
         $count = count($files['name']);
-
         for ($i = 0; $i < $count; $i++) {
             if (($files['error'][$i] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) continue;
             $fileCount++;
@@ -174,7 +167,6 @@ try {
             $totalSize += $fileSize;
             if ($fileCount > $maxFiles) throw new Exception('Maximale Anzahl an Dateien überschritten.');
             if ($totalSize > $maxTotal) throw new Exception('Die Gesamtgröße der Dateien darf 5 MB nicht überschreiten.');
-
             $tmpName = (string)($files['tmp_name'][$i] ?? '');
             $origName = basename((string)($files['name'][$i] ?? ''));
             if ($tmpName === '' || !is_uploaded_file($tmpName)) continue;
@@ -186,8 +178,6 @@ try {
 
     $mail->send();
     error_log(sprintf('FormMail: SMTP send successful; recipient=%s subject=%s', $to, $subject));
-
-    // The SPA route is /kontakt-ok, not a static .html file.
     header('Location: kontakt-ok', true, 303);
     exit;
 } catch (Exception $e) {
