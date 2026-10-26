@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - fix/membership-layout-final
+  pull_request:
+    branches:
+      - dev
 
 permissions:
   contents: write
@@ -31,12 +34,10 @@ jobs:
               print('Already finalized')
               raise SystemExit(0)
 
-          # Remove the page-level steps. They will live inside the membership section.
           p = p.replace('import MembershipApplicationSteps from "@/components/MembershipApplicationSteps";\n', '')
           p = p.replace('      <MembershipApplicationSteps />\n', '')
           page.write_text(p)
 
-          # Add the steps component import beside the other component imports.
           c = c.replace(
               'import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";\n',
               'import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";\nimport { MembershipApplicationSteps } from "@/components/MembershipApplicationSteps";\n',
@@ -55,23 +56,19 @@ jobs:
                       depth += 1
               raise RuntimeError('Could not find matching div')
 
-          # CTA block currently immediately follows the heading.
           cta_start = c.find('        <div className="mx-auto mb-10 grid max-w-4xl gap-4 md:grid-cols-2">')
           if cta_start < 0:
               raise RuntimeError('CTA block not found')
           cta_end = block_end(c, cta_start)
           cta = c[cta_start:cta_end]
-          c = c[:cta_start] + cta_end * 0 * '' + c[cta_end:]
+          c = c[:cta_start] + c[cta_end:]
 
-          # Insert MembershipApplicationSteps immediately after the intro/header.
           header_end = c.find('        </header>')
           if header_end < 0:
               raise RuntimeError('Membership header not found')
           header_end += len('        </header>')
-          steps = '\n        <MembershipApplicationSteps />'
-          c = c[:header_end] + steps + c[header_end:]
+          c = c[:header_end] + '\n        <MembershipApplicationSteps />' + c[header_end:]
 
-          # Put the CTA cards after the three information cards and before the form.
           form_start = c.find('        <div ref={formAnim.elementRef}')
           if form_start < 0:
               raise RuntimeError('Form block not found')
@@ -79,8 +76,6 @@ jobs:
 
           c += '\n// MEMBERSHIP_LAYOUT_FINALIZED\n'
           comp.write_text(c)
-
-          print('Applied final order: heading -> steps -> info -> CTA -> form')
 
       - name: Commit changes
         shell: bash
