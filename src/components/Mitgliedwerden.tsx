@@ -15,10 +15,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
-import {
-  createEncryptedMembershipPdf,
-  isMinor,
-} from "@/lib/membershipApplication";
+import { isMinor } from "@/lib/membershipApplication";
+import type { MembershipPdfData } from "@/lib/membershipApplication";
+import { createMembershipEml, MEMBERSHIP_RECIPIENTS, openMembershipMail, prepareLocalMembershipApplication } from "@/lib/localMembershipMail";
 
 type FormState = {
   first_name: string;
@@ -86,86 +85,15 @@ const Field = ({
     {children}
   </div>
 );
-const SignaturePad = ({
-  label,
-  hint,
-  valueRef,
-  onSigned,
-  onClear,
-}: {
-  label: string;
-  hint: string;
-  valueRef: React.MutableRefObject<HTMLCanvasElement | null>;
-  onSigned: () => void;
-  onClear: () => void;
-}) => {
-  const drawing = useRef(false);
-  const point = (e: PointerEvent) => {
-    const r = valueRef.current!.getBoundingClientRect();
-    return { x: e.clientX - r.left, y: e.clientY - r.top };
-  };
-  return (
-    <div className="rounded-lg border bg-gray-50/70 p-4">
-      <div className="mb-2 flex items-center justify-between gap-3">
-        <div>
-          <h3 className="font-semibold text-gray-900">{label}</h3>
-          <p className="text-xs text-gray-500">{hint}</p>
-        </div>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() => {
-            const c = valueRef.current,
-              x = c?.getContext("2d");
-            if (c && x) {
-              x.clearRect(0, 0, c.width, c.height);
-              onClear();
-            }
-          }}
-        >
-          <Eraser className="mr-1 h-4 w-4" />
-          Löschen
-        </Button>
-      </div>
-      <canvas
-        ref={valueRef}
-        className="h-32 w-full cursor-crosshair touch-none rounded-md border bg-white"
-        onPointerDown={(e) => {
-          const c = valueRef.current,
-            x = c?.getContext("2d");
-          if (!c || !x) return;
-          const ratio = Math.max(window.devicePixelRatio || 1, 1);
-          c.width = c.clientWidth * ratio;
-          c.height = c.clientHeight * ratio;
-          x.scale(ratio, ratio);
-          x.lineWidth = 2;
-          x.lineCap = "round";
-          x.strokeStyle = "#111827";
-          drawing.current = true;
-          c.setPointerCapture(e.pointerId);
-          const p = point(e.nativeEvent);
-          x.beginPath();
-          x.moveTo(p.x, p.y);
-        }}
-        onPointerMove={(e) => {
-          if (!drawing.current) return;
-          const x = valueRef.current?.getContext("2d");
-          if (!x) return;
-          const p = point(e.nativeEvent);
-          x.lineTo(p.x, p.y);
-          x.stroke();
-          onSigned();
-        }}
-        onPointerUp={() => {
-          drawing.current = false;
-        }}
-        onPointerCancel={() => {
-          drawing.current = false;
-        }}
-      />
-    </div>
-  );
+const SignaturePad = ({ label, hint, valueRef, onSigned, onClear }: { label: string; hint: string; valueRef: React.MutableRefObject<HTMLCanvasElement | null>; onSigned: () => void; onClear: () => void; }) => {
+  const drawing=useRef(false), signCanvas=useRef<HTMLCanvasElement|null>(null), fileInput=useRef<HTMLInputElement|null>(null);
+  const [open,setOpen]=useState(false);
+  const point=(c:HTMLCanvasElement,e:PointerEvent)=>{const r=c.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top};};
+  const setup=(c:HTMLCanvasElement)=>{const ratio=Math.max(window.devicePixelRatio||1,1);c.width=Math.max(c.clientWidth*ratio,1);c.height=Math.max(c.clientHeight*ratio,1);const x=c.getContext("2d");if(x){x.setTransform(ratio,0,0,ratio,0,0);x.clearRect(0,0,c.clientWidth,c.clientHeight);x.lineWidth=2;x.lineCap="round";x.lineJoin="round";x.strokeStyle="#111827";}};
+  const clear=()=>{const c=valueRef.current,x=c?.getContext("2d");if(c&&x)x.clearRect(0,0,c.width,c.height);const c2=signCanvas.current,x2=c2?.getContext("2d");if(c2&&x2)x2.clearRect(0,0,c2.width,c2.height);onClear();};
+  const upload=(file:File)=>{if(!file.type.startsWith("image/"))return;const r=new FileReader();r.onload=()=>{const img=new Image();img.onload=()=>{const c=valueRef.current;if(!c)return;const ratio=Math.max(window.devicePixelRatio||1,1);c.width=Math.max(c.clientWidth*ratio,1);c.height=Math.max(c.clientHeight*ratio,1);const x=c.getContext("2d");if(!x)return;x.setTransform(ratio,0,0,ratio,0,0);x.clearRect(0,0,c.clientWidth,c.clientHeight);const scale=Math.min((c.clientWidth-16)/img.width,(c.clientHeight-16)/img.height),w=img.width*scale,h=img.height*scale;x.drawImage(img,(c.clientWidth-w)/2,(c.clientHeight-h)/2,w,h);onSigned();};img.src=String(r.result);};r.readAsDataURL(file);};
+  const accept=()=>{const source=signCanvas.current,target=valueRef.current;if(!source||!target)return;const ratio=Math.max(window.devicePixelRatio||1,1);target.width=Math.max(target.clientWidth*ratio,1);target.height=Math.max(target.clientHeight*ratio,1);const x=target.getContext("2d");if(!x)return;x.setTransform(ratio,0,0,ratio,0,0);x.clearRect(0,0,target.clientWidth,target.clientHeight);const scale=Math.min(target.clientWidth/source.clientWidth,target.clientHeight/source.clientHeight),w=source.clientWidth*scale,h=source.clientHeight*scale;x.drawImage(source,(target.clientWidth-w)/2,(target.clientHeight-h)/2,w,h);setOpen(false);onSigned();};
+  return <><div className="rounded-lg border bg-gray-50/70 p-4"><div className="mb-2 flex items-center justify-between gap-3"><div><h3 className="font-semibold text-gray-900">{label}</h3><p className="text-xs text-gray-500">{hint}</p></div><Button type="button" variant="outline" size="sm" onClick={clear}><Eraser className="mr-1 h-4 w-4"/>Löschen</Button></div><canvas ref={valueRef} className="h-32 w-full rounded-md border bg-white object-contain"/><div className="mt-3 flex flex-wrap gap-2"><Button type="button" variant="outline" size="sm" onClick={()=>{setOpen(true);setTimeout(()=>{if(signCanvas.current)setup(signCanvas.current);},0);}}><PenLine className="mr-1 h-4 w-4"/>Unterschrift zeichnen</Button><Button type="button" variant="outline" size="sm" onClick={()=>fileInput.current?.click()}><Upload className="mr-1 h-4 w-4"/>Unterschrift hochladen</Button><input ref={fileInput} type="file" accept="image/png,image/jpeg,image/webp" className="hidden" onChange={e=>{const f=e.target.files?.[0];if(f)upload(f);e.currentTarget.value="";}}/></div></div>{open&&<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" role="dialog" aria-modal="true" aria-label={label}><div className="w-full max-w-2xl rounded-xl bg-white p-5 shadow-xl"><div className="mb-3 flex items-center justify-between"><div><h3 className="text-lg font-semibold text-gray-900">{label}</h3><p className="text-sm text-gray-500">Bitte unterschreiben Sie im Feld.</p></div><Button type="button" variant="outline" size="sm" onClick={()=>setOpen(false)}>Schließen</Button></div><canvas ref={signCanvas} className="h-48 w-full cursor-crosshair touch-none rounded-md border bg-white" onPointerDown={e=>{const c=signCanvas.current,x=c?.getContext("2d");if(!c||!x)return;drawing.current=true;c.setPointerCapture(e.pointerId);const q=point(c,e.nativeEvent);x.beginPath();x.moveTo(q.x,q.y);}} onPointerMove={e=>{if(!drawing.current)return;const c=signCanvas.current,x=c?.getContext("2d");if(!c||!x)return;const q=point(c,e.nativeEvent);x.lineTo(q.x,q.y);x.stroke();}} onPointerUp={()=>{drawing.current=false}} onPointerCancel={()=>{drawing.current=false}}/><div className="mt-3 flex justify-between gap-2"><Button type="button" variant="outline" onClick={()=>{const c=signCanvas.current,x=c?.getContext("2d");if(c&&x)x.clearRect(0,0,c.width,c.height)}}><Eraser className="mr-1 h-4 w-4"/>Löschen</Button><Button type="button" onClick={accept} className="bg-club-accent hover:bg-club-accent/90">Unterschrift übernehmen</Button></div></div></div>}</>;
 };
 function ibanOkay(value: string) {
   const s = value.replace(/\s/g, "").toUpperCase();
@@ -205,10 +133,14 @@ const MitgliedwerdenSection = () => {
     [terms, setTerms] = useState(false),
     [privacy, setPrivacy] = useState(false),
     [busy, setBusy] = useState(false),
+    [prepared, setPrepared] = useState<{ file: File; name: string } | null>(null),
     [message, setMessage] = useState("");
   const minor = isMinor(form.birth_date);
-  const set = (k: keyof FormState, v: string | boolean) =>
+  const set = (k: keyof FormState, v: string | boolean) => {
     setForm((x) => ({ ...x, [k]: v }));
+    setPrepared(null);
+    setMessage("");
+  };
   const reset = () => {
     setForm({
       ...initialForm,
@@ -219,6 +151,8 @@ const MitgliedwerdenSection = () => {
     setMandateSigned(false);
     setTerms(false);
     setPrivacy(false);
+    setPrepared(null);
+    setMessage("");
   };
   const submit = async (e: FormEvent) => {
     e.preventDefault();
@@ -261,49 +195,26 @@ const MitgliedwerdenSection = () => {
     }
     setBusy(true);
     try {
-      const encrypted = await createEncryptedMembershipPdf({
+      const data: MembershipPdfData = {
         ...form,
-        nationality:
-          form.nationality === "Sonstige"
-            ? `Sonstige: ${form.nationality_other.trim()}`
-            : form.nationality,
+        nationality: form.nationality === "Sonstige" ? `Sonstige: ${form.nationality_other.trim()}` : form.nationality,
         representative_name: minor ? form.representative_name.trim() : "",
-        signatures: {
-          applicant: applicant.current?.toDataURL("image/png") || "",
-          representative: minor
-            ? guardian.current?.toDataURL("image/png") || ""
-            : "",
-          mandate: form.direct_debit
-            ? mandate.current?.toDataURL("image/png") || ""
-            : "",
-        },
+        signatures: { applicant: applicant.current?.toDataURL("image/png") || "", representative: minor ? guardian.current?.toDataURL("image/png") || "" : "", mandate: form.direct_debit ? mandate.current?.toDataURL("image/png") || "" : "" },
         created: new Date().toISOString(),
-        text_version: "2026-10-19-v4",
-      });
-      const body = new FormData();
-      body.append("membership_application", encrypted.file);
-      body.append("type", "membership_application");
-      const r = await fetch("/formmail-80.php", { method: "POST", body });
-      if (!r.ok) {
-        let m = "Der Antrag konnte nicht gesendet werden.";
-        try {
-          const d = await r.json();
-          if (d.message) m = d.message;
-        } catch {}
-        throw new Error(m);
-      }
-      reset();
-      setMessage(
-        "Ihr Mitgliedsantrag wurde erfolgreich verschlüsselt und an den geschäftsführenden Vorstand übermittelt. Die Antragsdaten werden auf dem Webserver nicht gespeichert.",
-      );
+        text_version: "2026-10-24-final",
+      };
+      const result = await prepareLocalMembershipApplication(data);
+      setPrepared(result);
+      setMessage("Die PDF wurde ausschließlich in Ihrem Browser erstellt. Sie wurde noch nicht versendet.");
     } catch (err) {
-      setMessage(
-        err instanceof Error ? err.message : "Fehler beim Senden des Antrags.",
-      );
+      setMessage(err instanceof Error ? err.message : "Die PDF konnte nicht erstellt werden.");
     } finally {
       setBusy(false);
     }
   };
+  const download = () => { if (!prepared) return; const url=URL.createObjectURL(prepared.file); const a=document.createElement("a"); a.href=url; a.download=prepared.name; a.click(); setTimeout(()=>URL.revokeObjectURL(url),30000); };
+  const mail = () => { if (prepared) openMembershipMail(MEMBERSHIP_RECIPIENTS, prepared.name); };
+  const eml = async () => { if (!prepared) return; const text=await createMembershipEml(prepared.file,MEMBERSHIP_RECIPIENTS); const blob=new Blob([text],{type:"message/rfc822"}); const url=URL.createObjectURL(blob); const a=document.createElement("a"); a.href=url; a.download="SC-Aufnahmeantrag.eml"; a.click(); setTimeout(()=>URL.revokeObjectURL(url),30000); };
   return (
     <section id="mitgliedwerden" className="animate-fadeIn py-16">
       <div className="container mx-auto px-4">
@@ -467,7 +378,7 @@ const MitgliedwerdenSection = () => {
               </div>
             </summary>
             <div className="border-t p-5 md:p-7">
-              <form onSubmit={submit} className="space-y-7">
+              <form onSubmit={(e) => { submit(e); }} className="space-y-7">
                 <div className="space-y-6 rounded-lg border-2 border-gray-800 p-5 md:p-7">
                   <p className="leading-relaxed text-gray-800">
                     Ich möchte Mitglied beim Schachclub Laufenburg e.V. und im
@@ -798,30 +709,9 @@ const MitgliedwerdenSection = () => {
                     {message}
                   </div>
                 )}
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <p className="max-w-xl text-xs leading-5 text-gray-500">
-                    Die PDF wird in Ihrem Browser erstellt. Die Verschlüsselung
-                    erfolgt anschließend auf dem Webserver, bevor die Datei per
-                    E-Mail versendet wird. Die Antragsdaten werden nicht
-                    dauerhaft auf dem Webserver gespeichert.
-                  </p>
-                  <Button
-                    type="submit"
-                    disabled={busy}
-                    className="bg-club-accent hover:bg-club-accent/90"
-                  >
-                    {busy ? (
-                      <>
-                        <Clock className="mr-2 h-4 w-4 animate-spin" />
-                        PDF wird erstellt, verschlüsselt und gesendet...
-                      </>
-                    ) : (
-                      <>
-                        <Send className="mr-2 h-4 w-4" />
-                        Antrag sicher senden
-                      </>
-                    )}
-                  </Button>
+                <div className="flex flex-col gap-3 rounded-lg border bg-gray-50 p-4 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="max-w-xl text-xs leading-5 text-gray-500">Die PDF wird vollständig in Ihrem Browser erstellt. Sie wird nicht an den Webserver hochgeladen. Danach können Sie sie speichern, in Ihrem E-Mail-Programm als Anhang verwenden oder einen lokalen E-Mail-Entwurf erzeugen.</p>
+                  <div className="flex flex-wrap gap-2 sm:justify-end"><Button type="submit" disabled={busy} className="bg-club-accent hover:bg-club-accent/90">{busy ? <><Clock className="mr-2 h-4 w-4 animate-spin" />PDF wird erstellt...</> : <><FileText className="mr-2 h-4 w-4" />PDF vorbereiten</>}</Button>{prepared&&<><Button type="button" variant="outline" onClick={download}>PDF speichern</Button><Button type="button" variant="outline" onClick={mail}><Mail className="mr-2 h-4 w-4"/>E-Mail öffnen</Button><Button type="button" variant="outline" onClick={eml}>E-Mail-Entwurf (.eml)</Button></>}</div>
                 </div>
               </form>
             </div>
