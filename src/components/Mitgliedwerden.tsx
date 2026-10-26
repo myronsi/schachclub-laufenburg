@@ -1,6 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
-import { FormEvent, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   ArrowRight,
   Check,
@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Link } from "react-router-dom";
 import { isMinor } from "@/lib/membershipApplication";
 import type { MembershipPdfData } from "@/lib/membershipApplication";
 import { createMembershipEml, MEMBERSHIP_RECIPIENTS, openMembershipMail, prepareLocalMembershipApplication } from "@/lib/localMembershipMail";
@@ -77,7 +76,7 @@ const Field = ({
   required?: boolean;
   children: React.ReactNode;
 }) => (
-  <div className="space-y-1">
+  <div className="min-w-0 space-y-1">
     <label className="block pb-1 text-sm leading-5 font-medium text-gray-700">
       {label}
       {required && <span className="text-red-600"> *</span>}
@@ -88,12 +87,30 @@ const Field = ({
 const SignaturePad = ({ label, hint, valueRef, onSigned, onClear }: { label: string; hint: string; valueRef: React.MutableRefObject<HTMLCanvasElement | null>; onSigned: () => void; onClear: () => void; }) => {
   const drawing=useRef(false), signCanvas=useRef<HTMLCanvasElement|null>(null), fileInput=useRef<HTMLInputElement|null>(null);
   const [open,setOpen]=useState(false);
+  useEffect(() => {
+    if (!open) return;
+
+    const body = document.body;
+    const root = document.documentElement;
+    const previousStyles = {
+      bodyOverflow: body.style.overflow,
+      rootOverflow: root.style.overflow,
+    };
+
+    body.style.overflow = "hidden";
+    root.style.overflow = "hidden";
+
+    return () => {
+      body.style.overflow = previousStyles.bodyOverflow;
+      root.style.overflow = previousStyles.rootOverflow;
+    };
+  }, [open]);
   const point=(c:HTMLCanvasElement,e:PointerEvent)=>{const r=c.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top};};
   const setup=(c:HTMLCanvasElement)=>{const ratio=Math.max(window.devicePixelRatio||1,1);c.width=Math.max(c.clientWidth*ratio,1);c.height=Math.max(c.clientHeight*ratio,1);const x=c.getContext("2d");if(x){x.setTransform(ratio,0,0,ratio,0,0);x.clearRect(0,0,c.clientWidth,c.clientHeight);x.lineWidth=2;x.lineCap="round";x.lineJoin="round";x.strokeStyle="#111827";}};
   const clear=()=>{const c=valueRef.current,x=c?.getContext("2d");if(c&&x)x.clearRect(0,0,c.width,c.height);const c2=signCanvas.current,x2=c2?.getContext("2d");if(c2&&x2)x2.clearRect(0,0,c2.width,c2.height);onClear();};
   const upload=(file:File)=>{if(!file.type.startsWith("image/"))return;const r=new FileReader();r.onload=()=>{const img=new Image();img.onload=()=>{const c=valueRef.current;if(!c)return;const ratio=Math.max(window.devicePixelRatio||1,1);c.width=Math.max(c.clientWidth*ratio,1);c.height=Math.max(c.clientHeight*ratio,1);const x=c.getContext("2d");if(!x)return;x.setTransform(ratio,0,0,ratio,0,0);x.clearRect(0,0,c.clientWidth,c.clientHeight);const scale=Math.min((c.clientWidth-16)/img.width,(c.clientHeight-16)/img.height),w=img.width*scale,h=img.height*scale;x.drawImage(img,(c.clientWidth-w)/2,(c.clientHeight-h)/2,w,h);onSigned();};img.src=String(r.result);};r.readAsDataURL(file);};
   const accept=()=>{const source=signCanvas.current,target=valueRef.current;if(!source||!target)return;const ratio=Math.max(window.devicePixelRatio||1,1);target.width=Math.max(target.clientWidth*ratio,1);target.height=Math.max(target.clientHeight*ratio,1);const x=target.getContext("2d");if(!x)return;x.setTransform(ratio,0,0,ratio,0,0);x.clearRect(0,0,target.clientWidth,target.clientHeight);const scale=Math.min(target.clientWidth/source.clientWidth,target.clientHeight/source.clientHeight),w=source.clientWidth*scale,h=source.clientHeight*scale;x.drawImage(source,(target.clientWidth-w)/2,(target.clientHeight-h)/2,w,h);setOpen(false);onSigned();};
-  return <><div className="rounded-lg border bg-gray-50/70 p-4"><div className="mb-2 flex items-center justify-between gap-3"><div><h3 className="font-semibold text-gray-900">{label}</h3><p className="text-xs text-gray-500">{hint}</p></div><Button type="button" variant="outline" size="sm" onClick={clear}><Eraser className="mr-1 h-4 w-4"/>Löschen</Button></div><canvas ref={valueRef} className="h-32 w-full rounded-md border bg-white object-contain"/><div className="mt-3 flex flex-wrap gap-2"><Button type="button" variant="outline" size="sm" onClick={()=>{setOpen(true);setTimeout(()=>{if(signCanvas.current)setup(signCanvas.current);},0);}}><PenLine className="mr-1 h-4 w-4"/>Unterschrift zeichnen</Button><Button type="button" variant="outline" size="sm" onClick={()=>fileInput.current?.click()}><Upload className="mr-1 h-4 w-4"/>Unterschrift hochladen</Button><input ref={fileInput} type="file" accept="image/png,image/jpeg,image/webp" className="hidden" onChange={e=>{const f=e.target.files?.[0];if(f)upload(f);e.currentTarget.value="";}}/></div></div>{open&&<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" role="dialog" aria-modal="true" aria-label={label}><div className="w-full max-w-2xl rounded-xl bg-white p-5 shadow-xl"><div className="mb-3 flex items-center justify-between"><div><h3 className="text-lg font-semibold text-gray-900">{label}</h3><p className="text-sm text-gray-500">Bitte unterschreiben Sie im Feld.</p></div><Button type="button" variant="outline" size="sm" onClick={()=>setOpen(false)}>Schließen</Button></div><canvas ref={signCanvas} className="h-48 w-full cursor-crosshair touch-none rounded-md border bg-white" onPointerDown={e=>{const c=signCanvas.current,x=c?.getContext("2d");if(!c||!x)return;drawing.current=true;c.setPointerCapture(e.pointerId);const q=point(c,e.nativeEvent);x.beginPath();x.moveTo(q.x,q.y);}} onPointerMove={e=>{if(!drawing.current)return;const c=signCanvas.current,x=c?.getContext("2d");if(!c||!x)return;const q=point(c,e.nativeEvent);x.lineTo(q.x,q.y);x.stroke();}} onPointerUp={()=>{drawing.current=false}} onPointerCancel={()=>{drawing.current=false}}/><div className="mt-3 flex justify-between gap-2"><Button type="button" variant="outline" onClick={()=>{const c=signCanvas.current,x=c?.getContext("2d");if(c&&x)x.clearRect(0,0,c.width,c.height)}}><Eraser className="mr-1 h-4 w-4"/>Löschen</Button><Button type="button" onClick={accept} className="bg-club-accent hover:bg-club-accent/90">Unterschrift übernehmen</Button></div></div></div>}</>;
+  return <><div className="rounded-lg border bg-gray-50/70 p-4"><div className="mb-2 flex items-center justify-between gap-3"><div><h3 className="font-semibold text-gray-900">{label}</h3><p className="text-xs text-gray-500">{hint}</p></div><Button type="button" variant="outline" size="sm" onClick={clear}><Eraser className="mr-1 h-4 w-4"/>Löschen</Button></div><canvas ref={valueRef} className="h-32 w-full rounded-md border bg-white object-contain"/><div className="mt-3 flex flex-wrap gap-2"><Button type="button" variant="outline" size="sm" onClick={()=>{setOpen(true);setTimeout(()=>{if(signCanvas.current)setup(signCanvas.current);},0);}}><PenLine className="mr-1 h-4 w-4"/>Unterschrift zeichnen</Button><Button type="button" variant="outline" size="sm" onClick={()=>fileInput.current?.click()}><Upload className="mr-1 h-4 w-4"/>Unterschrift hochladen</Button><input ref={fileInput} type="file" accept="image/png,image/jpeg,image/webp" className="hidden" onChange={e=>{const f=e.target.files?.[0];if(f)upload(f);e.currentTarget.value="";}}/></div></div>{open&&createPortal(<div className="fixed inset-0 z-[100] flex h-dvh w-full items-center justify-center overflow-x-hidden overflow-y-auto bg-black/60 p-4" role="dialog" aria-modal="true" aria-label={label}><div className="w-full max-w-2xl rounded-xl bg-white p-5 shadow-xl"><div className="mb-3 flex items-center justify-between"><div><h3 className="text-lg font-semibold text-gray-900">{label}</h3><p className="text-sm text-gray-500">Bitte unterschreiben Sie im Feld.</p></div><Button type="button" variant="outline" size="sm" onClick={()=>setOpen(false)}>Schließen</Button></div><canvas ref={signCanvas} className="h-48 w-full cursor-crosshair touch-none rounded-md border bg-white" onPointerDown={e=>{const c=signCanvas.current,x=c?.getContext("2d");if(!c||!x)return;drawing.current=true;c.setPointerCapture(e.pointerId);const q=point(c,e.nativeEvent);x.beginPath();x.moveTo(q.x,q.y);}} onPointerMove={e=>{if(!drawing.current)return;const c=signCanvas.current,x=c?.getContext("2d");if(!c||!x)return;const q=point(c,e.nativeEvent);x.lineTo(q.x,q.y);x.stroke();}} onPointerUp={()=>{drawing.current=false}} onPointerCancel={()=>{drawing.current=false}}/><div className="mt-3 flex flex-wrap justify-between gap-2"><Button type="button" variant="outline" onClick={()=>{const c=signCanvas.current,x=c?.getContext("2d");if(c&&x)x.clearRect(0,0,c.width,c.height)}}><Eraser className="mr-1 h-4 w-4"/>Löschen</Button><Button type="button" onClick={accept} className="bg-club-accent hover:bg-club-accent/90">Unterschrift übernehmen</Button></div></div></div>,document.body)}</>;
 };
 function ibanOkay(value: string) {
   const s = value.replace(/\s/g, "").toUpperCase();
@@ -135,10 +152,13 @@ const MitgliedwerdenSection = () => {
     [prepared, setPrepared] = useState<{ file: File; name: string } | null>(null),
     [message, setMessage] = useState("");
   const minor = isMinor(form.birth_date);
-  const set = (k: keyof FormState, v: string | boolean) => {
-    setForm((x) => ({ ...x, [k]: v }));
+  const invalidatePrepared = () => {
     setPrepared(null);
     setMessage("");
+  };
+  const set = (k: keyof FormState, v: string | boolean) => {
+    setForm((x) => ({ ...x, [k]: v }));
+    invalidatePrepared();
   };
   const reset = () => {
     setForm({
@@ -215,8 +235,8 @@ const MitgliedwerdenSection = () => {
   const mail = () => { if (prepared) openMembershipMail(MEMBERSHIP_RECIPIENTS, prepared.name); };
   const eml = async () => { if (!prepared) return; const text=await createMembershipEml(prepared.file,MEMBERSHIP_RECIPIENTS); const blob=new Blob([text],{type:"message/rfc822"}); const url=URL.createObjectURL(blob); const a=document.createElement("a"); a.href=url; a.download="SC-Aufnahmeantrag.eml"; a.click(); setTimeout(()=>URL.revokeObjectURL(url),30000); };
   return (
-    <section id="mitgliedwerden" className="animate-fadeIn py-16">
-      <div className="container mx-auto px-4">
+    <section id="mitgliedwerden" className="animate-fadeIn overflow-x-clip py-16">
+      <div className="container mx-auto min-w-0 px-4">
         <header ref={intro.elementRef} className="mb-10 text-center">
           <h1 className="text-3xl font-bold text-club-primary">
             Mitglied werden
@@ -226,7 +246,7 @@ const MitgliedwerdenSection = () => {
             werden. Du entscheidest selbst, wie du den ersten Schritt machst.
           </p>
         </header>
-        <div className="mx-auto mb-10 grid max-w-4xl gap-4 md:grid-cols-2">
+        <div className="mx-auto mb-10 grid w-full max-w-4xl gap-4 md:grid-cols-2">
           <a
             href="#digital-antrag"
             className="group rounded-lg border bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md md:p-6"
@@ -250,7 +270,7 @@ const MitgliedwerdenSection = () => {
             </span>
           </a>
           <a
-            href="#kontakt"
+            href="/kontakt"
             className="group rounded-lg border border-club-accent/25 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-club-accent/50 hover:shadow-md md:p-6"
           >
             <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-club-accent/10">
@@ -274,7 +294,7 @@ const MitgliedwerdenSection = () => {
         </div>
         <div
           ref={info.elementRef}
-          className={`mx-auto mb-10 max-w-5xl ${info.isVisible ? "animate-slideInUp" : "opacity-0"}`}
+          className={`mx-auto mb-10 w-full max-w-5xl ${info.isVisible ? "animate-slideInUp" : "opacity-0"}`}
         >
           <div className="grid overflow-hidden rounded-lg border bg-white shadow-sm md:grid-cols-3">
             <div className="border-b p-5 md:border-b-0 md:border-r">
@@ -307,13 +327,10 @@ const MitgliedwerdenSection = () => {
         <div
           id="digital-antrag"
           ref={formAnim.elementRef}
-          className={`mx-auto mb-10 max-w-5xl ${formAnim.isVisible ? "animate-slideInUp" : "opacity-0"}`}
+          className={`mx-auto mb-10 w-full max-w-5xl scroll-mt-24 ${formAnim.isVisible ? "animate-slideInUp" : "opacity-0"}`}
         >
-          <details
-            open
-            className="overflow-hidden rounded-lg border bg-white shadow-sm"
-          >
-            <summary className="flex list-none items-center justify-between p-5 md:p-6">
+          <div className="min-w-0 overflow-hidden rounded-lg border bg-white shadow-sm">
+            <div className="p-5 md:p-6">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wider text-club-accent">
                   Digitaler Aufnahmeantrag
@@ -325,10 +342,10 @@ const MitgliedwerdenSection = () => {
                   Schachclub Laufenburg e.V. – gegründet 1969 –
                 </p>
               </div>
-            </summary>
+            </div>
             <div className="border-t p-5 md:p-7">
-              <form onSubmit={(e) => { submit(e); }} className="space-y-7">
-                <div className="space-y-6 rounded-lg border-2 border-gray-800 p-5 md:p-7">
+              <form onSubmit={(e) => { submit(e); }} className="min-w-0 space-y-7">
+                <div className="min-w-0 space-y-6 rounded-lg border-2 border-gray-800 p-5 md:p-7">
                   <p className="leading-relaxed text-gray-800">
                     Ich möchte Mitglied beim Schachclub Laufenburg e.V. und im
                     Badischen Schachverband e.V. werden. Die Satzung des
@@ -530,7 +547,10 @@ const MitgliedwerdenSection = () => {
                       required
                       type="checkbox"
                       checked={terms}
-                      onChange={(e) => setTerms(e.target.checked)}
+                      onChange={(e) => {
+                        setTerms(e.target.checked);
+                        invalidatePrepared();
+                      }}
                       className="mt-1"
                     />
                     <span>
@@ -544,7 +564,10 @@ const MitgliedwerdenSection = () => {
                       required
                       type="checkbox"
                       checked={privacy}
-                      onChange={(e) => setPrivacy(e.target.checked)}
+                      onChange={(e) => {
+                        setPrivacy(e.target.checked);
+                        invalidatePrepared();
+                      }}
                       className="mt-1"
                     />
                     <span>
@@ -570,21 +593,33 @@ const MitgliedwerdenSection = () => {
                       label="Der Antragsteller"
                       hint="Bitte hier digital unterschreiben."
                       valueRef={applicant}
-                      onSigned={() => setApplicantSigned(true)}
-                      onClear={() => setApplicantSigned(false)}
+                      onSigned={() => {
+                        setApplicantSigned(true);
+                        invalidatePrepared();
+                      }}
+                      onClear={() => {
+                        setApplicantSigned(false);
+                        invalidatePrepared();
+                      }}
                     />
                     {minor && (
                       <SignaturePad
                         label="Gesetzlicher Vertreter"
                         hint="Bei Minderjährigen erforderlich."
                         valueRef={guardian}
-                        onSigned={() => setGuardianSigned(true)}
-                        onClear={() => setGuardianSigned(false)}
+                        onSigned={() => {
+                          setGuardianSigned(true);
+                          invalidatePrepared();
+                        }}
+                        onClear={() => {
+                          setGuardianSigned(false);
+                          invalidatePrepared();
+                        }}
                       />
                     )}
                   </div>
                 </div>
-                <div className="space-y-5 rounded-lg border-2 border-gray-800 p-5 md:p-7">
+                <div className="min-w-0 space-y-5 rounded-lg border-2 border-gray-800 p-5 md:p-7">
                   <div>
                     <p className="mb-1 text-sm text-gray-700">
                       SEPA-Basislastschrift
@@ -644,8 +679,14 @@ const MitgliedwerdenSection = () => {
                         label="Unterschrift Einzugsermächtigung"
                         hint="Erforderlich bei erteilter Einzugsermächtigung."
                         valueRef={mandate}
-                        onSigned={() => setMandateSigned(true)}
-                        onClear={() => setMandateSigned(false)}
+                        onSigned={() => {
+                          setMandateSigned(true);
+                          invalidatePrepared();
+                        }}
+                        onClear={() => {
+                          setMandateSigned(false);
+                          invalidatePrepared();
+                        }}
                       />
                     </>
                   )}
@@ -660,29 +701,11 @@ const MitgliedwerdenSection = () => {
                 )}
                 <div className="flex flex-col gap-3 rounded-lg border bg-gray-50 p-4 sm:flex-row sm:items-center sm:justify-between">
                   <p className="max-w-xl text-xs leading-5 text-gray-500">Die PDF wird vollständig in Ihrem Browser erstellt. Sie wird nicht an den Webserver hochgeladen. Danach können Sie sie speichern, in Ihrem E-Mail-Programm als Anhang verwenden oder einen lokalen E-Mail-Entwurf erzeugen.</p>
-                  <div className="flex flex-wrap gap-2 sm:justify-end"><Button type="submit" disabled={busy} className="bg-club-accent hover:bg-club-accent/90">{busy ? <><Clock className="mr-2 h-4 w-4 animate-spin" />PDF wird erstellt...</> : <><FileText className="mr-2 h-4 w-4" />PDF vorbereiten</>}</Button>{prepared&&<><Button type="button" variant="outline" onClick={download}>PDF speichern</Button><Button type="button" variant="outline" onClick={mail}><Mail className="mr-2 h-4 w-4"/>E-Mail öffnen</Button><Button type="button" variant="outline" onClick={eml}>E-Mail-Entwurf (.eml)</Button></>}</div>
+                  <div className="flex flex-wrap gap-2 sm:justify-end">{!prepared&&<Button type="submit" disabled={busy} className="bg-club-accent hover:bg-club-accent/90">{busy ? <><Clock className="mr-2 h-4 w-4 animate-spin" />PDF wird erstellt...</> : <><FileText className="mr-2 h-4 w-4" />PDF vorbereiten</>}</Button>}{prepared&&<><Button type="button" variant="outline" onClick={download}>PDF speichern</Button><Button type="button" variant="outline" onClick={mail}><Mail className="mr-2 h-4 w-4"/>E-Mail öffnen</Button><Button type="button" variant="outline" onClick={eml}>E-Mail-Entwurf (.eml)</Button></>}</div>
                 </div>
               </form>
             </div>
-          </details>
-        </div>
-        <div id="kontakt" className="mx-auto max-w-5xl pb-10">
-          <Card>
-            <CardHeader>
-              <CardTitle>Probetag oder Fragen</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="mb-4 text-sm text-gray-600">
-                Du möchtest erst einmal vorbeikommen oder hast eine Frage? Nutze
-                unser Kontaktformular.
-              </p>
-              <Link to="/kontakt">
-                <Button variant="outline">
-                  Zum Kontaktformular <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
+          </div>
         </div>
       </div>
     </section>

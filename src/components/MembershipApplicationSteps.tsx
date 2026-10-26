@@ -35,20 +35,6 @@ export function MembershipApplicationSteps() {
     if (children[3]) children[3].style.order = "5";
     if (children[4]) children[4].style.order = "6";
 
-    // The dedicated "Probetag oder Fragen" card is no longer shown here.
-    const trialCard = Array.from(container.querySelectorAll("a")).find((link) =>
-      link.querySelector("h3")?.textContent?.trim() === "Probetag oder Fragen",
-    );
-    trialCard?.remove();
-
-    // Any remaining "Erst ausprobieren" CTA goes directly to the contact page.
-    Array.from(container.querySelectorAll("a")).forEach((link) => {
-      const label = link.textContent?.replace(/\s+/g, " ").trim().toLowerCase();
-      if (label?.includes("erst ausprobieren")) {
-        link.setAttribute("href", "/kontakt");
-      }
-    });
-
     const slot = document.createElement("div");
     slot.setAttribute("data-membership-steps-slot", "true");
     slot.style.order = "2";
@@ -74,10 +60,10 @@ export function MembershipApplicationSteps() {
       </div>
       <div className="grid gap-5 md:grid-cols-3">
         {steps.map(({ number, title, text, icon: Icon }) => (
-          <div key={number} className="flex gap-3 md:block md:text-center">
+          <div key={number} className="flex items-center gap-3">
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-club-accent text-sm font-bold text-white">{number}</span>
-            <div>
-              <Icon className="hidden md:mx-auto md:mt-3 md:block md:h-5 md:w-5 md:text-club-accent" />
+            <div className="min-w-0 text-left">
+              <Icon className="hidden md:mt-3 md:block md:h-5 md:w-5 md:text-club-accent" />
               <h4 className="font-semibold text-gray-900 md:mt-2">{title}</h4>
               <p className="mt-1 text-sm text-gray-600">{text}</p>
             </div>
