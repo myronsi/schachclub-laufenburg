@@ -3,7 +3,6 @@ name: Deploy React Vite to Strato via SFTP
 on:
   push:
     branches:
-      - main
       - dev
 
 jobs:
@@ -24,8 +23,28 @@ jobs:
       - name: Build project
         run: npm run build
 
+      - name: Adapt dev API endpoints
+        run: |
+          find dist/assets -type f -name '*.js' -print0 | xargs -0 sed -i 's#/formmail-80\.php#/dev/formmail-80.php#g'
+          if grep -R '"/formmail-80.php"' dist/assets; then
+            echo "Production form endpoint leaked into dev build"
+            exit 1
+          fi
+
       - name: Verify build output
-        run: ls -la dist
+        run: |
+          test -f dist/index.html
+          test -f dist/.htaccess
+          test -f dist/private-gallery.php
+          if grep -R "sc-laufenburg.de/api/auth.php" dist; then
+            echo "Production auth URL leaked into build"
+            exit 1
+          fi
+          if grep -R "mediaImages" dist; then
+            echo "Private gallery metadata leaked into build"
+            exit 1
+          fi
+          ls -la dist
 
       - name: Prepare PHPMailer
         run: |
@@ -51,15 +70,11 @@ jobs:
           grep -F "require_once __DIR__ . '/PHPMailer.php';" deploy/formmail-80.php
           grep -F "require_once __DIR__ . '/SMTP.php';" deploy/formmail-80.php
           grep -F "require_once __DIR__ . '/Exception.php';" deploy/formmail-80.php
+          grep -F "dirname(__DIR__) . '/config.ini'" deploy/formmail-80.php
 
       - name: Set deployment path
         id: deploy-path
-        run: |
-          if [ "${{ github.ref_name }}" = "dev" ]; then
-            echo "remote_path=/dev/" >> "$GITHUB_OUTPUT"
-          else
-            echo "remote_path=/" >> "$GITHUB_OUTPUT"
-          fi
+        run: echo "remote_path=/dev/" >> "$GITHUB_OUTPUT"
 
       - name: Deploy React build
         uses: wlixcc/SFTP-Deploy-Action@v1.2.6

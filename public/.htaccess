@@ -1,0 +1,15 @@
+Options -Indexes
+
+# Never expose application secrets or private gallery files directly.
+<FilesMatch "^(config\.ini|\.env|.*\.sql|.*\.sqlite|.*\.db)$">
+    Require all denied
+</FilesMatch>
+
+# The private gallery is streamed through private-gallery.php after authentication.
+RewriteEngine On
+RewriteRule ^photos/chronik(?:/|$) - [F,L]
+
+# Vite/React client-side routes.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.html [L]
