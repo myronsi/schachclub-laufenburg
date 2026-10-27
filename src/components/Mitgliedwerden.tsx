@@ -42,6 +42,212 @@ type FormState = {
   account_holder: string;
   representative_name: string;
 };
+
+const EU_COUNTRIES = [
+  "Belgien",
+  "Bulgarien",
+  "Dänemark",
+  "Deutschland",
+  "Estland",
+  "Finnland",
+  "Frankreich",
+  "Griechenland",
+  "Irland",
+  "Italien",
+  "Kroatien",
+  "Lettland",
+  "Litauen",
+  "Luxemburg",
+  "Malta",
+  "Niederlande",
+  "Österreich",
+  "Polen",
+  "Portugal",
+  "Rumänien",
+  "Schweden",
+  "Slowakei",
+  "Slowenien",
+  "Spanien",
+  "Tschechien",
+  "Ungarn",
+  "Zypern",
+];
+
+const OTHER_COUNTRIES = [
+  "Afghanistan",
+  "Albanien",
+  "Algerien",
+  "Andorra",
+  "Angola",
+  "Antigua und Barbuda",
+  "Argentinien",
+  "Armenien",
+  "Aserbaidschan",
+  "Ägypten",
+  "Äquatorialguinea",
+  "Äthiopien",
+  "Australien",
+  "Bahamas",
+  "Bahrain",
+  "Bangladesch",
+  "Barbados",
+  "Belarus",
+  "Belize",
+  "Benin",
+  "Bhutan",
+  "Bolivien",
+  "Bosnien und Herzegowina",
+  "Botswana",
+  "Brasilien",
+  "Brunei",
+  "Burkina Faso",
+  "Burundi",
+  "Chile",
+  "China",
+  "Costa Rica",
+  "Dominica",
+  "Dominikanische Republik",
+  "Dschibuti",
+  "Ecuador",
+  "El Salvador",
+  "Elfenbeinküste",
+  "Eritrea",
+  "Eswatini",
+  "Fidschi",
+  "Gabun",
+  "Gambia",
+  "Georgien",
+  "Ghana",
+  "Grenada",
+  "Guatemala",
+  "Guinea",
+  "Guinea-Bissau",
+  "Guyana",
+  "Haiti",
+  "Honduras",
+  "Indien",
+  "Indonesien",
+  "Irak",
+  "Iran",
+  "Island",
+  "Israel",
+  "Jamaika",
+  "Japan",
+  "Jemen",
+  "Jordanien",
+  "Kambodscha",
+  "Kamerun",
+  "Kanada",
+  "Kap Verde",
+  "Kasachstan",
+  "Katar",
+  "Kenia",
+  "Kirgisistan",
+  "Kiribati",
+  "Kolumbien",
+  "Komoren",
+  "Kongo",
+  "Demokratische Republik Kongo",
+  "Kosovo",
+  "Kuba",
+  "Kuwait",
+  "Laos",
+  "Lesotho",
+  "Libanon",
+  "Liberia",
+  "Libyen",
+  "Liechtenstein",
+  "Madagaskar",
+  "Malawi",
+  "Malaysia",
+  "Malediven",
+  "Mali",
+  "Marokko",
+  "Marshallinseln",
+  "Mauretanien",
+  "Mauritius",
+  "Mexiko",
+  "Mikronesien",
+  "Moldau",
+  "Monaco",
+  "Mongolei",
+  "Montenegro",
+  "Mosambik",
+  "Myanmar",
+  "Namibia",
+  "Nauru",
+  "Nepal",
+  "Neuseeland",
+  "Nicaragua",
+  "Niger",
+  "Nigeria",
+  "Nordkorea",
+  "Nordmazedonien",
+  "Norwegen",
+  "Oman",
+  "Pakistan",
+  "Palästina",
+  "Palau",
+  "Panama",
+  "Papua-Neuguinea",
+  "Paraguay",
+  "Peru",
+  "Philippinen",
+  "Ruanda",
+  "Russland",
+  "Salomonen",
+  "Sambia",
+  "Samoa",
+  "San Marino",
+  "São Tomé und Príncipe",
+  "Saudi-Arabien",
+  "Schweiz",
+  "Senegal",
+  "Serbien",
+  "Seychellen",
+  "Sierra Leone",
+  "Simbabwe",
+  "Singapur",
+  "Somalia",
+  "Sri Lanka",
+  "St. Kitts und Nevis",
+  "St. Lucia",
+  "St. Vincent und die Grenadinen",
+  "Sudan",
+  "Südafrika",
+  "Südkorea",
+  "Südsudan",
+  "Suriname",
+  "Syrien",
+  "Tadschikistan",
+  "Tansania",
+  "Thailand",
+  "Timor-Leste",
+  "Togo",
+  "Tonga",
+  "Trinidad und Tobago",
+  "Tschad",
+  "Tunesien",
+  "Türkei",
+  "Turkmenistan",
+  "Tuvalu",
+  "Uganda",
+  "Ukraine",
+  "Uruguay",
+  "Usbekistan",
+  "Vanuatu",
+  "Vatikanstadt",
+  "Venezuela",
+  "Vereinigte Arabische Emirate",
+  "Vereinigte Staaten",
+  "Vereinigtes Königreich",
+  "Vietnam",
+  "Zentralafrikanische Republik",
+  "Andere / nicht aufgeführt",
+  "Staatenlos",
+  "Ungeklärt",
+];
+
 const today = new Date().toISOString().slice(0, 10);
 const initialForm: FormState = {
   first_name: "",
@@ -216,7 +422,7 @@ const MitgliedwerdenSection = () => {
     try {
       const data: MembershipPdfData = {
         ...form,
-        nationality: form.nationality === "Sonstige" ? `Sonstige: ${form.nationality_other.trim()}` : form.nationality,
+        nationality: form.nationality,
         representative_name: minor ? form.representative_name.trim() : "",
         signatures: { applicant: applicant.current?.toDataURL("image/png") || "", representative: minor ? guardian.current?.toDataURL("image/png") || "" : "", mandate: form.direct_debit ? mandate.current?.toDataURL("image/png") || "" : "" },
         created: new Date().toISOString(),
@@ -416,27 +622,28 @@ const MitgliedwerdenSection = () => {
                   </div>
                   <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
                     <Field label="Staatsangehörigkeit" required>
-                      <div className="flex flex-wrap gap-4 pt-2 text-sm">
-                        {[
-                          ["Deutsch", "Deutsch"],
-                          ["EU-Angehöriger", "EU-Angehöriger"],
-                          ["Sonstige", "Sonstige"],
-                        ].map(([v, l]) => (
-                          <label
-                            key={v}
-                            className="inline-flex items-center gap-2"
-                          >
-                            <input
-                              type="radio"
-                              name="nationality"
-                              required
-                              checked={form.nationality === v}
-                              onChange={() => set("nationality", v)}
-                            />
-                            {l}
-                          </label>
-                        ))}
-                      </div>
+                      <select
+                        required
+                        value={form.nationality}
+                        onChange={(e) => set("nationality", e.target.value)}
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                      >
+                        <option value="">Bitte auswählen...</option>
+                        <optgroup label="EU-Mitgliedstaaten">
+                          {EU_COUNTRIES.map((country) => (
+                            <option key={country} value={country}>
+                              {country}
+                            </option>
+                          ))}
+                        </optgroup>
+                        <optgroup label="Andere Länder / sonstige Angaben">
+                          {OTHER_COUNTRIES.map((country) => (
+                            <option key={country} value={country}>
+                              {country}
+                            </option>
+                          ))}
+                        </optgroup>
+                      </select>
                     </Field>
                     <Field label="Geschlecht" required>
                       <div className="flex flex-wrap gap-4 pt-2 text-sm">
@@ -462,17 +669,6 @@ const MitgliedwerdenSection = () => {
                       </div>
                     </Field>
                   </div>
-                  {form.nationality === "Sonstige" && (
-                    <Field label="Sonstige Staatsangehörigkeit" required>
-                      <Input
-                        required
-                        value={form.nationality_other}
-                        onChange={(e) =>
-                          set("nationality_other", e.target.value)
-                        }
-                      />
-                    </Field>
-                  )}
                   {form.gender === "divers" && (
                     <Field label="Geschlecht für den Spielbetrieb" required>
                       <div className="flex gap-5 pt-2 text-sm">
